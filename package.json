@@ -1,0 +1,37 @@
+{
+  "name": "dompetku",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "autoprefixer": "^10.6.1",
+    "chart.js": "^4.6.1",
+    "dexie": "^4.4.7",
+    "dexie-react-hooks": "^4.4.0",
+    "lucide-react": "^1.61.0",
+    "postcss": "^8.5.31",
+    "react": "^19.3.1",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.3",
+    "vite-plugin-pwa": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.88.0",
+    "pngjs": "^7.0.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
+  }
+}
