@@ -14,6 +14,9 @@ import { getCurrentYearMonth, getPeriodDateRange } from '../utils/date';
 import { shouldShowBackupReminder } from '../utils/exportImport';
 import { TransactionItem } from '../components/transaction/TransactionItem';
 import { EmptyState } from '../components/common/EmptyState';
+import { PwaInstallBanner } from '../components/common/PwaInstallBanner';
+import { PwaInstallModal } from '../components/common/PwaInstallModal';
+import { usePwaInstall } from '../hooks/usePwaInstall';
 import {
   Wallet,
   TrendingDown,
@@ -41,6 +44,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [walletBalances, setWalletBalances] = useState<WalletBalanceInfo[]>([]);
   const [budgetAlerts, setBudgetAlerts] = useState<BudgetStatusInfo[]>([]);
   const [backupReminder, setBackupReminder] = useState<string | null>(null);
+
+  // PWA installation state
+  const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
   // Live queries for reactive updates
   const recentTransactions = useLiveQuery(() => getRecentTransactions(5)) || [];
@@ -97,6 +103,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
+      {/* PWA Home Screen Install Banner */}
+      <PwaInstallBanner isInstalled={isInstalled} onInstall={installApp} />
+
       {/* Backup Reminder Notice */}
       {backupReminder && (
         <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
@@ -313,6 +322,15 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         )}
       </div>
+
+      {/* PWA Guide Modal */}
+      <PwaInstallModal
+        isOpen={showGuideModal}
+        onClose={() => setShowGuideModal(false)}
+        isIOS={isIOS}
+        isAndroid={isAndroid}
+        onNativeInstall={installApp}
+      />
     </div>
   );
 };

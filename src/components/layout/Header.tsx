@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive } from 'lucide-react';
+import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download } from 'lucide-react';
 import { isStoragePersisted, requestPersistentStorage } from '../../utils/pwa';
 import { useAuthLock } from '../../hooks/useAuthLock';
 import { db } from '../../db/database';
+import { usePwaInstall } from '../../hooks/usePwaInstall';
+import { PwaInstallModal } from '../common/PwaInstallModal';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
@@ -13,6 +15,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const [isPersisted, setIsPersisted] = useState(false);
   const [isPinEnabled, setIsPinEnabled] = useState(false);
   const { lock } = useAuthLock();
+  const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -91,6 +94,19 @@ export const Header: React.FC<HeaderProps> = () => {
             </span>
           )}
 
+          {/* PWA Install Button */}
+          {!isInstalled && (
+            <button
+              type="button"
+              onClick={installApp}
+              title="Tambahkan DompetKu ke Layar Utama"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 rounded-lg transition-all active:scale-95 shadow-2xs"
+            >
+              <Download size={13} className="text-emerald-600 dark:text-emerald-400" />
+              <span>Instal App</span>
+            </button>
+          )}
+
           {/* Offline/Online badge */}
           <div
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
@@ -118,6 +134,15 @@ export const Header: React.FC<HeaderProps> = () => {
           )}
         </div>
       </div>
+
+      {/* PWA Install Modal */}
+      <PwaInstallModal
+        isOpen={showGuideModal}
+        onClose={() => setShowGuideModal(false)}
+        isIOS={isIOS}
+        isAndroid={isAndroid}
+        onNativeInstall={installApp}
+      />
     </header>
   );
 };

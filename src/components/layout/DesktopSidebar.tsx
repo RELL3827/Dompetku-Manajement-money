@@ -1,7 +1,9 @@
 import React from 'react';
-import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings, ShieldCheck, Sun, Moon, Download } from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
+import { usePwaInstall } from '../../hooks/usePwaInstall';
+import { PwaInstallModal } from '../common/PwaInstallModal';
 
 interface DesktopSidebarProps {
   activeTab: NavTab;
@@ -15,6 +17,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   onOpenAddModal,
 }) => {
   const { theme, setTheme } = useTheme();
+  const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
   const navItems = [
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
@@ -77,6 +80,18 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 
       {/* Footer / Theme toggle */}
       <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+        {/* PWA Install Button for Desktop */}
+        {!isInstalled && (
+          <button
+            type="button"
+            onClick={installApp}
+            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-2xs cursor-pointer"
+          >
+            <Download size={14} className="text-emerald-600 dark:text-emerald-400" />
+            <span>Instal ke Desktop</span>
+          </button>
+        )}
+
         <div className="flex items-center justify-between px-2 text-xs text-slate-500 dark:text-slate-400">
           <span>Mode: <strong className="capitalize text-slate-800 dark:text-slate-200">{theme === 'light' ? 'Terang' : theme === 'dark' ? 'Gelap' : 'Sistem'}</strong></span>
           <button
@@ -92,6 +107,15 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           DompetKu v1.0 • Lisensi MIT Bebas & Terbuka
         </p>
       </div>
+
+      {/* PWA Guide Modal */}
+      <PwaInstallModal
+        isOpen={showGuideModal}
+        onClose={() => setShowGuideModal(false)}
+        isIOS={isIOS}
+        isAndroid={isAndroid}
+        onNativeInstall={installApp}
+      />
     </aside>
   );
 };
