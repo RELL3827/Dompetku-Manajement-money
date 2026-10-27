@@ -47,12 +47,13 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ trendData }) => 
     scales: {
       x: {
         grid: { display: false },
-        ticks: { font: { size: 10 } },
+        ticks: { font: { size: 10 }, color: '#94a3b8' },
       },
       y: {
         grid: { color: 'rgba(148, 163, 184, 0.1)' },
         ticks: {
           font: { size: 10 },
+          color: '#94a3b8',
           callback: (value: any) => {
             if (Math.abs(value) >= 1000000) return `${value / 1000000}jt`;
             if (Math.abs(value) >= 1000) return `${value / 1000}rb`;
@@ -63,9 +64,11 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ trendData }) => 
     },
   };
 
+  const chartKey = trendData.map((d) => `${d.monthKey}-${d.net}`).join('_');
+
   return (
     <div className="h-64 w-full">
-      <Line data={chartData} options={chartOptions} />
+      <Line key={chartKey} data={chartData} options={chartOptions} />
     </div>
   );
 };

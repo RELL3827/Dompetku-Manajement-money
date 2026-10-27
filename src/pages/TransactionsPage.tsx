@@ -47,7 +47,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
   // Live queries for wallets & categories
   const wallets = useLiveQuery(() => db.wallets.toArray()) || [];
   const categories = useLiveQuery(() => db.categories.toArray()) || [];
-  const allTxTrigger = useLiveQuery(() => db.transactions.count()) || 0;
+  const allTxTrigger = useLiveQuery(() => db.transactions.toArray());
 
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
 

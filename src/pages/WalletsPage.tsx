@@ -19,8 +19,8 @@ export const WalletsPage: React.FC<WalletsPageProps> = ({ onOpenTransactionModal
   const [walletToEdit, setWalletToEdit] = useState<Wallet | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
-  const txTrigger = useLiveQuery(() => db.transactions.count()) || 0;
-  const walletTrigger = useLiveQuery(() => db.wallets.count()) || 0;
+  const txTrigger = useLiveQuery(() => db.transactions.toArray());
+  const walletTrigger = useLiveQuery(() => db.wallets.toArray());
 
   const loadWallets = async () => {
     const all = await getAllWalletBalances();

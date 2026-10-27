@@ -103,9 +103,15 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
             {theme === 'dark' ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-slate-700" />}
           </button>
         </div>
-        <p className="text-[11px] text-slate-400 dark:text-slate-600 px-2 leading-relaxed">
-          DompetKu v1.0 • Lisensi MIT Bebas & Terbuka
-        </p>
+
+        <div className="pt-2 px-2 border-t border-slate-100/60 dark:border-slate-800/60 space-y-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            Dibuat oleh <strong className="font-semibold text-emerald-600 dark:text-emerald-400">Farel Rizky P</strong>
+          </p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500">
+            DompetKu v1.0 • Lisensi MIT
+          </p>
+        </div>
       </div>
 
       {/* PWA Guide Modal */}

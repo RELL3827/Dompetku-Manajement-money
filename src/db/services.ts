@@ -847,12 +847,12 @@ export async function withdrawFromSavingGoal(
 // ANALYTICS & SUMMARY SERVICES
 // ----------------------------------------------------
 
-export async function getFinancialSummary(startDate: string, endDate: string): Promise<FinancialSummary> {
-  const [transactions, categories] = await Promise.all([
-    db.transactions.toArray(),
-    db.categories.toArray(),
-  ]);
-
+export function calculateFinancialSummary(
+  transactions: Transaction[],
+  categories: Category[],
+  startDate: string,
+  endDate: string
+): FinancialSummary {
   const filtered = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
   const catMap = new Map(categories.map((c) => [c.id, c]));
 
@@ -905,12 +905,12 @@ export async function getFinancialSummary(startDate: string, endDate: string): P
   };
 }
 
-export async function getCategoryExpensesBreakdown(startDate: string, endDate: string) {
-  const [transactions, categories] = await Promise.all([
-    db.transactions.toArray(),
-    db.categories.toArray(),
-  ]);
-
+export function calculateCategoryExpensesBreakdown(
+  transactions: Transaction[],
+  categories: Category[],
+  startDate: string,
+  endDate: string
+) {
   const catMap = new Map(categories.map((c) => [c.id, c]));
   const filtered = transactions.filter((t) => t.type === 'expense' && t.date >= startDate && t.date <= endDate);
 
@@ -939,7 +939,10 @@ export async function getCategoryExpensesBreakdown(startDate: string, endDate: s
   };
 }
 
-export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
+export function calculateMonthlyIncomeExpenseTrend(
+  transactions: Transaction[],
+  monthsCount = 6
+) {
   const now = new Date();
   const months: string[] = [];
 
@@ -948,8 +951,6 @@ export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
     const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     months.push(ym);
   }
-
-  const transactions = await db.transactions.toArray();
 
   return months.map((ym) => {
     const [year, month] = ym.split('-');
@@ -975,6 +976,27 @@ export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
       net: income - expense,
     };
   });
+}
+
+export async function getFinancialSummary(startDate: string, endDate: string): Promise<FinancialSummary> {
+  const [transactions, categories] = await Promise.all([
+    db.transactions.toArray(),
+    db.categories.toArray(),
+  ]);
+  return calculateFinancialSummary(transactions, categories, startDate, endDate);
+}
+
+export async function getCategoryExpensesBreakdown(startDate: string, endDate: string) {
+  const [transactions, categories] = await Promise.all([
+    db.transactions.toArray(),
+    db.categories.toArray(),
+  ]);
+  return calculateCategoryExpensesBreakdown(transactions, categories, startDate, endDate);
+}
+
+export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
+  const transactions = await db.transactions.toArray();
+  return calculateMonthlyIncomeExpenseTrend(transactions, monthsCount);
 }
 
 // ----------------------------------------------------

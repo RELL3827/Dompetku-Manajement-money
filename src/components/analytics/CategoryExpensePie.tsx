@@ -56,7 +56,7 @@ export const CategoryExpensePie: React.FC<CategoryExpensePieProps> = ({ data }) 
     <div className="flex flex-col sm:flex-row items-center gap-6">
       {/* Chart container with centered total */}
       <div className="relative w-48 h-48 sm:w-56 sm:h-56 shrink-0">
-        <Doughnut data={chartData} options={chartOptions} />
+        <Doughnut key={`doughnut-${data.items.length}-${data.total}`} data={chartData} options={chartOptions} />
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4">
           <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
             Total Keluar

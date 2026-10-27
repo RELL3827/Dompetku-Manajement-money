@@ -32,6 +32,7 @@ import {
   FileKey,
   ShieldCheck,
   Smartphone,
+  Info,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -455,6 +456,59 @@ export const SettingsPage: React.FC = () => {
         <p className="text-xs text-slate-500 leading-relaxed">
           DompetKu tidak menggunakan pelacak (Google Analytics, Sentry, Firebase), tidak ada iklan, dan tidak ada server database. Aplikasi ini sepenuhnya open-source dengan Lisensi MIT.
         </p>
+      </div>
+
+      {/* App & Developer Information */}
+      <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+            <Info size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              Informasi Aplikasi & Pengembang
+            </h2>
+            <p className="text-xs text-slate-400">
+              Tentang pembuat dan lisensi aplikasi DompetKu
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+              Pembuat Aplikasi
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                Farel Rizky P
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300">
+                Author
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+              Pengembang & Perancang DompetKu
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+              Versi & Lisensi
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                DompetKu v1.0.0
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">
+                MIT License
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+              100% Offline-First PWA • Open Source
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Danger Zone: Reset App */}

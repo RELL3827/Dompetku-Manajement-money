@@ -24,8 +24,8 @@ export const SavingsPage: React.FC = () => {
 
   // Reactive live queries
   const wallets = useLiveQuery(() => db.wallets.toArray()) || [];
-  const savingsTrigger = useLiveQuery(() => db.savings.count()) || 0;
-  const txTrigger = useLiveQuery(() => db.transactions.count()) || 0;
+  const savingsTrigger = useLiveQuery(() => db.savings.toArray());
+  const txTrigger = useLiveQuery(() => db.transactions.toArray());
 
   const walletMap = useMemo(() => new Map(wallets.map((w: Wallet) => [w.id, w])), [wallets]);
 

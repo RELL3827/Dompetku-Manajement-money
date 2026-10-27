@@ -381,6 +381,14 @@ Kontribusi dari komunitas sangat disambut! Silakan baca panduan lengkap di [CONT
 
 ---
 
+## 👨‍💻 Pengembang (Author)
+
+Aplikasi **DompetKu** dirancang dan dibuat oleh **Farel Rizky P**.
+- **GitHub Repository:** [https://github.com/RELL3827/Dompetku-Manajement-money](https://github.com/RELL3827/Dompetku-Manajement-money)
+- **Komitmen Privasi:** 100% Offline-First, Bebas Iklan, Tanpa Pelacak, Tanpa Database Server, Lisensi Bebas & Terbuka (MIT).
+
+---
+
 ## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE) - bebas digunakan untuk keperluan pribadi maupun komersial.

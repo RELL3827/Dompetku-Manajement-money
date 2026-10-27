@@ -1,28 +1,4 @@
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Filler,
-} from 'chart.js';
+import ChartJS from 'chart.js/auto';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Filler
-);
-
+// Ensure all chart types (Doughnut, Bar, Line, Pie, etc.), scales, and plugins are auto-registered
 export default ChartJS;

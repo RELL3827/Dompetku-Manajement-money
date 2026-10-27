@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import {
-  getFinancialSummary,
-  getCategoryExpensesBreakdown,
-  getMonthlyIncomeExpenseTrend,
-  type FinancialSummary,
+  calculateFinancialSummary,
+  calculateCategoryExpensesBreakdown,
+  calculateMonthlyIncomeExpenseTrend,
 } from '../db/services';
 import { AnalyticsSummaryCards } from '../components/analytics/AnalyticsSummaryCards';
 import { CategoryExpensePie } from '../components/analytics/CategoryExpensePie';
@@ -20,52 +19,32 @@ export const AnalyticsPage: React.FC = () => {
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState(toLocalISODate());
 
-  const txTrigger = useLiveQuery(() => db.transactions.count()) || 0;
+  // Real-time live queries directly observing IndexedDB transactions & categories
+  const transactions = useLiveQuery(() => db.transactions.toArray()) || [];
+  const categories = useLiveQuery(() => db.categories.toArray()) || [];
 
-  const [summary, setSummary] = useState<FinancialSummary>({
-    totalIncome: 0,
-    totalExpense: 0,
-    netSavings: 0,
-    dailyAverageExpense: 0,
-    transactionCount: 0,
-  });
-
-  const [categoryBreakdown, setCategoryBreakdown] = useState<{
-    total: number;
-    items: Array<{ name: string; color: string; amount: number; percentage: number }>;
-  }>({ total: 0, items: [] });
-
-  const [monthlyTrend, setMonthlyTrend] = useState<
-    Array<{ monthKey: string; label: string; income: number; expense: number; net: number }>
-  >([]);
-
-  useEffect(() => {
-    async function loadAnalytics() {
-      let startDate: string;
-      let endDate: string;
-
-      if (period === 'custom') {
-        startDate = customStart || '1970-01-01';
-        endDate = customEnd || toLocalISODate();
-      } else {
-        const range = getPeriodDateRange(period);
-        startDate = range.startDate;
-        endDate = range.endDate;
-      }
-
-      const [sum, catBreakdown, trend] = await Promise.all([
-        getFinancialSummary(startDate, endDate),
-        getCategoryExpensesBreakdown(startDate, endDate),
-        getMonthlyIncomeExpenseTrend(6),
-      ]);
-
-      setSummary(sum);
-      setCategoryBreakdown(catBreakdown);
-      setMonthlyTrend(trend);
+  // Instant reactive in-memory calculation: updates in real-time when any tx is added, edited, or deleted
+  const { startDate, endDate } = useMemo(() => {
+    if (period === 'custom') {
+      return {
+        startDate: customStart || '1970-01-01',
+        endDate: customEnd || '2099-12-31',
+      };
     }
+    return getPeriodDateRange(period);
+  }, [period, customStart, customEnd]);
 
-    loadAnalytics();
-  }, [period, customStart, customEnd, txTrigger]);
+  const summary = useMemo(() => {
+    return calculateFinancialSummary(transactions, categories, startDate, endDate);
+  }, [transactions, categories, startDate, endDate]);
+
+  const categoryBreakdown = useMemo(() => {
+    return calculateCategoryExpensesBreakdown(transactions, categories, startDate, endDate);
+  }, [transactions, categories, startDate, endDate]);
+
+  const monthlyTrend = useMemo(() => {
+    return calculateMonthlyIncomeExpenseTrend(transactions, 6);
+  }, [transactions]);
 
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">

@@ -31,8 +31,8 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
   const [is503020ModalOpen, setIs503020ModalOpen] = useState(false);
 
   // Trigger query on database changes
-  const txTrigger = useLiveQuery(() => db.transactions.count()) || 0;
-  const budgetTrigger = useLiveQuery(() => db.budgets.count()) || 0;
+  const txTrigger = useLiveQuery(() => db.transactions.toArray());
+  const budgetTrigger = useLiveQuery(() => db.budgets.toArray());
   const settingsTrigger = useLiveQuery(() => db.settings.get('app_settings'));
 
   useEffect(() => {

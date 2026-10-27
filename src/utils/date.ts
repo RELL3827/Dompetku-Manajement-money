@@ -67,45 +67,50 @@ export function getRelativeDateLabel(dateStr: string): string {
  */
 export function getPeriodDateRange(period: PeriodFilter): { startDate: string; endDate: string } {
   const now = new Date();
-  const todayStr = toLocalISODate(now);
 
   switch (period) {
     case 'this_week': {
       // Monday of current week
       const day = now.getDay();
       const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(now.setDate(diff));
+      const monday = new Date(now);
+      monday.setDate(diff);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
       return {
         startDate: toLocalISODate(monday),
-        endDate: todayStr,
+        endDate: toLocalISODate(sunday),
       };
     }
     case 'this_month': {
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       return {
         startDate: toLocalISODate(firstDay),
-        endDate: todayStr,
+        endDate: toLocalISODate(lastDay),
       };
     }
     case 'last_3_months': {
       const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       return {
         startDate: toLocalISODate(threeMonthsAgo),
-        endDate: todayStr,
+        endDate: toLocalISODate(lastDay),
       };
     }
     case 'this_year': {
       const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
+      const lastDayOfYear = new Date(now.getFullYear(), 11, 31);
       return {
         startDate: toLocalISODate(firstDayOfYear),
-        endDate: todayStr,
+        endDate: toLocalISODate(lastDayOfYear),
       };
     }
     case 'all':
     default:
       return {
         startDate: '1970-01-01',
-        endDate: todayStr,
+        endDate: '2099-12-31',
       };
   }
 }
