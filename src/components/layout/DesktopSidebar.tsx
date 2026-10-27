@@ -1,9 +1,10 @@
-import React from 'react';
-import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings, ShieldCheck, Sun, Moon, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings, ShieldCheck, Sun, Moon, Download, Heart } from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { PwaInstallModal } from '../common/PwaInstallModal';
+import { DonationModal } from '../common/DonationModal';
 
 interface DesktopSidebarProps {
   activeTab: NavTab;
@@ -18,6 +19,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 }) => {
   const { theme, setTheme } = useTheme();
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
 
   const navItems = [
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
@@ -111,6 +113,14 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           <p className="text-[10px] text-slate-400 dark:text-slate-500">
             DompetKu v1.0 • Lisensi MIT
           </p>
+          <button
+            type="button"
+            onClick={() => setIsDonationModalOpen(true)}
+            className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+          >
+            <Heart size={13} className="fill-current text-rose-500 animate-pulse" />
+            <span>Donasi Seikhlasnya</span>
+          </button>
         </div>
       </div>
 
@@ -121,6 +131,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         isIOS={isIOS}
         isAndroid={isAndroid}
         onNativeInstall={installApp}
+      />
+
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
     </aside>
   );

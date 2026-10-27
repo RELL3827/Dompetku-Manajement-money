@@ -27,7 +27,9 @@ import {
   AlertTriangle,
   ChevronRight,
   PiggyBank,
+  Heart,
 } from 'lucide-react';
+import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal } from '../types';
 
 interface HomePageProps {
@@ -44,6 +46,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [walletBalances, setWalletBalances] = useState<WalletBalanceInfo[]>([]);
   const [budgetAlerts, setBudgetAlerts] = useState<BudgetStatusInfo[]>([]);
   const [backupReminder, setBackupReminder] = useState<string | null>(null);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
 
   // PWA installation state
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
@@ -323,6 +326,31 @@ export const HomePage: React.FC<HomePageProps> = ({
         )}
       </div>
 
+      {/* Support / Donation Banner */}
+      <div className="p-4 rounded-3xl bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-amber-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-2xl bg-rose-500 text-white shrink-0 shadow-sm">
+            <Heart size={18} className="fill-current animate-pulse" />
+          </div>
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span>Suka dengan DompetKu?</span>
+            </h3>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+              Aplikasi ini 100% gratis & tanpa iklan. Dukung Farel Rizky P lewat donasi seikhlasnya.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsDonationModalOpen(true)}
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 active:scale-95 text-white text-xs font-bold shrink-0 transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <Heart size={13} className="fill-current" />
+          <span>Donasi QRIS</span>
+        </button>
+      </div>
+
       {/* PWA Guide Modal */}
       <PwaInstallModal
         isOpen={showGuideModal}
@@ -330,6 +358,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         isIOS={isIOS}
         isAndroid={isAndroid}
         onNativeInstall={installApp}
+      />
+
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
     </div>
   );

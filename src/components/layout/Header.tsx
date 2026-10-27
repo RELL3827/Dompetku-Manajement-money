@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download } from 'lucide-react';
+import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download, Heart } from 'lucide-react';
 import { isStoragePersisted, requestPersistentStorage } from '../../utils/pwa';
 import { useAuthLock } from '../../hooks/useAuthLock';
 import { db } from '../../db/database';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { PwaInstallModal } from '../common/PwaInstallModal';
+import { DonationModal } from '../common/DonationModal';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isPersisted, setIsPersisted] = useState(false);
   const [isPinEnabled, setIsPinEnabled] = useState(false);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const { lock } = useAuthLock();
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
@@ -120,6 +122,17 @@ export const Header: React.FC<HeaderProps> = () => {
             <span className="text-[11px]">{!isOnline ? 'Offline' : 'Lokal Aktif'}</span>
           </div>
 
+          {/* Donation Heart Button */}
+          <button
+            type="button"
+            onClick={() => setIsDonationModalOpen(true)}
+            title="Dukung Pengembang (Donasi Seikhlasnya)"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-900/60 rounded-lg transition-all active:scale-95 shadow-2xs cursor-pointer"
+          >
+            <Heart size={13} className="fill-current text-rose-500 animate-pulse" />
+            <span className="hidden sm:inline">Donasi</span>
+          </button>
+
           {/* Quick Lock Button if PIN is set */}
           {isPinEnabled && (
             <button
@@ -142,6 +155,12 @@ export const Header: React.FC<HeaderProps> = () => {
         isIOS={isIOS}
         isAndroid={isAndroid}
         onNativeInstall={installApp}
+      />
+
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
     </header>
   );

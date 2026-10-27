@@ -33,15 +33,18 @@ import {
   ShieldCheck,
   Smartphone,
   Info,
+  Heart,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
+import { DonationModal } from '../components/common/DonationModal';
 
 export const SettingsPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [isStoragePersistedState, setIsStoragePersistedState] = useState(false);
   const [storageUsage, setStorageUsage] = useState({ usedBytes: 0, quotaBytes: 0, percentage: 0 });
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
@@ -509,6 +512,31 @@ export const SettingsPage: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* Donation Callout Card */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-amber-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-rose-500 text-white shrink-0 shadow-sm mt-0.5">
+              <Heart size={18} className="fill-current animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                <span>Dukung Pengembang (Donasi Seikhlasnya)</span>
+              </h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                DompetKu 100% gratis tanpa iklan. Dukung kelangsungan aplikasi dan traktir kopi pengembang (Farel Rizky P) via QRIS RellAppstore.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsDonationModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 active:scale-95 text-white text-xs font-bold shrink-0 transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Heart size={14} className="fill-current" />
+            <span>Lihat QRIS Donasi</span>
+          </button>
+        </div>
       </div>
 
       {/* Danger Zone: Reset App */}
@@ -812,6 +840,12 @@ export const SettingsPage: React.FC = () => {
         isIOS={isIOS}
         isAndroid={isAndroid}
         onNativeInstall={installApp}
+      />
+
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
     </div>
   );

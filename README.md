@@ -389,6 +389,22 @@ Aplikasi **DompetKu** dirancang dan dibuat oleh **Farel Rizky P**.
 
 ---
 
+## ☕ Dukung Pengembang (Donasi Seikhlasnya)
+
+Aplikasi **DompetKu** bersifat 100% gratis, bebas iklan, dan tanpa biaya langganan. Jika aplikasi ini bermanfaat dalam membantu Anda mengelola finansial pribadi, Anda dapat memberikan dukungan atau donasi seikhlasnya untuk pengembang (**Farel Rizky P**) melalui QRIS berikut:
+
+<div align="center">
+  <img src="public/qris-donasi.jpg" alt="QRIS Donasi RellAppstore - Farel Rizky P" width="280" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+  <br/>
+  <p>
+    <strong>Merchant:</strong> RellAppstore<br/>
+    <strong>NMID:</strong> <code>ID1026588112551</code><br/>
+    <em>Mendukung seluruh m-Banking & e-Wallet berlogo QRIS: BCA, Mandiri, BRI, BNI, GoPay, OVO, DANA, ShopeePay, LinkAja, dll.</em>
+  </p>
+</div>
+
+---
+
 ## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE) - bebas digunakan untuk keperluan pribadi maupun komersial.
