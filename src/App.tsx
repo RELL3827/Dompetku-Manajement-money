@@ -8,6 +8,7 @@ import { FloatingActionButton } from './components/layout/FloatingActionButton';
 import { PinLockScreen } from './components/security/PinLockScreen';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { TransactionFormModal } from './components/transaction/TransactionFormModal';
+import { CalculatorModal } from './components/calculator/CalculatorModal';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -15,6 +16,8 @@ import { TransactionsPage } from './pages/TransactionsPage';
 import { SavingsPage } from './pages/SavingsPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { WalletsPage } from './pages/WalletsPage';
+import { NotesPage } from './pages/NotesPage';
+import { CalculatorPage } from './pages/CalculatorPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
@@ -31,20 +34,33 @@ export const App: React.FC = () => {
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [txToEdit, setTxToEdit] = useState<Transaction | null>(null);
   const [defaultTxType, setDefaultTxType] = useState<TransactionType>('expense');
+  const [defaultTxAmount, setDefaultTxAmount] = useState<number>(0);
+  const [defaultTxNotes, setDefaultTxNotes] = useState<string>('');
+
+  // Global Quick Calculator Modal State
+  const [isCalculatorModalOpen, setIsCalculatorModalOpen] = useState(false);
 
   // Check onboarding status
   const settingsRecord = useLiveQuery(() => db.settings.get('app_settings'));
   const hasCompletedOnboarding = settingsRecord?.value?.hasCompletedOnboarding ?? true;
 
-  const handleOpenAddTransaction = (type: TransactionType = 'expense') => {
+  const handleOpenAddTransaction = (
+    type: TransactionType = 'expense',
+    amount?: number,
+    notes?: string
+  ) => {
     setTxToEdit(null);
     setDefaultTxType(type);
+    setDefaultTxAmount(amount || 0);
+    setDefaultTxNotes(notes || '');
     setIsTxModalOpen(true);
   };
 
   const handleEditTransaction = (tx: Transaction) => {
     setTxToEdit(tx);
     setDefaultTxType(tx.type);
+    setDefaultTxAmount(tx.amount);
+    setDefaultTxNotes(tx.notes || '');
     setIsTxModalOpen(true);
   };
 
@@ -68,7 +84,10 @@ export const App: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* Top Header */}
-        <Header onOpenSettings={() => setCurrentTab('settings')} />
+        <Header
+          onOpenSettings={() => setCurrentTab('settings')}
+          onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+        />
 
         {/* Page Container */}
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 sm:py-6">
@@ -90,6 +109,17 @@ export const App: React.FC = () => {
           {currentTab === 'savings' && <SavingsPage />}
 
           {currentTab === 'budgets' && <BudgetsPage onNavigate={setCurrentTab} />}
+
+          {currentTab === 'notes' && (
+            <NotesPage onOpenTransactionModal={handleOpenAddTransaction} />
+          )}
+
+          {currentTab === 'calculator' && (
+            <CalculatorPage
+              onOpenTransactionModal={handleOpenAddTransaction}
+              onNavigate={setCurrentTab}
+            />
+          )}
 
           {currentTab === 'wallets' && (
             <WalletsPage onOpenTransactionModal={handleOpenAddTransaction} />
@@ -113,9 +143,19 @@ export const App: React.FC = () => {
         onClose={() => setIsTxModalOpen(false)}
         transactionToEdit={txToEdit}
         defaultType={defaultTxType}
+        defaultAmount={defaultTxAmount}
+        defaultNotes={defaultTxNotes}
         onSaved={() => {
           // LiveQueries reactively refresh all views
         }}
+      />
+
+      {/* Global Quick Calculator Modal */}
+      <CalculatorModal
+        isOpen={isCalculatorModalOpen}
+        onClose={() => setIsCalculatorModalOpen(false)}
+        onUseAmount={(amt, notes) => handleOpenAddTransaction('expense', amt, notes)}
+        onNavigateToBudgets={() => setCurrentTab('budgets')}
       />
     </div>
   );

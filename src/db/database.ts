@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Wallet, Category, Transaction, Budget, SavingGoal, AppSettings } from '../types';
+import type { Wallet, Category, Transaction, Budget, SavingGoal, FinancialNote, AppSettings } from '../types';
 import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_WALLETS } from './defaultData';
 
 export interface SettingRecord {
@@ -13,6 +13,7 @@ export class DompetKuDatabase extends Dexie {
   transactions!: Table<Transaction, string>;
   budgets!: Table<Budget, string>;
   savings!: Table<SavingGoal, string>;
+  notes!: Table<FinancialNote, string>;
   settings!: Table<SettingRecord, string>;
 
   constructor() {
@@ -35,6 +36,17 @@ export class DompetKuDatabase extends Dexie {
       budgets: 'id, categoryId, period, createdAt',
       settings: 'key',
       savings: 'id, name, isCompleted, walletId, targetDate, createdAt',
+    });
+
+    // Schema definition version 3 (Adding Financial Notes / Catatan Keuangan)
+    this.version(3).stores({
+      wallets: 'id, name, type, isArchived, createdAt',
+      categories: 'id, name, type, isDefault, createdAt',
+      transactions: 'id, amount, type, categoryId, walletId, toWalletId, date, createdAt',
+      budgets: 'id, categoryId, period, createdAt',
+      settings: 'key',
+      savings: 'id, name, isCompleted, walletId, targetDate, createdAt',
+      notes: 'id, title, category, isPinned, createdAt, updatedAt',
     });
   }
 

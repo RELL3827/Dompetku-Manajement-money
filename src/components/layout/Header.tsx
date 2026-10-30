@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download, Heart } from 'lucide-react';
+import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download, Heart, Calculator, Settings } from 'lucide-react';
 import { isStoragePersisted, requestPersistentStorage } from '../../utils/pwa';
 import { useAuthLock } from '../../hooks/useAuthLock';
 import { db } from '../../db/database';
@@ -9,9 +9,10 @@ import { DonationModal } from '../common/DonationModal';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
+  onOpenCalculator?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = () => {
+export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isPersisted, setIsPersisted] = useState(false);
   const [isPinEnabled, setIsPinEnabled] = useState(false);
@@ -122,6 +123,19 @@ export const Header: React.FC<HeaderProps> = () => {
             <span className="text-[11px]">{!isOnline ? 'Offline' : 'Lokal Aktif'}</span>
           </div>
 
+          {/* Quick Calculator Button */}
+          {onOpenCalculator && (
+            <button
+              type="button"
+              onClick={onOpenCalculator}
+              title="Kalkulator & Alat Hitung Cepat"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 rounded-lg transition-all active:scale-95 shadow-2xs cursor-pointer"
+            >
+              <Calculator size={13} className="text-emerald-600 dark:text-emerald-400" />
+              <span className="hidden sm:inline">Kalkulator</span>
+            </button>
+          )}
+
           {/* Donation Heart Button */}
           <button
             type="button"
@@ -140,9 +154,22 @@ export const Header: React.FC<HeaderProps> = () => {
               onClick={lock}
               title="Kunci Aplikasi Sekarang"
               aria-label="Kunci aplikasi"
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <Lock size={17} />
+            </button>
+          )}
+
+          {/* Settings Shortcut Button */}
+          {onOpenSettings && (
+            <button
+              type="button"
+              onClick={onOpenSettings}
+              title="Pengaturan Aplikasi"
+              aria-label="Pengaturan"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <Settings size={17} />
             </button>
           )}
         </div>

@@ -111,6 +111,29 @@ export interface Budget503020Summary {
   };
 }
 
+export type NoteTag = 'general' | 'shopping' | 'debt' | 'wishlist' | 'budget';
+
+export interface NoteChecklistItem {
+  id: string;
+  text: string;
+  isDone: boolean;
+  amount?: number;
+}
+
+export interface FinancialNote {
+  id: string;
+  title: string;
+  content: string;
+  category: NoteTag;
+  color: string;
+  isPinned: boolean;
+  checklist?: NoteChecklistItem[];
+  estimatedAmount?: number;
+  dueDate?: string; // YYYY-MM-DD
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BackupData {
   version: number;
   appName: 'DompetKu';
@@ -120,6 +143,7 @@ export interface BackupData {
   transactions: Transaction[];
   budgets: Budget[];
   savings?: SavingGoal[];
+  notes?: FinancialNote[];
   settings?: Partial<AppSettings>;
 }
 
@@ -140,4 +164,4 @@ export interface TransactionFilters {
   sort: SortOrder;
 }
 
-export type NavTab = 'home' | 'transactions' | 'wallets' | 'savings' | 'budgets' | 'analytics' | 'settings';
+export type NavTab = 'home' | 'transactions' | 'wallets' | 'savings' | 'budgets' | 'notes' | 'calculator' | 'analytics' | 'settings';

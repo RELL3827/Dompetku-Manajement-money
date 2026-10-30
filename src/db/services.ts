@@ -5,6 +5,9 @@ import type {
   Transaction,
   Budget,
   SavingGoal,
+  FinancialNote,
+  NoteTag,
+  NoteChecklistItem,
   TransactionFilters,
   BackupData,
   BudgetGroup503020,
@@ -844,6 +847,104 @@ export async function withdrawFromSavingGoal(
 }
 
 // ----------------------------------------------------
+// FINANCIAL NOTES SERVICES
+// ----------------------------------------------------
+
+export async function createNote(data: {
+  title: string;
+  content: string;
+  category: NoteTag;
+  color?: string;
+  isPinned?: boolean;
+  checklist?: NoteChecklistItem[];
+  estimatedAmount?: number;
+  dueDate?: string;
+}): Promise<FinancialNote> {
+  const now = new Date().toISOString();
+  const note: FinancialNote = {
+    id: generateId('note'),
+    title: data.title.trim(),
+    content: data.content.trim(),
+    category: data.category,
+    color: data.color || '#10b981',
+    isPinned: data.isPinned || false,
+    checklist: data.checklist || [],
+    estimatedAmount: data.estimatedAmount,
+    dueDate: data.dueDate,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await db.notes.add(note);
+  return note;
+}
+
+export async function updateNote(
+  id: string,
+  data: Partial<Omit<FinancialNote, 'id' | 'createdAt'>>
+): Promise<FinancialNote> {
+  const existing = await db.notes.get(id);
+  if (!existing) throw new Error('Catatan tidak ditemukan');
+
+  const updated: FinancialNote = {
+    ...existing,
+    ...data,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await db.notes.put(updated);
+  return updated;
+}
+
+export async function deleteNote(id: string): Promise<void> {
+  await db.notes.delete(id);
+}
+
+export async function togglePinNote(id: string): Promise<boolean> {
+  const existing = await db.notes.get(id);
+  if (!existing) throw new Error('Catatan tidak ditemukan');
+
+  const newPinned = !existing.isPinned;
+  await db.notes.update(id, {
+    isPinned: newPinned,
+    updatedAt: new Date().toISOString(),
+  });
+  return newPinned;
+}
+
+export async function toggleChecklistItem(noteId: string, itemId: string): Promise<FinancialNote> {
+  const existing = await db.notes.get(noteId);
+  if (!existing || !existing.checklist) throw new Error('Catatan atau checklist tidak ditemukan');
+
+  const updatedChecklist = existing.checklist.map((item) =>
+    item.id === itemId ? { ...item, isDone: !item.isDone } : item
+  );
+
+  const updated: FinancialNote = {
+    ...existing,
+    checklist: updatedChecklist,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await db.notes.put(updated);
+  return updated;
+}
+
+export async function getNotes(category?: NoteTag | 'all'): Promise<FinancialNote[]> {
+  let list = await db.notes.toArray();
+  if (category && category !== 'all') {
+    list = list.filter((n) => n.category === category);
+  }
+
+  return list.sort((a, b) => {
+    if (a.isPinned !== b.isPinned) {
+      return a.isPinned ? -1 : 1;
+    }
+    return b.updatedAt.localeCompare(a.updatedAt);
+  });
+}
+
+// ----------------------------------------------------
 // ANALYTICS & SUMMARY SERVICES
 // ----------------------------------------------------
 
@@ -1004,19 +1105,20 @@ export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
 // ----------------------------------------------------
 
 export async function exportAllData(): Promise<BackupData> {
-  const [wallets, categories, transactions, budgets, savings, settingsRecord] = await Promise.all([
+  const [wallets, categories, transactions, budgets, savings, notes, settingsRecord] = await Promise.all([
     db.wallets.toArray(),
     db.categories.toArray(),
     db.transactions.toArray(),
     db.budgets.toArray(),
     db.savings.toArray(),
+    db.notes.toArray(),
     db.settings.get('app_settings'),
   ]);
 
   const appSettings = settingsRecord ? settingsRecord.value : undefined;
 
   return {
-    version: 2,
+    version: 3,
     appName: 'DompetKu',
     exportDate: new Date().toISOString(),
     wallets,
@@ -1024,6 +1126,7 @@ export async function exportAllData(): Promise<BackupData> {
     transactions,
     budgets,
     savings,
+    notes,
     settings: appSettings,
   };
 }
@@ -1040,12 +1143,13 @@ export async function restoreAllData(
   let updated = 0;
 
   if (mode === 'overwrite') {
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes], async () => {
       await db.wallets.clear();
       await db.categories.clear();
       await db.transactions.clear();
       await db.budgets.clear();
       await db.savings.clear();
+      await db.notes.clear();
 
       await db.wallets.bulkAdd(data.wallets);
       await db.categories.bulkAdd(data.categories);
@@ -1056,6 +1160,9 @@ export async function restoreAllData(
       if (data.savings && data.savings.length > 0) {
         await db.savings.bulkAdd(data.savings);
       }
+      if (data.notes && data.notes.length > 0) {
+        await db.notes.bulkAdd(data.notes);
+      }
     });
 
     added =
@@ -1063,10 +1170,11 @@ export async function restoreAllData(
       data.categories.length +
       data.transactions.length +
       (data.budgets?.length || 0) +
-      (data.savings?.length || 0);
+      (data.savings?.length || 0) +
+      (data.notes?.length || 0);
   } else {
     // Merge mode: Add missing records or update existing
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes], async () => {
       // Merge Wallets
       for (const w of data.wallets) {
         const exist = await db.wallets.get(w.id);
@@ -1130,6 +1238,20 @@ export async function restoreAllData(
           }
         }
       }
+
+      // Merge Notes
+      if (data.notes) {
+        for (const n of data.notes) {
+          const exist = await db.notes.get(n.id);
+          if (exist) {
+            await db.notes.put(n);
+            updated++;
+          } else {
+            await db.notes.add(n);
+            added++;
+          }
+        }
+      }
     });
   }
 
@@ -1144,12 +1266,13 @@ export async function restoreAllData(
 }
 
 export async function resetAllData(): Promise<void> {
-  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.settings], async () => {
+  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.settings], async () => {
     await db.wallets.clear();
     await db.categories.clear();
     await db.transactions.clear();
     await db.budgets.clear();
     await db.savings.clear();
+    await db.notes.clear();
     await db.settings.clear();
   });
   await db.seedInitialData();

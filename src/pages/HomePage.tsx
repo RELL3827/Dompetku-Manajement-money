@@ -28,6 +28,8 @@ import {
   ChevronRight,
   PiggyBank,
   Heart,
+  FileText,
+  Calculator,
 } from 'lucide-react';
 import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal } from '../types';
@@ -249,6 +251,41 @@ export const HomePage: React.FC<HomePageProps> = ({
         >
           <span>Buka Tabungan</span>
           <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* Quick Tools Grid: Notes & Calculator */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => onNavigate('notes')}
+          className="p-3.5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-emerald-200 dark:hover:border-emerald-800/60 transition-all text-left flex items-center gap-3 cursor-pointer group"
+        >
+          <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
+            <FileText size={18} />
+          </div>
+          <div className="min-w-0">
+            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+              Catatan & Belanja
+            </h4>
+            <p className="text-[10px] text-slate-400 truncate">Memo, hutang, wishlist</p>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigate('calculator')}
+          className="p-3.5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-emerald-200 dark:hover:border-emerald-800/60 transition-all text-left flex items-center gap-3 cursor-pointer group"
+        >
+          <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+            <Calculator size={18} />
+          </div>
+          <div className="min-w-0">
+            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+              Kalkulator Cepat
+            </h4>
+            <p className="text-[10px] text-slate-400 truncate">50/30/20, diskon, split bill</p>
+          </div>
         </button>
       </div>
 

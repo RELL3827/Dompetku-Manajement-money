@@ -1,5 +1,15 @@
-import React from 'react';
-import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
+import {
+  Home,
+  History,
+  WalletCards,
+  PiggyBank,
+  Target,
+  BarChart3,
+  Settings,
+  FileText,
+  Calculator,
+} from 'lucide-react';
 import type { NavTab } from '../../types';
 
 interface BottomNavProps {
@@ -11,19 +21,32 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
   const tabs = [
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
     { id: 'transactions' as NavTab, label: 'Riwayat', icon: History },
-    { id: 'savings' as NavTab, label: 'Tabungan', icon: PiggyBank },
+    { id: 'notes' as NavTab, label: 'Catatan', icon: FileText },
+    { id: 'calculator' as NavTab, label: 'Kalkulator', icon: Calculator },
     { id: 'budgets' as NavTab, label: 'Anggaran', icon: Target },
+    { id: 'savings' as NavTab, label: 'Tabungan', icon: PiggyBank },
     { id: 'wallets' as NavTab, label: 'Dompet', icon: WalletCards },
     { id: 'analytics' as NavTab, label: 'Statistik', icon: BarChart3 },
     { id: 'settings' as NavTab, label: 'Setelan', icon: Settings },
   ];
+
+  const activeRef = useRef<HTMLButtonElement | null>(null);
+
+  // Auto scroll active tab into view
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  }, [activeTab]);
 
   return (
     <nav
       aria-label="Navigasi bawah"
       className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] shadow-lg"
     >
-      <div className="grid grid-cols-7 h-16">
+      <div className="flex items-center overflow-x-auto scrollbar-none h-16 px-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -31,9 +54,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
           return (
             <button
               key={tab.id}
+              ref={isActive ? activeRef : null}
               type="button"
               onClick={() => onChangeTab(tab.id)}
-              className={`flex flex-col items-center justify-center gap-0.5 transition-all ${
+              className={`flex flex-col items-center justify-center gap-0.5 min-w-[62px] flex-1 py-1 transition-all cursor-pointer shrink-0 ${
                 isActive
                   ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300'

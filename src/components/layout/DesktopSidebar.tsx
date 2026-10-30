@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { Home, History, WalletCards, PiggyBank, Target, BarChart3, Settings, ShieldCheck, Sun, Moon, Download, Heart } from 'lucide-react';
+import {
+  Home,
+  History,
+  WalletCards,
+  PiggyBank,
+  Target,
+  BarChart3,
+  Settings,
+  ShieldCheck,
+  Sun,
+  Moon,
+  Download,
+  Heart,
+  FileText,
+  Calculator,
+} from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
@@ -25,7 +40,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
     { id: 'transactions' as NavTab, label: 'Riwayat Transaksi', icon: History },
     { id: 'savings' as NavTab, label: 'Target Tabungan', icon: PiggyBank },
-    { id: 'budgets' as NavTab, label: 'Anggaran Bulanan', icon: Target },
+    { id: 'budgets' as NavTab, label: 'Anggaran 50/30/20', icon: Target },
+    { id: 'notes' as NavTab, label: 'Catatan Keuangan', icon: FileText },
+    { id: 'calculator' as NavTab, label: 'Kalkulator Cepat', icon: Calculator },
     { id: 'wallets' as NavTab, label: 'Kelola Dompet', icon: WalletCards },
     { id: 'analytics' as NavTab, label: 'Statistik & Analitik', icon: BarChart3 },
     { id: 'settings' as NavTab, label: 'Pengaturan & Backup', icon: Settings },

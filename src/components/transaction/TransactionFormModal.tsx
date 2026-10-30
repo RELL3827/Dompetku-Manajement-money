@@ -16,6 +16,8 @@ interface TransactionFormModalProps {
   onSaved: () => void;
   transactionToEdit?: Transaction | null;
   defaultType?: TransactionType;
+  defaultAmount?: number;
+  defaultNotes?: string;
 }
 
 export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
@@ -24,14 +26,16 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
   onSaved,
   transactionToEdit,
   defaultType = 'expense',
+  defaultAmount = 0,
+  defaultNotes = '',
 }) => {
   const [type, setType] = useState<TransactionType>(transactionToEdit?.type || defaultType);
-  const [amount, setAmount] = useState<number>(transactionToEdit?.amount || 0);
+  const [amount, setAmount] = useState<number>(transactionToEdit?.amount || defaultAmount);
   const [categoryId, setCategoryId] = useState<string>(transactionToEdit?.categoryId || '');
   const [walletId, setWalletId] = useState<string>(transactionToEdit?.walletId || '');
   const [toWalletId, setToWalletId] = useState<string>(transactionToEdit?.toWalletId || '');
   const [date, setDate] = useState<string>(transactionToEdit?.date || toLocalISODate());
-  const [notes, setNotes] = useState<string>(transactionToEdit?.notes || '');
+  const [notes, setNotes] = useState<string>(transactionToEdit?.notes || defaultNotes);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -55,12 +59,12 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
       setNotes(transactionToEdit.notes || '');
     } else {
       setType(defaultType);
-      setAmount(0);
+      setAmount(defaultAmount || 0);
       setDate(toLocalISODate());
-      setNotes('');
+      setNotes(defaultNotes || '');
       setError('');
     }
-  }, [transactionToEdit, defaultType, isOpen]);
+  }, [transactionToEdit, defaultType, defaultAmount, defaultNotes, isOpen]);
 
   // Set default wallet and category if empty
   useEffect(() => {
