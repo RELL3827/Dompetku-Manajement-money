@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db/database';
 import { Header } from './components/layout/Header';
@@ -11,6 +11,7 @@ import { TransactionFormModal } from './components/transaction/TransactionFormMo
 import { CalculatorModal } from './components/calculator/CalculatorModal';
 import { UpdatePromptModal } from './components/common/UpdatePromptModal';
 import { UpdateToastBanner } from './components/common/UpdateToastBanner';
+import { sendAnonymousTelemetryPing } from './utils/telemetry';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -29,6 +30,11 @@ import type { NavTab, Transaction, TransactionType } from './types';
 export const App: React.FC = () => {
   // Initialize theme
   useTheme();
+
+  // Anonymous installation & active telemetry ping (Zero-PII)
+  useEffect(() => {
+    sendAnonymousTelemetryPing();
+  }, []);
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
 

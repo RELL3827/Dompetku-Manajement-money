@@ -37,6 +37,7 @@ import {
   Rocket,
   RefreshCw,
   Sparkles,
+  Zap,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -44,6 +45,8 @@ import { usePwaUpdate } from '../context/PwaUpdateContext';
 import { APP_VERSION, APP_RELEASE_DATE } from '../utils/version';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
 import { DonationModal } from '../components/common/DonationModal';
+import { DevPinModal } from '../components/admin/DevPinModal';
+import { AdminPanelModal } from '../components/admin/AdminPanelModal';
 
 export const SettingsPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -61,6 +64,12 @@ export const SettingsPage: React.FC = () => {
   const [isStoragePersistedState, setIsStoragePersistedState] = useState(false);
   const [storageUsage, setStorageUsage] = useState({ usedBytes: 0, quotaBytes: 0, percentage: 0 });
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
+
+  // Developer mode secret access state
+  const [devTapCount, setDevTapCount] = useState(0);
+  const [isDevPinModalOpen, setIsDevPinModalOpen] = useState(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [isDevUnlocked, setIsDevUnlocked] = useState(false);
 
   // Export password dialog state
   const [isExportPasswordModalOpen, setIsExportPasswordModalOpen] = useState(false);
@@ -98,6 +107,25 @@ export const SettingsPage: React.FC = () => {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleVersionTap = () => {
+    if (isDevUnlocked) {
+      setIsAdminPanelOpen(true);
+      return;
+    }
+
+    const nextCount = devTapCount + 1;
+    setDevTapCount(nextCount);
+
+    if (nextCount === 3) {
+      showToast('Ketuk 2 kali lagi untuk membuka Panel Pengembang...');
+    } else if (nextCount === 4) {
+      showToast('Ketuk 1 kali lagi untuk membuka Panel Pengembang...');
+    } else if (nextCount >= 5) {
+      setDevTapCount(0);
+      setIsDevPinModalOpen(true);
+    }
   };
 
   const handleRequestStorage = async () => {
@@ -392,16 +420,44 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-xs gap-2">
-          <div>
+          <div
+            onClick={handleVersionTap}
+            className="cursor-pointer select-none active:scale-95 transition-all p-1 -m-1 rounded-xl hover:bg-slate-100/60 dark:hover:bg-slate-700/30"
+            title="Ketuk 5 kali untuk membuka Panel Pengembang"
+          >
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
               Versi Aplikasi Saat Ini
             </span>
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
-              {APP_VERSION} ({APP_RELEASE_DATE})
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                {APP_VERSION} ({APP_RELEASE_DATE})
+              </span>
+              {devTapCount > 0 && devTapCount < 5 && (
+                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400 animate-pulse">
+                  {5 - devTapCount} ketuk lagi
+                </span>
+              )}
+              {isDevUnlocked && (
+                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                  Dev Mode
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {isDevUnlocked && (
+              <button
+                type="button"
+                onClick={() => setIsAdminPanelOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+                title="Buka Panel Admin & Statistik Pengguna"
+              >
+                <Zap size={13} />
+                <span>Panel Dev</span>
+              </button>
+            )}
+
             <button
               type="button"
               disabled={isChecking || isUpdating}
@@ -940,6 +996,24 @@ export const SettingsPage: React.FC = () => {
       <DonationModal
         isOpen={isDonationModalOpen}
         onClose={() => setIsDonationModalOpen(false)}
+      />
+
+      {/* Developer PIN Modal */}
+      <DevPinModal
+        isOpen={isDevPinModalOpen}
+        onClose={() => setIsDevPinModalOpen(false)}
+        onSuccess={() => {
+          setIsDevPinModalOpen(false);
+          setIsDevUnlocked(true);
+          setIsAdminPanelOpen(true);
+          showToast('Mode Pengembang berhasil diaktifkan!');
+        }}
+      />
+
+      {/* Admin Panel & User Stats Modal */}
+      <AdminPanelModal
+        isOpen={isAdminPanelOpen}
+        onClose={() => setIsAdminPanelOpen(false)}
       />
     </div>
   );
