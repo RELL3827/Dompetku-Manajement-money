@@ -9,6 +9,8 @@ import { PinLockScreen } from './components/security/PinLockScreen';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { TransactionFormModal } from './components/transaction/TransactionFormModal';
 import { CalculatorModal } from './components/calculator/CalculatorModal';
+import { UpdatePromptModal } from './components/common/UpdatePromptModal';
+import { UpdateToastBanner } from './components/common/UpdateToastBanner';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -157,6 +159,10 @@ export const App: React.FC = () => {
         onUseAmount={(amt, notes) => handleOpenAddTransaction('expense', amt, notes)}
         onNavigateToBudgets={() => setCurrentTab('budgets')}
       />
+
+      {/* Global PWA Update Notification Modal & Toast Banner */}
+      <UpdatePromptModal />
+      <UpdateToastBanner />
     </div>
   );
 };

@@ -34,14 +34,27 @@ import {
   Smartphone,
   Info,
   Heart,
+  Rocket,
+  RefreshCw,
+  Sparkles,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
+import { usePwaUpdate } from '../context/PwaUpdateContext';
+import { APP_VERSION, APP_RELEASE_DATE } from '../utils/version';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
 import { DonationModal } from '../components/common/DonationModal';
 
 export const SettingsPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
+  const {
+    needRefresh,
+    isChecking,
+    isUpdating,
+    checkResult,
+    checkForUpdates,
+    updateApp,
+  } = usePwaUpdate();
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
@@ -355,6 +368,87 @@ export const SettingsPage: React.FC = () => {
             </span>
             <span className="text-[10px] text-slate-400">Format UTF-8 rapi</span>
           </button>
+        </div>
+      </div>
+
+      {/* PWA Update / Pembaruan Aplikasi */}
+      <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Rocket size={17} className="text-emerald-500" />
+            <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              Pembaruan Aplikasi (Update PWA)
+            </h2>
+          </div>
+          {needRefresh ? (
+            <span className="text-[11px] font-bold text-amber-700 bg-amber-100 dark:bg-amber-950/80 dark:text-amber-300 px-2 py-0.5 rounded-md flex items-center gap-1 animate-pulse">
+              <Sparkles size={12} /> Versi Baru Tersedia!
+            </span>
+          ) : (
+            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-md flex items-center gap-1">
+              <CheckCircle2 size={12} /> Versi Terbaru
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-xs gap-2">
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+              Versi Aplikasi Saat Ini
+            </span>
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
+              {APP_VERSION} ({APP_RELEASE_DATE})
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={isChecking || isUpdating}
+              onClick={async () => {
+                const res = await checkForUpdates();
+                showToast(res.message);
+              }}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={isChecking ? 'animate-spin' : ''} />
+              <span>{isChecking ? 'Mengecek...' : 'Cek Pembaruan'}</span>
+            </button>
+
+            {needRefresh && (
+              <button
+                type="button"
+                disabled={isUpdating}
+                onClick={updateApp}
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isUpdating ? <RefreshCw size={13} className="animate-spin" /> : <Rocket size={13} />}
+                <span>{isUpdating ? 'Memasang...' : 'Update Sekarang'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {checkResult && (
+          <div
+            className={`p-2.5 rounded-xl text-xs font-medium ${
+              needRefresh
+                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60'
+                : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60'
+            }`}
+          >
+            {checkResult}
+          </div>
+        )}
+
+        <div className="p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-[11px] text-emerald-800 dark:text-emerald-300 space-y-1">
+          <p className="font-bold flex items-center gap-1">
+            <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>Pembaruan Bebas Khawatir Tanpa Kehilangan Data:</span>
+          </p>
+          <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+            Aplikasi memperbarui file cache service worker secara instan di latar belakang. Anda tidak perlu menguninstall atau memasang ulang aplikasi dari awal di Android, iOS, maupun Desktop. Seluruh saldo dompet, pos anggaran, catatan, dan riwayat transaksi di IndexedDB tetap aman 100%.
+          </p>
         </div>
       </div>
 

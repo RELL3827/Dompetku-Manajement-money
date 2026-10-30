@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download, Heart, Calculator, Settings } from 'lucide-react';
+import { Wifi, WifiOff, ShieldCheck, Lock, HardDrive, Download, Heart, Calculator, Settings, Rocket } from 'lucide-react';
 import { isStoragePersisted, requestPersistentStorage } from '../../utils/pwa';
 import { useAuthLock } from '../../hooks/useAuthLock';
 import { db } from '../../db/database';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
+import { usePwaUpdate } from '../../context/PwaUpdateContext';
 import { PwaInstallModal } from '../common/PwaInstallModal';
 import { DonationModal } from '../common/DonationModal';
 
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const { lock } = useAuthLock();
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
+  const { needRefresh, openPrompt } = usePwaUpdate();
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -107,6 +109,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
             >
               <Download size={13} className="text-emerald-600 dark:text-emerald-400" />
               <span>Instal App</span>
+            </button>
+          )}
+
+          {/* Update Available Prompt Button */}
+          {needRefresh && (
+            <button
+              type="button"
+              onClick={openPrompt}
+              title="Versi baru DompetKu siap dipasang! Klik untuk update"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 border border-emerald-400/40 rounded-lg transition-all animate-pulse shadow-xs active:scale-95 cursor-pointer"
+            >
+              <Rocket size={13} />
+              <span>Update Tersedia</span>
             </button>
           )}
 
