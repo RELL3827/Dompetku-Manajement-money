@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldAlert, KeyRound, X, ArrowRight } from 'lucide-react';
+import { verifyDevPin } from '../../security/devAuth';
 
 interface DevPinModalProps {
   isOpen: boolean;
@@ -15,13 +16,12 @@ export const DevPinModal: React.FC<DevPinModalProps> = ({ isOpen, onClose, onSuc
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Default Dev PIN: 3827 (from RELL3827) or 1945 or 0000
-    if (pin === '3827' || pin === '1945' || pin === '0000') {
+    if (verifyDevPin(pin)) {
       setError('');
       setPin('');
       onSuccess();
     } else {
-      setError('PIN Pengembang salah! Masukkan PIN yang valid.');
+      setError('PIN Pengembang tidak valid.');
     }
   };
 
@@ -70,19 +70,15 @@ export const DevPinModal: React.FC<DevPinModalProps> = ({ isOpen, onClose, onSuc
                 setPin(e.target.value);
                 if (error) setError('');
               }}
-              placeholder="Masukkan PIN (Default: 3827)"
+              placeholder="Masukkan PIN Pengembang"
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center text-sm font-bold tracking-widest text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"
             />
             {error && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1.5 flex items-center gap-1">
+              <p className="text-[11px] text-rose-500 font-medium mt-1.5 flex items-center justify-center gap-1">
                 <ShieldAlert size={12} />
                 <span>{error}</span>
               </p>
             )}
-          </div>
-
-          <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-[10px] text-slate-400">
-            <span>PIN Pengembang bawaan: <strong>3827</strong> (atau 1945)</span>
           </div>
 
           <div className="flex items-center gap-2 pt-1">

@@ -37,7 +37,6 @@ import {
   Rocket,
   RefreshCw,
   Sparkles,
-  Zap,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -65,8 +64,8 @@ export const SettingsPage: React.FC = () => {
   const [storageUsage, setStorageUsage] = useState({ usedBytes: 0, quotaBytes: 0, percentage: 0 });
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
-  // Developer mode secret access state
-  const [devTapCount, setDevTapCount] = useState(0);
+  // Developer mode secret access state (completely secret without visual cues)
+  const devTapTimesRef = useRef<number[]>([]);
   const [isDevPinModalOpen, setIsDevPinModalOpen] = useState(false);
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isDevUnlocked, setIsDevUnlocked] = useState(false);
@@ -110,20 +109,21 @@ export const SettingsPage: React.FC = () => {
   };
 
   const handleVersionTap = () => {
+    // If dev mode is already unlocked for this session, re-open directly
     if (isDevUnlocked) {
       setIsAdminPanelOpen(true);
       return;
     }
 
-    const nextCount = devTapCount + 1;
-    setDevTapCount(nextCount);
+    const now = Date.now();
+    // Keep taps occurring within the last 3500ms
+    const recent = devTapTimesRef.current.filter((t) => now - t < 3500);
+    recent.push(now);
+    devTapTimesRef.current = recent;
 
-    if (nextCount === 3) {
-      showToast('Ketuk 2 kali lagi untuk membuka Panel Pengembang...');
-    } else if (nextCount === 4) {
-      showToast('Ketuk 1 kali lagi untuk membuka Panel Pengembang...');
-    } else if (nextCount >= 5) {
-      setDevTapCount(0);
+    // Secret requirement: exactly 7 rapid taps without public intermediate hints
+    if (recent.length >= 7) {
+      devTapTimesRef.current = [];
       setIsDevPinModalOpen(true);
     }
   };
@@ -422,8 +422,7 @@ export const SettingsPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-xs gap-2">
           <div
             onClick={handleVersionTap}
-            className="cursor-pointer select-none active:scale-95 transition-all p-1 -m-1 rounded-xl hover:bg-slate-100/60 dark:hover:bg-slate-700/30"
-            title="Ketuk 5 kali untuk membuka Panel Pengembang"
+            className="cursor-pointer select-none active:scale-[0.99] transition-transform"
           >
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
               Versi Aplikasi Saat Ini
@@ -432,31 +431,10 @@ export const SettingsPage: React.FC = () => {
               <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
                 {APP_VERSION} ({APP_RELEASE_DATE})
               </span>
-              {devTapCount > 0 && devTapCount < 5 && (
-                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400 animate-pulse">
-                  {5 - devTapCount} ketuk lagi
-                </span>
-              )}
-              {isDevUnlocked && (
-                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                  Dev Mode
-                </span>
-              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            {isDevUnlocked && (
-              <button
-                type="button"
-                onClick={() => setIsAdminPanelOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer"
-                title="Buka Panel Admin & Statistik Pengguna"
-              >
-                <Zap size={13} />
-                <span>Panel Dev</span>
-              </button>
-            )}
 
             <button
               type="button"
@@ -1006,7 +984,6 @@ export const SettingsPage: React.FC = () => {
           setIsDevPinModalOpen(false);
           setIsDevUnlocked(true);
           setIsAdminPanelOpen(true);
-          showToast('Mode Pengembang berhasil diaktifkan!');
         }}
       />
 
@@ -1014,6 +991,11 @@ export const SettingsPage: React.FC = () => {
       <AdminPanelModal
         isOpen={isAdminPanelOpen}
         onClose={() => setIsAdminPanelOpen(false)}
+        onLockDev={() => {
+          setIsDevUnlocked(false);
+          setIsAdminPanelOpen(false);
+          showToast('Sesi Developer telah dikunci.');
+        }}
       />
     </div>
   );

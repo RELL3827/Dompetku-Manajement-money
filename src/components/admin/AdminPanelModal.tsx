@@ -18,21 +18,39 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
+  KeyRound,
+  ShieldCheck,
+  Check,
 } from 'lucide-react';
+import {
+  verifyDevPin,
+  updateDevPin,
+  resetDevPinToDefault,
+  isDevPinCustomized,
+} from '../../security/devAuth';
 
 interface AdminPanelModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLockDev?: () => void;
 }
 
-type AdminTab = 'users' | 'database' | 'system' | 'guide';
+type AdminTab = 'users' | 'database' | 'system' | 'security' | 'guide';
 
-export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClose }) => {
+export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClose, onLockDev }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [stats, setStats] = useState<AdminStatsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
+
+  // Developer PIN modification state
+  const [currentPinInput, setCurrentPinInput] = useState('');
+  const [newPinInput, setNewPinInput] = useState('');
+  const [confirmPinInput, setConfirmPinInput] = useState('');
+  const [pinSuccessMsg, setPinSuccessMsg] = useState<string | null>(null);
+  const [pinErrorMsg, setPinErrorMsg] = useState<string | null>(null);
+  const [isCustomPin, setIsCustomPin] = useState(false);
 
   // Local database counts
   const [localDbCounts, setLocalDbCounts] = useState({
@@ -83,8 +101,58 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
     if (isOpen) {
       loadStats();
       loadLocalDb();
+      setIsCustomPin(isDevPinCustomized());
+      setPinSuccessMsg(null);
+      setPinErrorMsg(null);
+      setCurrentPinInput('');
+      setNewPinInput('');
+      setConfirmPinInput('');
     }
   }, [isOpen]);
+
+  const handleChangePin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPinSuccessMsg(null);
+    setPinErrorMsg(null);
+
+    if (!verifyDevPin(currentPinInput)) {
+      setPinErrorMsg('PIN Pengembang saat ini tidak valid.');
+      return;
+    }
+
+    if (newPinInput.trim().length < 4) {
+      setPinErrorMsg('PIN Baru minimal 4 karakter/angka.');
+      return;
+    }
+
+    if (newPinInput.trim() !== confirmPinInput.trim()) {
+      setPinErrorMsg('Konfirmasi PIN Baru tidak cocok.');
+      return;
+    }
+
+    const ok = updateDevPin(newPinInput.trim());
+    if (ok) {
+      setIsCustomPin(true);
+      setPinSuccessMsg('PIN Developer berhasil diperbarui! Simpan PIN baru ini untuk akses berikutnya.');
+      setCurrentPinInput('');
+      setNewPinInput('');
+      setConfirmPinInput('');
+    } else {
+      setPinErrorMsg('Gagal memperbarui PIN.');
+    }
+  };
+
+  const handleResetPin = () => {
+    if (window.confirm('Apakah Anda yakin ingin mengembalikan PIN Pengembang ke default awal?')) {
+      resetDevPinToDefault();
+      setIsCustomPin(false);
+      setPinSuccessMsg('PIN Pengembang berhasil dikembalikan ke default.');
+      setPinErrorMsg(null);
+      setCurrentPinInput('');
+      setNewPinInput('');
+      setConfirmPinInput('');
+    }
+  };
 
   const handleRunTestPing = async () => {
     setIsTesting(true);
@@ -163,6 +231,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
             { id: 'users', label: 'Statistik Pengguna', icon: Users },
             { id: 'database', label: 'Inspektur Database', icon: Database },
             { id: 'system', label: 'Diagnostik Sistem', icon: HardDrive },
+            { id: 'security', label: 'Keamanan & PIN Dev', icon: KeyRound },
             { id: 'guide', label: 'Panduan Dev', icon: HelpCircle },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -420,7 +489,157 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
             </div>
           )}
 
-          {/* TAB 4: DEVELOPER GUIDE */}
+          {/* TAB 4: DEVELOPER PIN SECURITY */}
+          {activeTab === 'security' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-indigo-900 dark:text-indigo-200 flex items-start gap-3">
+                <KeyRound size={20} className="text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <h3 className="font-bold text-xs">Pengaturan PIN Pengembang (Privat)</h3>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                    PIN ini digunakan untuk membuka Admin Panel & metrik pengguna. Anda dapat mengubahnya kapan saja sesuai keinginan Anda. Data PIN tersimpan privat di perangkat Anda.
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Badge Card */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Status PIN Dev</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {isCustomPin ? 'PIN Khusus Aktif (Kustom)' : 'PIN Standar Bawaan'}
+                  </span>
+                </div>
+                {isCustomPin ? (
+                  <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
+                    <ShieldCheck size={12} />
+                    <span>Terkunci PIN Kustom</span>
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 flex items-center gap-1">
+                    <KeyRound size={12} />
+                    <span>PIN Default</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Change PIN Form */}
+              <form onSubmit={handleChangePin} className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 space-y-3.5">
+                <h4 className="font-bold text-slate-800 dark:text-slate-100 text-xs">
+                  Ganti PIN Pengembang Baru
+                </h4>
+
+                {pinSuccessMsg && (
+                  <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-1.5 border border-emerald-200 dark:border-emerald-800">
+                    <Check size={14} className="shrink-0" />
+                    <span>{pinSuccessMsg}</span>
+                  </div>
+                )}
+
+                {pinErrorMsg && (
+                  <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-1.5 border border-rose-200 dark:border-rose-800">
+                    <AlertCircle size={14} className="shrink-0" />
+                    <span>{pinErrorMsg}</span>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                    PIN Pengembang Saat Ini:
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    required
+                    value={currentPinInput}
+                    onChange={(e) => setCurrentPinInput(e.target.value)}
+                    placeholder="Masukkan PIN saat ini..."
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                      PIN Baru (Minimal 4 Karakter):
+                    </label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      required
+                      value={newPinInput}
+                      onChange={(e) => setNewPinInput(e.target.value)}
+                      placeholder="Masukkan PIN baru..."
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                      Konfirmasi PIN Baru:
+                    </label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      required
+                      value={confirmPinInput}
+                      onChange={(e) => setConfirmPinInput(e.target.value)}
+                      placeholder="Ulangi PIN baru..."
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  {isCustomPin ? (
+                    <button
+                      type="button"
+                      onClick={handleResetPin}
+                      className="text-xs text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 font-medium cursor-pointer"
+                    >
+                      Reset ke PIN Default
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  <button
+                    type="submit"
+                    className="py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Check size={14} />
+                    <span>Simpan PIN Baru</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Quick Lock Action */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                    Kunci Akses Pengembang
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Kunci sesi pengembang ini sekarang agar meminta PIN kembali.
+                  </p>
+                </div>
+                {onLockDev && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onLockDev();
+                      onClose();
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/60 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Kunci Sekarang
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: DEVELOPER GUIDE */}
           {activeTab === 'guide' && (
             <div className="space-y-4 leading-relaxed text-slate-600 dark:text-slate-300">
               <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-indigo-900 dark:text-indigo-200 space-y-1">
@@ -429,7 +648,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
                   <span>Kerahasiaan & Keamanan Akses Panel</span>
                 </p>
                 <p className="text-[11px]">
-                  Admin Panel ini dilindungi PIN Developer (default: <code>3827</code>). Akses hanya terbuka ketika mengetuk versi 5 kali di menu Pengaturan. Pengguna umum tidak dapat mengakses panel ini.
+                  Admin Panel ini sepenuhnya rahasia dan dilindungi PIN Developer Anda. Akses diaktifkan melalui gestur rahasia 7 ketukan cepat pada label versi aplikasi di menu Pengaturan. Pengguna umum tidak dapat melihat maupun mengakses konsol ini.
                 </p>
               </div>
 
@@ -463,17 +682,30 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
         {/* Modal Footer */}
         <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-            <AlertCircle size={13} className="text-amber-500" />
-            <span>Mode Pengembang Aktif</span>
+            <ShieldCheck size={13} className="text-indigo-500" />
+            <span>Sesi Pengembang Rahasia Aktif</span>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
-          >
-            Tutup Panel
-          </button>
+          <div className="flex items-center gap-2">
+            {onLockDev && (
+              <button
+                type="button"
+                onClick={onLockDev}
+                className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                title="Kunci sesi agar memerlukan 7 ketukan + PIN kembali"
+              >
+                <Lock size={13} />
+                <span>Kunci Sesi Dev</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            >
+              Tutup Panel
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { formatRupiah } from '../../utils/currency';
 import { CurrencyInput } from '../common/CurrencyInput';
+import { evaluateMathExpression } from '../../utils/calculator';
 import {
   Calculator as CalcIcon,
   Percent,
@@ -31,38 +32,14 @@ export const FinancialCalculator: React.FC<FinancialCalculatorProps> = ({
   const [expression, setExpression] = useState('0');
   const [history, setHistory] = useState<Array<{ expr: string; result: number }>>([]);
 
-  const safeEvaluate = (expr: string): number => {
-    try {
-      // Clean string: replace symbols
-      const sanitized = expr
-        .replace(/×/g, '*')
-        .replace(/÷/g, '/')
-        .replace(/,/g, '.')
-        .replace(/[^0-9+\-*/.%()]/g, '');
-
-      // Evaluate safely via Function constructor
-      if (!sanitized) return 0;
-      // Handle percentage e.g. 50% -> 0.5
-      const parsed = sanitized.replace(/([0-9.]+)\s*%/g, '($1/100)');
-      // eslint-disable-next-line no-new-func
-      const fn = new Function(`return (${parsed})`);
-      const res = fn();
-      if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
-        return Math.round(res);
-      }
-      return 0;
-    } catch {
-      return 0;
-    }
-  };
-
-  const calculatedResult = useMemo(() => safeEvaluate(expression), [expression]);
+  const calculatedResult = useMemo(() => evaluateMathExpression(expression), [expression]);
 
   const handleKeypadPress = (val: string) => {
     if (val === 'C') {
       setExpression('0');
       return;
     }
+
     if (val === '⌫') {
       if (expression.length <= 1) {
         setExpression('0');
@@ -71,8 +48,9 @@ export const FinancialCalculator: React.FC<FinancialCalculatorProps> = ({
       }
       return;
     }
+
     if (val === '=') {
-      const res = safeEvaluate(expression);
+      const res = evaluateMathExpression(expression);
       if (expression !== '0') {
         setHistory((prev) => [{ expr: expression, result: res }, ...prev.slice(0, 9)]);
       }
@@ -80,12 +58,94 @@ export const FinancialCalculator: React.FC<FinancialCalculatorProps> = ({
       return;
     }
 
+    if (val === '( )') {
+      const openCount = (expression.match(/\(/g) || []).length;
+      const closeCount = (expression.match(/\)/g) || []).length;
+      const lastChar = expression.slice(-1);
+
+      if (openCount > closeCount && !['+', '-', '×', '÷', '(', '%'].includes(lastChar)) {
+        setExpression((prev) => prev + ')');
+      } else {
+        if (expression === '0') {
+          setExpression('(');
+        } else if (['+', '-', '×', '÷', '('].includes(lastChar)) {
+          setExpression((prev) => prev + '(');
+        } else {
+          setExpression((prev) => prev + '×(');
+        }
+      }
+      return;
+    }
+
+    if (val === '000') {
+      if (expression === '0') return;
+      const lastChar = expression.slice(-1);
+      if (['+', '-', '×', '÷', '('].includes(lastChar)) {
+        setExpression((prev) => prev + '0');
+      } else {
+        setExpression((prev) => prev + '000');
+      }
+      return;
+    }
+
+    // Replace operator if preceding character is already an operator
+    if (['+', '-', '×', '÷'].includes(val)) {
+      const lastChar = expression.slice(-1);
+      if (['+', '-', '×', '÷'].includes(lastChar)) {
+        setExpression(expression.slice(0, -1) + val);
+        return;
+      }
+      setExpression((prev) => prev + val);
+      return;
+    }
+
+    // Numbers & %
     if (expression === '0' && !['+', '-', '×', '÷', '%'].includes(val)) {
       setExpression(val);
     } else {
       setExpression((prev) => prev + val);
     }
   };
+
+  // Keyboard shortcut listener for standard calculator
+  useEffect(() => {
+    if (mode !== 'standard') return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        return;
+      }
+
+      if (e.key >= '0' && e.key <= '9') {
+        handleKeypadPress(e.key);
+      } else if (e.key === '+') {
+        handleKeypadPress('+');
+      } else if (e.key === '-') {
+        handleKeypadPress('-');
+      } else if (e.key === '*' || e.key === 'x' || e.key === 'X') {
+        handleKeypadPress('×');
+      } else if (e.key === '/') {
+        e.preventDefault();
+        handleKeypadPress('÷');
+      } else if (e.key === '%') {
+        handleKeypadPress('%');
+      } else if (e.key === '(' || e.key === ')') {
+        handleKeypadPress('( )');
+      } else if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault();
+        handleKeypadPress('=');
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleKeypadPress('⌫');
+      } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+        handleKeypadPress('C');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mode, expression]);
 
   // ----------------------------------------------------
   // 2. 50/30/20 QUICK BUDGET STATE
@@ -183,8 +243,8 @@ export const FinancialCalculator: React.FC<FinancialCalculatorProps> = ({
           <div className="grid grid-cols-4 gap-2">
             {[
               { val: 'C', label: 'C', cls: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold hover:bg-rose-500/20' },
-              { val: '(', label: '(', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' },
-              { val: ')', label: ')', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' },
+              { val: '⌫', label: '⌫', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold' },
+              { val: '%', label: '%', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold' },
               { val: '÷', label: '÷', cls: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold hover:bg-emerald-500/20' },
 
               { val: '7', label: '7', cls: 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100' },
@@ -202,9 +262,9 @@ export const FinancialCalculator: React.FC<FinancialCalculatorProps> = ({
               { val: '3', label: '3', cls: 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100' },
               { val: '+', label: '+', cls: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold hover:bg-emerald-500/20' },
 
+              { val: '( )', label: '( )', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium' },
               { val: '0', label: '0', cls: 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100' },
               { val: '000', label: '000', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold' },
-              { val: '⌫', label: '⌫', cls: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' },
               { val: '=', label: '=', cls: 'bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm' },
             ].map((btn) => (
               <button
