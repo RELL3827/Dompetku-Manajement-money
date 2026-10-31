@@ -135,3 +135,4 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
     }
   );
 };
+

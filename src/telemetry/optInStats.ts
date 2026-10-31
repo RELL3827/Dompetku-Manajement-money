@@ -215,3 +215,4 @@ export async function sendDailyPingIfDue(): Promise<void> {
     // Silent catch: network offline or server down should NEVER affect the app
   }
 }
+

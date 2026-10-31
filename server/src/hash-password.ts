@@ -14,3 +14,4 @@ const hash = bcrypt.hashSync(password, saltRounds);
 console.log('\n=== HASH PASSWORD BCRYPT BERHASIL DIBUAT ===');
 console.log('Salin baris berikut ke file server/.env Anda:');
 console.log(`ADMIN_PASSWORD_HASH="${hash}"\n`);
+

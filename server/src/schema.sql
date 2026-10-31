@@ -23,3 +23,4 @@ CREATE TABLE IF NOT EXISTS daily_aggregates (
   new_count INTEGER NOT NULL DEFAULT 0,
   calculated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+

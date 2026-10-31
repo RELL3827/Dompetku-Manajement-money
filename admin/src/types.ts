@@ -35,3 +35,4 @@ export interface DashboardStats {
   generatedAt: string;
   periodDays: number | 'all';
 }
+

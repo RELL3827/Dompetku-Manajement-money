@@ -58,3 +58,4 @@ export async function fetchDashboardStats(period: string = '30d'): Promise<Dashb
 export function downloadAggregateCsv(): void {
   window.open(`${API_BASE}/api/admin/export-csv`, '_blank');
 }
+

@@ -412,3 +412,4 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout, isDark, toggleTh
     </div>
   );
 };
+

@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.tsbuildinfo
+server/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

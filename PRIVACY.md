@@ -67,3 +67,4 @@ Seluruh kode aplikasi klien (`/src`), server backend (`/server`), dan web admin 
 * Anda dapat memeriksa kode pengiriman ping di file: [`src/telemetry/optInStats.ts`](file:///c:/Users/PIXWAR/Documents/DompetKu/src/telemetry/optInStats.ts).
 * Anda dapat memeriksa backend di folder: [`server/`](file:///c:/Users/PIXWAR/Documents/DompetKu/server/).
 * Jika Anda membuat salinan (fork) dan menginginkan versi murni offline tanpa opsi statistik sama sekali, kosongkan variabel `VITE_STATS_ENDPOINT` pada build time. Seluruh elemen UI statistik tidak akan dimuat ke dalam aplikasi.
+

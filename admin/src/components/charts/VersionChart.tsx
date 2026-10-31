@@ -73,3 +73,4 @@ export const VersionChart: React.FC<VersionChartProps> = ({ distribution, isDark
     </div>
   );
 };
+

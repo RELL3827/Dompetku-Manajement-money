@@ -100,3 +100,4 @@ export const pingRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 };
+

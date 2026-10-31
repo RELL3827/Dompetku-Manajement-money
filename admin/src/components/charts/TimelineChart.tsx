@@ -109,3 +109,4 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({ newInstalls, activ
     </div>
   );
 };
+

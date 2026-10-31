@@ -84,3 +84,4 @@ export const PlatformChart: React.FC<PlatformChartProps> = ({ distribution, isDa
     </div>
   );
 };
+

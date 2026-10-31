@@ -27,3 +27,4 @@ services:
 volumes:
   stats-data:
     name: dompetku_stats_sqlite_data
+

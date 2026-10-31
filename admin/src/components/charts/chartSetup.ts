@@ -26,3 +26,4 @@ ChartJS.register(
 );
 
 export default ChartJS;
+

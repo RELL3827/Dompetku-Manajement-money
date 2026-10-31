@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -10,15 +10,15 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-export const db = new Database(DB_PATH);
+export const db = new DatabaseSync(DB_PATH);
 
 // High-performance, crash-safe SQLite pragmas
-db.pragma('journal_mode = WAL');
-db.pragma('synchronous = NORMAL');
-db.pragma('foreign_keys = ON');
-db.pragma('busy_timeout = 5000');
+db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA synchronous = NORMAL;');
+db.exec('PRAGMA foreign_keys = ON;');
+db.exec('PRAGMA busy_timeout = 5000;');
 
-// Initialize schema
+// Initialize schema immediately before preparing statements
 export function initDb() {
   const schemaPath = path.resolve(process.cwd(), 'src', 'schema.sql');
   const schemaSql = fs.existsSync(schemaPath)
@@ -41,10 +41,13 @@ export function initDb() {
   db.exec(schemaSql);
 }
 
+// Ensure schema is executed immediately
+initDb();
+
 // Prepared Statements for Performance
 const stmtUpsertInstall = db.prepare(`
   INSERT INTO installs (install_id, first_seen, last_seen, app_version, platform)
-  VALUES (@install_id, @date, @date, @app_version, @platform)
+  VALUES (?, ?, ?, ?, ?)
   ON CONFLICT(install_id) DO UPDATE SET
     last_seen = excluded.last_seen,
     app_version = excluded.app_version,
@@ -67,17 +70,23 @@ export function upsertInstall(payload: {
   platform: 'android' | 'ios' | 'desktop' | 'web';
   date: string;
 }) {
-  return stmtUpsertInstall.run(payload);
+  return stmtUpsertInstall.run(
+    payload.install_id,
+    payload.date,
+    payload.date,
+    payload.app_version,
+    payload.platform
+  );
 }
 
 export function deleteInstall(install_id: string) {
   const result = stmtDeleteInstall.run(install_id);
-  return result.changes > 0;
+  return Number(result.changes) > 0;
 }
 
 export function cleanupStaleInstalls() {
   const res = stmtCleanupStale.run();
-  return res.changes;
+  return Number(res.changes);
 }
 
 export interface StatsTimelineItem {
@@ -120,17 +129,21 @@ export interface DashboardStats {
 
 export function getDashboardStats(periodDays: number | 'all' = 30): DashboardStats {
   // 1. High level counters
-  const totalInstalls = (db.prepare('SELECT COUNT(*) as count FROM installs').get() as { count: number }).count;
+  const totalRow = db.prepare('SELECT COUNT(*) as count FROM installs').get() as unknown as { count: number };
+  const totalInstalls = Number(totalRow?.count || 0);
   
   // DAU: Active today (YYYY-MM-DD)
   const today = new Date().toISOString().slice(0, 10);
-  const dau = (db.prepare('SELECT COUNT(*) as count FROM installs WHERE last_seen = ?').get(today) as { count: number }).count;
+  const dauRow = db.prepare('SELECT COUNT(*) as count FROM installs WHERE last_seen = ?').get(today) as unknown as { count: number };
+  const dau = Number(dauRow?.count || 0);
 
   // WAU: Active in last 7 days
-  const wau = (db.prepare("SELECT COUNT(*) as count FROM installs WHERE last_seen >= date('now', '-7 days')").get() as { count: number }).count;
+  const wauRow = db.prepare("SELECT COUNT(*) as count FROM installs WHERE last_seen >= date('now', '-7 days')").get() as unknown as { count: number };
+  const wau = Number(wauRow?.count || 0);
 
   // MAU: Active in last 30 days
-  const mau = (db.prepare("SELECT COUNT(*) as count FROM installs WHERE last_seen >= date('now', '-30 days')").get() as { count: number }).count;
+  const mauRow = db.prepare("SELECT COUNT(*) as count FROM installs WHERE last_seen >= date('now', '-30 days')").get() as unknown as { count: number };
+  const mau = Number(mauRow?.count || 0);
 
   // 2. Retention calculation
   // 7-day retention: installs where first_seen was >= 7 days ago, how many were still active >= 7 days after first_seen
@@ -140,10 +153,10 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
       SUM(CASE WHEN CAST(strftime('%J', last_seen) - strftime('%J', first_seen) AS INT) >= 7 THEN 1 ELSE 0 END) as retained
     FROM installs
     WHERE first_seen <= date('now', '-7 days')
-  `).get() as { eligible: number; retained: number | null };
+  `).get() as unknown as { eligible: number; retained: number | null };
 
-  const eligible7 = ret7Query?.eligible || 0;
-  const retained7 = ret7Query?.retained || 0;
+  const eligible7 = Number(ret7Query?.eligible || 0);
+  const retained7 = Number(ret7Query?.retained || 0);
   const pct7 = eligible7 > 0 ? Math.round((retained7 / eligible7) * 1000) / 10 : 0;
 
   // 30-day retention
@@ -153,10 +166,10 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
       SUM(CASE WHEN CAST(strftime('%J', last_seen) - strftime('%J', first_seen) AS INT) >= 30 THEN 1 ELSE 0 END) as retained
     FROM installs
     WHERE first_seen <= date('now', '-30 days')
-  `).get() as { eligible: number; retained: number | null };
+  `).get() as unknown as { eligible: number; retained: number | null };
 
-  const eligible30 = ret30Query?.eligible || 0;
-  const retained30 = ret30Query?.retained || 0;
+  const eligible30 = Number(ret30Query?.eligible || 0);
+  const retained30 = Number(ret30Query?.retained || 0);
   const pct30 = eligible30 > 0 ? Math.round((retained30 / eligible30) * 1000) / 10 : 0;
 
   // 3. Timelines with period filter
@@ -173,7 +186,7 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     ${dateConditionFirst}
     GROUP BY first_seen
     ORDER BY first_seen ASC
-  `).all() as StatsTimelineItem[];
+  `).all() as unknown as StatsTimelineItem[];
 
   const activeInstallsTimeline = db.prepare(`
     SELECT last_seen as date, COUNT(*) as count
@@ -181,7 +194,7 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     ${dateConditionLast}
     GROUP BY last_seen
     ORDER BY last_seen ASC
-  `).all() as StatsTimelineItem[];
+  `).all() as unknown as StatsTimelineItem[];
 
   // 4. Distributions
   const totalInFilter = totalInstalls > 0 ? totalInstalls : 1;
@@ -191,12 +204,12 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     FROM installs
     GROUP BY app_version
     ORDER BY count DESC
-  `).all() as { name: string; count: number }[];
+  `).all() as unknown as { name: string; count: number }[];
 
   const versionDistribution: DistributionItem[] = rawVersions.map((v) => ({
-    name: v.name,
-    count: v.count,
-    percentage: Math.round((v.count / totalInFilter) * 1000) / 10,
+    name: String(v.name),
+    count: Number(v.count),
+    percentage: Math.round((Number(v.count) / totalInFilter) * 1000) / 10,
   }));
 
   const rawPlatforms = db.prepare(`
@@ -204,12 +217,12 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     FROM installs
     GROUP BY platform
     ORDER BY count DESC
-  `).all() as { name: string; count: number }[];
+  `).all() as unknown as { name: string; count: number }[];
 
   const platformDistribution: DistributionItem[] = rawPlatforms.map((p) => ({
-    name: p.name,
-    count: p.count,
-    percentage: Math.round((p.count / totalInFilter) * 1000) / 10,
+    name: String(p.name),
+    count: Number(p.count),
+    percentage: Math.round((Number(p.count) / totalInFilter) * 1000) / 10,
   }));
 
   return {
@@ -239,3 +252,4 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     periodDays,
   };
 }
+
