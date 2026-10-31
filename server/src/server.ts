@@ -10,6 +10,7 @@ import { adminRoutes } from './routes/admin.js';
 
 const PORT = parseInt(process.env.PORT || '4000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
+const NODE_ENV = process.env.NODE_ENV || 'development';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dompetku-dev-session-secret-change-in-production-3827';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'http://localhost:5173,http://localhost:5174';
 
@@ -39,15 +40,35 @@ await fastify.register(helmet, {
 });
 
 // 3. CORS Configuration
-const allowedOrigins = ALLOWED_ORIGIN.split(',').map((o) => o.trim());
+const allowedOrigins = ALLOWED_ORIGIN.split(',').map((o) => o.trim().replace(/^["']|["']$/g, ''));
 await fastify.register(cors, {
   origin: (origin, cb) => {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server)
-    if (!origin) return cb(null, true);
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+    // In development mode, allow all origins for seamless local/LAN testing
+    if (NODE_ENV !== 'production') {
       return cb(null, true);
     }
-    return cb(new Error('CORS origin tidak diizinkan oleh server DompetKu'), false);
+
+    // Allow requests with no origin (like mobile apps, curl, server-to-server, webview)
+    if (!origin || origin === 'null') return cb(null, true);
+
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes('*') ||
+      origin.startsWith('http://localhost') ||
+      origin.startsWith('https://localhost') ||
+      origin.startsWith('http://127.0.0.1') ||
+      origin.startsWith('https://127.0.0.1') ||
+      origin.startsWith('capacitor://') ||
+      origin.startsWith('ionic://') ||
+      /^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.includes('vercel.app');
+
+    if (isAllowed) {
+      return cb(null, true);
+    }
+
+    return cb(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
