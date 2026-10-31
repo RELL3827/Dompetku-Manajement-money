@@ -4,6 +4,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dompetku-dev-session-secret-change-in-production-3827';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
+const ADMIN_DEV_PASSWORD = process.env.ADMIN_DEV_PASSWORD || '3827';
 
 // In-Memory Brute-force Tracking (Zero Persistence: never written to DB or disk)
 interface BruteForceEntry {
@@ -97,12 +98,15 @@ export function verifySessionToken(token: string): boolean {
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  if (!ADMIN_PASSWORD_HASH) {
-    // If not configured in development, reject for safety or warn
-    console.warn('[SECURITY] ADMIN_PASSWORD_HASH is not set! Admin login is disabled.');
-    return false;
+  if (ADMIN_PASSWORD_HASH) {
+    return bcrypt.compare(password, ADMIN_PASSWORD_HASH);
   }
-  return bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+  // Local development fallback: allows testing with PIN/password 3827
+  if (process.env.NODE_ENV !== 'production' && ADMIN_DEV_PASSWORD) {
+    return password === ADMIN_DEV_PASSWORD;
+  }
+  console.warn('[SECURITY] ADMIN_PASSWORD_HASH is not set! Admin login is disabled.');
+  return false;
 }
 
 // Fastify Auth Guard Hook
@@ -117,3 +121,4 @@ export async function requireAdminAuth(req: FastifyRequest, reply: FastifyReply)
     return;
   }
 }
+
