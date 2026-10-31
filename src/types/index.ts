@@ -134,6 +134,21 @@ export interface FinancialNote {
   updatedAt: string;
 }
 
+export type CalendarEventType = 'gajian' | 'liburan' | 'tagihan' | 'belanja' | 'lainnya';
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  type: CalendarEventType;
+  date: string; // YYYY-MM-DD
+  amount?: number;
+  color?: string;
+  notes?: string;
+  isDone?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BackupData {
   version: number;
   appName: 'DompetKu';
@@ -144,6 +159,7 @@ export interface BackupData {
   budgets: Budget[];
   savings?: SavingGoal[];
   notes?: FinancialNote[];
+  calendarEvents?: CalendarEvent[];
   settings?: Partial<AppSettings>;
 }
 
@@ -164,4 +180,14 @@ export interface TransactionFilters {
   sort: SortOrder;
 }
 
-export type NavTab = 'home' | 'transactions' | 'wallets' | 'savings' | 'budgets' | 'notes' | 'calculator' | 'analytics' | 'settings';
+export type NavTab =
+  | 'home'
+  | 'transactions'
+  | 'calendar'
+  | 'wallets'
+  | 'savings'
+  | 'budgets'
+  | 'notes'
+  | 'calculator'
+  | 'analytics'
+  | 'settings';

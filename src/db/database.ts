@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Wallet, Category, Transaction, Budget, SavingGoal, FinancialNote, AppSettings } from '../types';
+import type { Wallet, Category, Transaction, Budget, SavingGoal, FinancialNote, CalendarEvent, AppSettings } from '../types';
 import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_WALLETS } from './defaultData';
 
 export interface SettingRecord {
@@ -14,6 +14,7 @@ export class DompetKuDatabase extends Dexie {
   budgets!: Table<Budget, string>;
   savings!: Table<SavingGoal, string>;
   notes!: Table<FinancialNote, string>;
+  calendarEvents!: Table<CalendarEvent, string>;
   settings!: Table<SettingRecord, string>;
 
   constructor() {
@@ -47,6 +48,18 @@ export class DompetKuDatabase extends Dexie {
       settings: 'key',
       savings: 'id, name, isCompleted, walletId, targetDate, createdAt',
       notes: 'id, title, category, isPinned, createdAt, updatedAt',
+    });
+
+    // Schema definition version 4 (Adding Calendar Events: Gajian, Liburan, Tagihan, dll.)
+    this.version(4).stores({
+      wallets: 'id, name, type, isArchived, createdAt',
+      categories: 'id, name, type, isDefault, createdAt',
+      transactions: 'id, amount, type, categoryId, walletId, toWalletId, date, createdAt',
+      budgets: 'id, categoryId, period, createdAt',
+      settings: 'key',
+      savings: 'id, name, isCompleted, walletId, targetDate, createdAt',
+      notes: 'id, title, category, isPinned, createdAt, updatedAt',
+      calendarEvents: 'id, title, type, date, isDone, createdAt',
     });
   }
 

@@ -38,8 +38,10 @@ import {
   RefreshCw,
   Sparkles,
   Activity,
+  MessageSquare,
+  Calendar,
 } from 'lucide-react';
-import type { BackupData, ThemeMode } from '../types';
+import type { BackupData, ThemeMode, NavTab } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import { usePwaUpdate } from '../context/PwaUpdateContext';
 import { APP_VERSION, APP_RELEASE_DATE } from '../utils/version';
@@ -58,7 +60,19 @@ import {
   STATS_ENDPOINT,
 } from '../telemetry/optInStats';
 
-export const SettingsPage: React.FC = () => {
+interface SettingsPageProps {
+  onOpenAbout?: () => void;
+  onOpenFeedback?: () => void;
+  onOpenDonation?: () => void;
+  onNavigate?: (tab: NavTab) => void;
+}
+
+export const SettingsPage: React.FC<SettingsPageProps> = ({
+  onOpenAbout,
+  onOpenFeedback,
+  onOpenDonation,
+  onNavigate,
+}) => {
   const { theme, setTheme } = useTheme();
   const {
     needRefresh,
@@ -733,7 +747,7 @@ export const SettingsPage: React.FC = () => {
             </span>
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                DompetKu v1.0.0
+                DompetKu v{APP_VERSION}
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">
                 MIT License
@@ -743,6 +757,42 @@ export const SettingsPage: React.FC = () => {
               100% Offline-First PWA • Open Source
             </p>
           </div>
+        </div>
+
+        {/* Buttons for About, Feedback & Calendar */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+          {onOpenAbout && (
+            <button
+              type="button"
+              onClick={onOpenAbout}
+              className="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+            >
+              <Info size={16} />
+              <span>Tentang DompetKu</span>
+            </button>
+          )}
+
+          {onOpenFeedback && (
+            <button
+              type="button"
+              onClick={onOpenFeedback}
+              className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+            >
+              <MessageSquare size={16} />
+              <span>Beri Umpan Balik</span>
+            </button>
+          )}
+
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('calendar')}
+              className="p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+            >
+              <Calendar size={16} />
+              <span>Buka Kalender</span>
+            </button>
+          )}
         </div>
 
         {/* Donation Callout Card */}
@@ -762,7 +812,7 @@ export const SettingsPage: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => setIsDonationModalOpen(true)}
+            onClick={() => (onOpenDonation ? onOpenDonation() : setIsDonationModalOpen(true))}
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 active:scale-95 text-white text-xs font-bold shrink-0 transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
           >
             <Heart size={14} className="fill-current" />

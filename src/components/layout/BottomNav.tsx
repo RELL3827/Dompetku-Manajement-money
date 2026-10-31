@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import {
   Home,
   History,
+  Calendar,
   WalletCards,
   PiggyBank,
   Target,
@@ -21,6 +22,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
   const tabs = [
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
     { id: 'transactions' as NavTab, label: 'Riwayat', icon: History },
+    { id: 'calendar' as NavTab, label: 'Kalender', icon: Calendar },
     { id: 'notes' as NavTab, label: 'Catatan', icon: FileText },
     { id: 'calculator' as NavTab, label: 'Kalkulator', icon: Calculator },
     { id: 'budgets' as NavTab, label: 'Anggaran', icon: Target },

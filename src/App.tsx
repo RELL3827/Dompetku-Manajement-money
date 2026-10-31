@@ -15,6 +15,7 @@ import { UpdateToastBanner } from './components/common/UpdateToastBanner';
 // Pages
 import { HomePage } from './pages/HomePage';
 import { TransactionsPage } from './pages/TransactionsPage';
+import { CalendarPage } from './pages/CalendarPage';
 import { SavingsPage } from './pages/SavingsPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { WalletsPage } from './pages/WalletsPage';
@@ -22,6 +23,10 @@ import { NotesPage } from './pages/NotesPage';
 import { CalculatorPage } from './pages/CalculatorPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
+
+import { FeedbackModal } from './components/feedback/FeedbackModal';
+import { AboutModal } from './components/about/AboutModal';
+import { DonationModal } from './components/common/DonationModal';
 
 import { useTheme } from './hooks/useTheme';
 import type { NavTab, Transaction, TransactionType } from './types';
@@ -41,6 +46,11 @@ export const App: React.FC = () => {
 
   // Global Quick Calculator Modal State
   const [isCalculatorModalOpen, setIsCalculatorModalOpen] = useState(false);
+
+  // Global Feedback & About Modals
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
 
   // Check onboarding status
   const settingsRecord = useLiveQuery(() => db.settings.get('app_settings'));
@@ -81,6 +91,8 @@ export const App: React.FC = () => {
         activeTab={currentTab}
         onChangeTab={setCurrentTab}
         onOpenAddModal={() => handleOpenAddTransaction('expense')}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
+        onOpenFeedback={() => setIsFeedbackModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -108,6 +120,10 @@ export const App: React.FC = () => {
             />
           )}
 
+          {currentTab === 'calendar' && (
+            <CalendarPage onOpenTransactionModal={handleOpenAddTransaction} />
+          )}
+
           {currentTab === 'savings' && <SavingsPage />}
 
           {currentTab === 'budgets' && <BudgetsPage onNavigate={setCurrentTab} />}
@@ -129,7 +145,14 @@ export const App: React.FC = () => {
 
           {currentTab === 'analytics' && <AnalyticsPage />}
 
-          {currentTab === 'settings' && <SettingsPage />}
+          {currentTab === 'settings' && (
+            <SettingsPage
+              onOpenAbout={() => setIsAboutModalOpen(true)}
+              onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+              onOpenDonation={() => setIsDonationModalOpen(true)}
+              onNavigate={setCurrentTab}
+            />
+          )}
         </main>
 
         {/* Mobile Floating Action Button */}
@@ -158,6 +181,26 @@ export const App: React.FC = () => {
         onClose={() => setIsCalculatorModalOpen(false)}
         onUseAmount={(amt, notes) => handleOpenAddTransaction('expense', amt, notes)}
         onNavigateToBudgets={() => setCurrentTab('budgets')}
+      />
+
+      {/* Global Feedback Modal */}
+      <FeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+      />
+
+      {/* Global About Modal */}
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+        onOpenDonation={() => setIsDonationModalOpen(true)}
+      />
+
+      {/* Global Donation Modal */}
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
 
       {/* Global PWA Update Notification Modal & Toast Banner */}

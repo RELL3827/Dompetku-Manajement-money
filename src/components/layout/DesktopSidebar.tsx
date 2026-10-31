@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Home,
   History,
+  Calendar,
   WalletCards,
   PiggyBank,
   Target,
@@ -14,6 +15,8 @@ import {
   Heart,
   FileText,
   Calculator,
+  MessageSquare,
+  Info,
 } from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
@@ -25,12 +28,16 @@ interface DesktopSidebarProps {
   activeTab: NavTab;
   onChangeTab: (tab: NavTab) => void;
   onOpenAddModal: () => void;
+  onOpenAbout?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   activeTab,
   onChangeTab,
   onOpenAddModal,
+  onOpenAbout,
+  onOpenFeedback,
 }) => {
   const { theme, setTheme } = useTheme();
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
@@ -39,6 +46,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   const navItems = [
     { id: 'home' as NavTab, label: 'Beranda', icon: Home },
     { id: 'transactions' as NavTab, label: 'Riwayat Transaksi', icon: History },
+    { id: 'calendar' as NavTab, label: 'Kalender Keuangan', icon: Calendar },
     { id: 'savings' as NavTab, label: 'Target Tabungan', icon: PiggyBank },
     { id: 'budgets' as NavTab, label: 'Anggaran 50/30/20', icon: Target },
     { id: 'notes' as NavTab, label: 'Catatan Keuangan', icon: FileText },
@@ -123,17 +131,34 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           </button>
         </div>
 
-        <div className="pt-2 px-2 border-t border-slate-100/60 dark:border-slate-800/60 space-y-0.5">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            Dibuat oleh <strong className="font-semibold text-emerald-600 dark:text-emerald-400">Farel Rizky P</strong>
-          </p>
+        <div className="pt-2 px-2 border-t border-slate-100/60 dark:border-slate-800/60 space-y-1.5">
+          <div className="flex items-center justify-between text-[11px]">
+            <button
+              type="button"
+              onClick={onOpenAbout}
+              className="text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1 transition-colors"
+            >
+              <Info size={12} />
+              <span>Tentang DompetKu</span>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenFeedback}
+              className="text-slate-500 dark:text-slate-400 hover:text-amber-500 flex items-center gap-1 transition-colors"
+            >
+              <MessageSquare size={12} />
+              <span>Feedback</span>
+            </button>
+          </div>
+
           <p className="text-[10px] text-slate-400 dark:text-slate-500">
-            DompetKu v1.0 • Lisensi MIT
+            Dibuat oleh <strong className="font-semibold text-emerald-600 dark:text-emerald-400">Farel Rizky P</strong> • MIT
           </p>
+
           <button
             type="button"
             onClick={() => setIsDonationModalOpen(true)}
-            className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+            className="w-full mt-1.5 py-1.5 px-3 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
           >
             <Heart size={13} className="fill-current text-rose-500 animate-pulse" />
             <span>Donasi Seikhlasnya</span>

@@ -15,9 +15,12 @@ import {
   Layers,
   PieChart,
   Info,
+  MessageSquare,
+  Star,
+  Trash2,
 } from 'lucide-react';
-import { fetchDashboardStats, logoutAdmin, downloadAggregateCsv } from '../api';
-import type { DashboardStats } from '../types';
+import { fetchDashboardStats, logoutAdmin, downloadAggregateCsv, fetchFeedbacks, deleteFeedbackApi } from '../api';
+import type { DashboardStats, FeedbackItem } from '../types';
 import { MetricCard } from './MetricCard';
 import { TimelineChart } from './charts/TimelineChart';
 import { PlatformChart } from './charts/PlatformChart';
@@ -32,6 +35,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onLogout, isDark, toggleTheme }) => {
   const [period, setPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,12 +43,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout, isDark, toggleTh
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchDashboardStats(selectedPeriod);
+      const [data, fbList] = await Promise.all([
+        fetchDashboardStats(selectedPeriod),
+        fetchFeedbacks().catch(() => []),
+      ]);
       setStats(data);
+      setFeedbacks(fbList);
     } catch (err: any) {
       setError(err.message || 'Gagal mengambil data dari server.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteFeedback = async (id: string) => {
+    if (window.confirm('Hapus masukan feedback ini?')) {
+      const ok = await deleteFeedbackApi(id);
+      if (ok) {
+        setFeedbacks((prev) => prev.filter((f) => f.id !== id));
+      }
     }
   };
 
@@ -407,6 +424,112 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout, isDark, toggleTh
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* User Feedback & Suggestions Section */}
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <MessageSquare size={16} className="text-amber-500" />
+                <span>Umpan Balik & Masukan Pengguna ({feedbacks.length})</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Pesan, saran fitur, dan laporan dari pengguna aplikasi DompetKu
+              </p>
+            </div>
+
+            {feedbacks.length > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900/60 flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-300">
+                  <Star size={13} className="fill-amber-400 text-amber-400" />
+                  <span>
+                    Rata-rata:{' '}
+                    {(
+                      feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length
+                    ).toFixed(1)}
+                    /5
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {feedbacks.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+              Belum ada umpan balik yang masuk dari pengguna.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {feedbacks.map((fb) => (
+                <div
+                  key={fb.id}
+                  className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 space-y-2.5 relative group"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            size={13}
+                            className={
+                              s <= fb.rating
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'text-slate-300 dark:text-slate-600'
+                            }
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 tracking-wider">
+                        {fb.category}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400">
+                        {fb.created_at ? fb.created_at.slice(0, 10) : ''}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteFeedback(fb.id)}
+                        className="opacity-60 hover:opacity-100 p-1 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
+                        title="Hapus feedback ini"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">
+                    {fb.message}
+                  </p>
+
+                  <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
+                    <div>
+                      {fb.contact ? (
+                        <span>Kontak: <strong className="text-slate-700 dark:text-slate-300">{fb.contact}</strong></span>
+                      ) : (
+                        <span className="italic">Anonim</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {fb.platform && (
+                        <span className="capitalize px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700 font-semibold">
+                          {fb.platform}
+                        </span>
+                      )}
+                      {fb.app_version && (
+                        <span className="px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700 font-semibold">
+                          v{fb.app_version}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -30,9 +30,10 @@ import {
   Heart,
   FileText,
   Calculator,
+  Calendar,
 } from 'lucide-react';
 import { DonationModal } from '../components/common/DonationModal';
-import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal } from '../types';
+import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
 
 interface HomePageProps {
   onNavigate: (tab: NavTab) => void;
@@ -58,6 +59,12 @@ export const HomePage: React.FC<HomePageProps> = ({
   const categories = useLiveQuery(() => db.categories.toArray()) || [];
   const wallets = useLiveQuery(() => db.wallets.toArray()) || [];
   const savingsGoals = useLiveQuery(() => db.savings.toArray()) || [];
+  const calendarEvents = useLiveQuery(() => db.calendarEvents.toArray()) || [];
+
+  const todayDateStr = new Date().toISOString().slice(0, 10);
+  const upcomingEvent = calendarEvents
+    .filter((e: CalendarEvent) => e.date >= todayDateStr && !e.isDone)
+    .sort((a: CalendarEvent, b: CalendarEvent) => a.date.localeCompare(b.date))[0] || null;
 
   const catMap = new Map(categories.map((c: Category) => [c.id, c]));
   const walletMap = new Map(wallets.map((w: WalletType) => [w.id, w]));
@@ -250,6 +257,50 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 transition-colors flex items-center gap-1 shrink-0"
         >
           <span>Buka Tabungan</span>
+          <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* Calendar & Agenda Banner (Gajian, Liburan, Tagihan) */}
+      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <Calendar size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Kalender Keuangan
+              </h3>
+              {upcomingEvent && (
+                <span className="text-[10px] text-amber-700 dark:text-amber-300 font-bold bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-md">
+                  {upcomingEvent.type === 'gajian'
+                    ? '💰 Gajian'
+                    : upcomingEvent.type === 'liburan'
+                    ? '🏖️ Liburan'
+                    : '⚡ Tagihan'}
+                </span>
+              )}
+            </div>
+            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-0.5">
+              {upcomingEvent ? (
+                <>
+                  <strong className="text-slate-900 dark:text-slate-100">{upcomingEvent.title}</strong>
+                  <span className="text-[11px] text-slate-400 font-normal"> ({upcomingEvent.date})</span>
+                </>
+              ) : (
+                <span className="text-slate-500 dark:text-slate-400">Tandai gajian, liburan & tagihan bulanan</span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigate('calendar')}
+          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 transition-colors flex items-center gap-1 shrink-0"
+        >
+          <span>Buka Kalender</span>
           <ChevronRight size={14} />
         </button>
       </div>

@@ -7,6 +7,7 @@ import rateLimit from '@fastify/rate-limit';
 import { initDb, cleanupStaleInstalls } from './db.js';
 import { pingRoutes } from './routes/ping.js';
 import { adminRoutes } from './routes/admin.js';
+import { feedbackRoutes } from './routes/feedback.js';
 
 const PORT = parseInt(process.env.PORT || '4000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
@@ -99,6 +100,7 @@ fastify.get('/health', async () => {
 // 6. Register Routes
 await fastify.register(pingRoutes);
 await fastify.register(adminRoutes);
+await fastify.register(feedbackRoutes);
 
 // 7. Retention Policy: Daily automatic cleanup of inactive records (> 12 months)
 const RETENTION_INTERVAL_MS = 24 * 60 * 60 * 1000;

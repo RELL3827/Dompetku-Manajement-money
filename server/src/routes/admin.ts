@@ -8,7 +8,7 @@ import {
   createSessionToken,
   requireAdminAuth,
 } from '../auth.js';
-import { getDashboardStats } from '../db.js';
+import { getDashboardStats, getAllFeedbacks, deleteFeedback } from '../db.js';
 
 const LoginSchema = z.object({
   password: z.string().min(1, 'Password wajib diisi'),
@@ -132,6 +132,31 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
       reply.header('Content-Type', 'text/csv; charset=utf-8');
       reply.header('Content-Disposition', 'attachment; filename="dompetku_stats_aggregate.csv"');
       return reply.send(csv);
+    }
+  );
+
+  // GET /api/admin/feedbacks - List user feedback
+  fastify.get(
+    '/api/admin/feedbacks',
+    {
+      preHandler: requireAdminAuth,
+    },
+    async (request, reply) => {
+      const feedbacks = getAllFeedbacks(100);
+      return reply.send({ success: true, feedbacks });
+    }
+  );
+
+  // DELETE /api/admin/feedbacks/:id - Delete a feedback item
+  fastify.delete(
+    '/api/admin/feedbacks/:id',
+    {
+      preHandler: requireAdminAuth,
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const success = deleteFeedback(id);
+      return reply.send({ success });
     }
   );
 };

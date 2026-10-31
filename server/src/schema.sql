@@ -24,3 +24,18 @@ CREATE TABLE IF NOT EXISTS daily_aggregates (
   calculated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- User Feedback Table (Voluntary opt-in feedback & suggestions)
+CREATE TABLE IF NOT EXISTS feedbacks (
+  id TEXT PRIMARY KEY,
+  rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+  category TEXT NOT NULL,
+  message TEXT NOT NULL,
+  contact TEXT,
+  app_version TEXT,
+  platform TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedbacks_created_at ON feedbacks(created_at);
+
+

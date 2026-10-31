@@ -36,3 +36,14 @@ export interface DashboardStats {
   periodDays: number | 'all';
 }
 
+export interface FeedbackItem {
+  id: string;
+  rating: number;
+  category: string;
+  message: string;
+  contact?: string | null;
+  app_version?: string | null;
+  platform?: string | null;
+  created_at: string;
+}
+

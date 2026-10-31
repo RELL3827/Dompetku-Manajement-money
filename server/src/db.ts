@@ -64,6 +64,22 @@ const stmtCleanupStale = db.prepare(`
   WHERE last_seen < date('now', '-12 months')
 `);
 
+const stmtInsertFeedback = db.prepare(`
+  INSERT INTO feedbacks (id, rating, category, message, contact, app_version, platform)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
+`);
+
+const stmtGetAllFeedbacks = db.prepare(`
+  SELECT id, rating, category, message, contact, app_version, platform, created_at
+  FROM feedbacks
+  ORDER BY created_at DESC
+  LIMIT ?
+`);
+
+const stmtDeleteFeedback = db.prepare(`
+  DELETE FROM feedbacks WHERE id = ?
+`);
+
 export function upsertInstall(payload: {
   install_id: string;
   app_version: string;
@@ -251,5 +267,46 @@ export function getDashboardStats(periodDays: number | 'all' = 30): DashboardSta
     generatedAt: new Date().toISOString(),
     periodDays,
   };
+}
+
+export interface FeedbackItem {
+  id: string;
+  rating: number;
+  category: string;
+  message: string;
+  contact?: string | null;
+  app_version?: string | null;
+  platform?: string | null;
+  created_at: string;
+}
+
+export function insertFeedback(payload: {
+  rating: number;
+  category: string;
+  message: string;
+  contact?: string;
+  app_version?: string;
+  platform?: string;
+}): string {
+  const id = `fb_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  stmtInsertFeedback.run(
+    id,
+    payload.rating,
+    payload.category,
+    payload.message,
+    payload.contact || null,
+    payload.app_version || null,
+    payload.platform || null
+  );
+  return id;
+}
+
+export function getAllFeedbacks(limit = 100): FeedbackItem[] {
+  return stmtGetAllFeedbacks.all(limit) as unknown as FeedbackItem[];
+}
+
+export function deleteFeedback(id: string): boolean {
+  const res = stmtDeleteFeedback.run(id);
+  return Number(res.changes) > 0;
 }
 

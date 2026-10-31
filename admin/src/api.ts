@@ -1,4 +1,4 @@
-import type { DashboardStats } from './types';
+import type { DashboardStats, FeedbackItem } from './types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -57,5 +57,24 @@ export async function fetchDashboardStats(period: string = '30d'): Promise<Dashb
 
 export function downloadAggregateCsv(): void {
   window.open(`${API_BASE}/api/admin/export-csv`, '_blank');
+}
+
+export async function fetchFeedbacks(): Promise<FeedbackItem[]> {
+  const res = await fetch(`${API_BASE}/api/admin/feedbacks`, {
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    throw new Error('Gagal memuat feedback pengguna.');
+  }
+  const data = await res.json();
+  return data.feedbacks || [];
+}
+
+export async function deleteFeedbackApi(id: string): Promise<boolean> {
+  const res = await fetch(`${API_BASE}/api/admin/feedbacks/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  return res.ok;
 }
 

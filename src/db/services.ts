@@ -8,6 +8,7 @@ import type {
   FinancialNote,
   NoteTag,
   NoteChecklistItem,
+  CalendarEvent,
   TransactionFilters,
   BackupData,
   BudgetGroup503020,
@@ -1101,24 +1102,81 @@ export async function getMonthlyIncomeExpenseTrend(monthsCount = 6) {
 }
 
 // ----------------------------------------------------
+// CALENDAR EVENT SERVICES (Gajian, Liburan, Tagihan, dll.)
+// ----------------------------------------------------
+
+export async function addCalendarEvent(
+  event: Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<CalendarEvent> {
+  const now = new Date().toISOString();
+  const newEvent: CalendarEvent = {
+    ...event,
+    id: `cal_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    createdAt: now,
+    updatedAt: now,
+  };
+  await db.calendarEvents.add(newEvent);
+  return newEvent;
+}
+
+export async function updateCalendarEvent(
+  id: string,
+  partial: Partial<CalendarEvent>
+): Promise<void> {
+  const now = new Date().toISOString();
+  await db.calendarEvents.update(id, {
+    ...partial,
+    updatedAt: now,
+  });
+}
+
+export async function deleteCalendarEvent(id: string): Promise<void> {
+  await db.calendarEvents.delete(id);
+}
+
+export async function toggleCalendarEventDone(id: string): Promise<void> {
+  const event = await db.calendarEvents.get(id);
+  if (event) {
+    await db.calendarEvents.update(id, {
+      isDone: !event.isDone,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+}
+
+export async function getCalendarEventsByDate(dateStr: string): Promise<CalendarEvent[]> {
+  return db.calendarEvents.where('date').equals(dateStr).toArray();
+}
+
+export async function getUpcomingCalendarEvents(limit = 5): Promise<CalendarEvent[]> {
+  const today = new Date().toISOString().slice(0, 10);
+  const events = await db.calendarEvents
+    .where('date')
+    .aboveOrEqual(today)
+    .sortBy('date');
+  return events.slice(0, limit);
+}
+
+// ----------------------------------------------------
 // BACKUP & RESTORE SERVICES
 // ----------------------------------------------------
 
 export async function exportAllData(): Promise<BackupData> {
-  const [wallets, categories, transactions, budgets, savings, notes, settingsRecord] = await Promise.all([
+  const [wallets, categories, transactions, budgets, savings, notes, calendarEvents, settingsRecord] = await Promise.all([
     db.wallets.toArray(),
     db.categories.toArray(),
     db.transactions.toArray(),
     db.budgets.toArray(),
     db.savings.toArray(),
     db.notes.toArray(),
+    db.calendarEvents.toArray(),
     db.settings.get('app_settings'),
   ]);
 
   const appSettings = settingsRecord ? settingsRecord.value : undefined;
 
   return {
-    version: 3,
+    version: 4,
     appName: 'DompetKu',
     exportDate: new Date().toISOString(),
     wallets,
@@ -1127,6 +1185,7 @@ export async function exportAllData(): Promise<BackupData> {
     budgets,
     savings,
     notes,
+    calendarEvents,
     settings: appSettings,
   };
 }
@@ -1143,13 +1202,14 @@ export async function restoreAllData(
   let updated = 0;
 
   if (mode === 'overwrite') {
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents], async () => {
       await db.wallets.clear();
       await db.categories.clear();
       await db.transactions.clear();
       await db.budgets.clear();
       await db.savings.clear();
       await db.notes.clear();
+      await db.calendarEvents.clear();
 
       await db.wallets.bulkAdd(data.wallets);
       await db.categories.bulkAdd(data.categories);
@@ -1163,6 +1223,9 @@ export async function restoreAllData(
       if (data.notes && data.notes.length > 0) {
         await db.notes.bulkAdd(data.notes);
       }
+      if (data.calendarEvents && data.calendarEvents.length > 0) {
+        await db.calendarEvents.bulkAdd(data.calendarEvents);
+      }
     });
 
     added =
@@ -1171,10 +1234,11 @@ export async function restoreAllData(
       data.transactions.length +
       (data.budgets?.length || 0) +
       (data.savings?.length || 0) +
-      (data.notes?.length || 0);
+      (data.notes?.length || 0) +
+      (data.calendarEvents?.length || 0);
   } else {
     // Merge mode: Add missing records or update existing
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents], async () => {
       // Merge Wallets
       for (const w of data.wallets) {
         const exist = await db.wallets.get(w.id);
@@ -1252,6 +1316,20 @@ export async function restoreAllData(
           }
         }
       }
+
+      // Merge Calendar Events
+      if (data.calendarEvents) {
+        for (const ev of data.calendarEvents) {
+          const exist = await db.calendarEvents.get(ev.id);
+          if (exist) {
+            await db.calendarEvents.put(ev);
+            updated++;
+          } else {
+            await db.calendarEvents.add(ev);
+            added++;
+          }
+        }
+      }
     });
   }
 
@@ -1266,13 +1344,14 @@ export async function restoreAllData(
 }
 
 export async function resetAllData(): Promise<void> {
-  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.settings], async () => {
+  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents, db.settings], async () => {
     await db.wallets.clear();
     await db.categories.clear();
     await db.transactions.clear();
     await db.budgets.clear();
     await db.savings.clear();
     await db.notes.clear();
+    await db.calendarEvents.clear();
     await db.settings.clear();
   });
   await db.seedInitialData();
