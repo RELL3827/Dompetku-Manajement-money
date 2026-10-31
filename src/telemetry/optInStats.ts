@@ -14,67 +14,16 @@ import { APP_VERSION } from '../utils/version';
 const STORAGE_KEY_OPT_IN = 'dompetku_opt_in_stats_enabled';
 const STORAGE_KEY_INSTALL_ID = 'dompetku_stats_install_id';
 const STORAGE_KEY_LAST_PING = 'dompetku_stats_last_ping_date';
-const STORAGE_KEY_CUSTOM_ENDPOINT = 'dompetku_custom_stats_endpoint';
 
-// Base configured endpoint from environment variable
+// Configurable endpoint (e.g. "https://stats.domain.com" or empty)
 export const STATS_ENDPOINT: string = (import.meta.env.VITE_STATS_ENDPOINT || '').trim();
-
-/**
- * Dynamically resolves the active stats endpoint:
- * 1. Checks custom override in localStorage (if set by user/developer).
- * 2. If endpoint contains 'localhost' or '127.0.0.1' and the client is accessed via a LAN IP (e.g. 192.168.x.x on iOS/Android),
- *    it automatically substitutes localhost with the current host so mobile devices connect to the host computer seamlessly.
- */
-export function getActiveStatsEndpoint(): string {
-  try {
-    const custom = localStorage.getItem(STORAGE_KEY_CUSTOM_ENDPOINT);
-    if (custom && custom.trim().length > 0) {
-      return custom.trim().replace(/\/+$/, '');
-    }
-  } catch {
-    // ignore
-  }
-
-  let endpoint = STATS_ENDPOINT.replace(/\/+$/, '');
-  if (!endpoint) return '';
-
-  if (typeof window !== 'undefined' && window.location) {
-    const clientHost = window.location.hostname;
-    if (clientHost && clientHost !== 'localhost' && clientHost !== '127.0.0.1') {
-      endpoint = endpoint.replace(/\b(localhost|127\.0\.0\.1)\b/g, clientHost);
-    }
-  }
-
-  return endpoint;
-}
-
-export function setCustomStatsEndpoint(url: string): void {
-  try {
-    if (!url || url.trim() === '') {
-      localStorage.removeItem(STORAGE_KEY_CUSTOM_ENDPOINT);
-    } else {
-      localStorage.setItem(STORAGE_KEY_CUSTOM_ENDPOINT, url.trim().replace(/\/+$/, ''));
-    }
-  } catch {
-    // ignore
-  }
-}
-
-export function getCustomStatsEndpoint(): string {
-  try {
-    return localStorage.getItem(STORAGE_KEY_CUSTOM_ENDPOINT) || '';
-  } catch {
-    return '';
-  }
-}
 
 /**
  * Returns true if a telemetry server endpoint is configured.
  * Forks wanting a pure offline experience without any stats UI can simply leave VITE_STATS_ENDPOINT empty.
  */
 export function isStatsFeatureAvailable(): boolean {
-  const ep = getActiveStatsEndpoint();
-  return Boolean(ep && ep.length > 0);
+  return Boolean(STATS_ENDPOINT && STATS_ENDPOINT.length > 0);
 }
 
 /**
@@ -192,9 +141,8 @@ export async function deleteMyStatsData(): Promise<{ success: boolean; message: 
     return { success: true, message: 'Tidak ada data statistik lokal yang tersimpan.' };
   }
 
-  const endpoint = getActiveStatsEndpoint();
   try {
-    const res = await fetch(`${endpoint}/api/install/${installId}`, {
+    const res = await fetch(`${STATS_ENDPOINT}/api/install/${installId}`, {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
@@ -269,27 +217,15 @@ export async function sendDailyPingIfDue(force = false): Promise<{ success: bool
     date: today,
   };
 
-  const endpoint = getActiveStatsEndpoint();
-  if (!endpoint) {
-    return { success: false, message: 'Server statistik tidak dikonfigurasi.' };
-  }
-
   try {
-    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const timeoutId = controller ? setTimeout(() => controller.abort(), 8000) : null;
-
-    const res = await fetch(`${endpoint}/api/ping`, {
+    const res = await fetch(`${STATS_ENDPOINT}/api/ping`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
       },
       body: JSON.stringify(payload),
-      // IMPORTANT for iOS / Safari: Do NOT set keepalive: true, as WebKit has a bug that drops POST JSON bodies and fails CORS preflights!
-      signal: controller?.signal,
+      keepalive: true,
     });
-
-    if (timeoutId) clearTimeout(timeoutId);
 
     if (res.ok) {
       localStorage.setItem(STORAGE_KEY_LAST_PING, today);
@@ -298,16 +234,13 @@ export async function sendDailyPingIfDue(force = false): Promise<{ success: bool
       const errData = await res.json().catch(() => ({}));
       return {
         success: false,
-        message: errData.message || `Server merespons status HTTP ${res.status}`,
+        message: errData.message || `Server merespons error HTTP ${res.status}`,
       };
     }
   } catch (err: any) {
-    const isAbort = err?.name === 'AbortError';
     return {
       success: false,
-      message: isAbort
-        ? `Waktu koneksi habis (timeout) ke ${endpoint}. Pastikan server dapat dijangkau oleh perangkat ini.`
-        : `Tidak dapat menghubungi server di ${endpoint}: ${err?.message || 'Koneksi gagal'}.`,
+      message: `Tidak dapat menghubungi server di ${STATS_ENDPOINT}. Pastikan server backend sudah dinyalakan.`,
     };
   }
 }

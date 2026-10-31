@@ -43,4 +43,3 @@ export const feedbackRoutes: FastifyPluginAsync = async (fastify) => {
     }
   );
 };
-
