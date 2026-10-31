@@ -37,6 +37,7 @@ import {
   Rocket,
   RefreshCw,
   Sparkles,
+  Activity,
 } from 'lucide-react';
 import type { BackupData, ThemeMode } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -44,8 +45,14 @@ import { usePwaUpdate } from '../context/PwaUpdateContext';
 import { APP_VERSION, APP_RELEASE_DATE } from '../utils/version';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
 import { DonationModal } from '../components/common/DonationModal';
-import { DevPinModal } from '../components/admin/DevPinModal';
-import { AdminPanelModal } from '../components/admin/AdminPanelModal';
+import {
+  isStatsFeatureAvailable,
+  isStatsOptInEnabled,
+  enableStatsOptIn,
+  disableStatsOptIn,
+  deleteMyStatsData,
+  getExamplePayload,
+} from '../telemetry/optInStats';
 
 export const SettingsPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -64,11 +71,10 @@ export const SettingsPage: React.FC = () => {
   const [storageUsage, setStorageUsage] = useState({ usedBytes: 0, quotaBytes: 0, percentage: 0 });
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
 
-  // Developer mode secret access state (completely secret without visual cues)
-  const devTapTimesRef = useRef<number[]>([]);
-  const [isDevPinModalOpen, setIsDevPinModalOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
-  const [isDevUnlocked, setIsDevUnlocked] = useState(false);
+  // Anonymous Opt-in Telemetry State
+  const [isStatsOptIn, setIsStatsOptIn] = useState(() => isStatsOptInEnabled());
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+  const [isDeletingStats, setIsDeletingStats] = useState(false);
 
   // Export password dialog state
   const [isExportPasswordModalOpen, setIsExportPasswordModalOpen] = useState(false);
@@ -108,24 +114,24 @@ export const SettingsPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleVersionTap = () => {
-    // If dev mode is already unlocked for this session, re-open directly
-    if (isDevUnlocked) {
-      setIsAdminPanelOpen(true);
-      return;
+  const handleToggleStats = (enabled: boolean) => {
+    if (enabled) {
+      enableStatsOptIn();
+      setIsStatsOptIn(true);
+      showToast('Statistik anonim diaktifkan. Terima kasih atas partisipasi Anda!');
+    } else {
+      disableStatsOptIn();
+      setIsStatsOptIn(false);
+      showToast('Statistik anonim dinonaktifkan. Data lokal telah dihapus.');
     }
+  };
 
-    const now = Date.now();
-    // Keep taps occurring within the last 3500ms
-    const recent = devTapTimesRef.current.filter((t) => now - t < 3500);
-    recent.push(now);
-    devTapTimesRef.current = recent;
-
-    // Secret requirement: exactly 7 rapid taps without public intermediate hints
-    if (recent.length >= 7) {
-      devTapTimesRef.current = [];
-      setIsDevPinModalOpen(true);
-    }
+  const handleDeleteStatsFromServer = async () => {
+    setIsDeletingStats(true);
+    const res = await deleteMyStatsData();
+    setIsDeletingStats(false);
+    setIsStatsOptIn(false);
+    showToast(res.message);
   };
 
   const handleRequestStorage = async () => {
@@ -420,10 +426,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-xs gap-2">
-          <div
-            onClick={handleVersionTap}
-            className="cursor-pointer select-none active:scale-[0.99] transition-transform"
-          >
+          <div>
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
               Versi Aplikasi Saat Ini
             </span>
@@ -588,6 +591,76 @@ export const SettingsPage: React.FC = () => {
           DompetKu tidak menggunakan pelacak (Google Analytics, Sentry, Firebase), tidak ada iklan, dan tidak ada server database. Aplikasi ini sepenuhnya open-source dengan Lisensi MIT.
         </p>
       </div>
+
+      {/* Optional Anonymous Opt-In Telemetry (Only visible if VITE_STATS_ENDPOINT is defined) */}
+      {isStatsFeatureAvailable() && (
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity size={18} className="text-teal-500" />
+              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                Statistik Pengguna Anonim (Opt-In)
+              </h2>
+            </div>
+            <span
+              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                isStatsOptIn
+                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+              }`}
+            >
+              {isStatsOptIn ? 'Aktif (Opt-in)' : 'Mati (Default)'}
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Bantu pengembang (Farel Rizky P) mengetahui perkiraan jumlah pengguna DompetKu tanpa mengorbankan privasi. Fitur ini bersifat sukarela dan <strong>default-nya MATI</strong>. Server tidak menyimpan alamat IP, tidak ada pelacak pihak ketiga, dan tidak ada catatan keuangan apa pun yang dikirim.
+          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+            <div>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Kirim Ping Harian Anonim
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Maksimal 1x sehari mengirim ID acak perangkat, versi, platform, dan tanggal.
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isStatsOptIn}
+                onChange={(e) => handleToggleStats(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setIsStatsModalOpen(true)}
+              className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <Info size={13} />
+              <span>Lihat Detail Transparansi & Contoh Payload JSON</span>
+            </button>
+
+            {isStatsOptIn && (
+              <button
+                type="button"
+                disabled={isDeletingStats}
+                onClick={handleDeleteStatsFromServer}
+                className="text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+              >
+                <Trash2 size={13} />
+                <span>{isDeletingStats ? 'Menghapus...' : 'Hapus Data Statistik Saya dari Server'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* App & Developer Information */}
       <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
@@ -919,9 +992,9 @@ export const SettingsPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <h3 className="font-bold text-slate-800 dark:text-slate-100">2. Tanpa Pelacak & Tanpa Iklan</h3>
+            <h3 className="font-bold text-slate-800 dark:text-slate-100">2. Tanpa Pelacak Pihak Ketiga & Tanpa Iklan</h3>
             <p>
-              Aplikasi ini tidak menyertakan script analitik apa pun: tidak ada Google Analytics, Firebase, Sentry, Mixpanel, atau iklan jaringan pihak ketiga. Content-Security-Policy (CSP) aplikasi dikonfigurasi ketat agar browser memblokir koneksi jaringan keluar yang tidak sah.
+              Aplikasi ini 100% offline dan tidak menyertakan script analitik pihak ketiga apa pun (tidak ada Google Analytics, Firebase, Sentry, Mixpanel, atau Facebook SDK). Statistik jumlah pengguna bersifat opsional (opt-in), default-nya MATI, dan hanya mengirim 4 parameter anonim tanpa IP jika Anda aktifkan sendiri.
             </p>
           </div>
 
@@ -976,27 +1049,63 @@ export const SettingsPage: React.FC = () => {
         onClose={() => setIsDonationModalOpen(false)}
       />
 
-      {/* Developer PIN Modal */}
-      <DevPinModal
-        isOpen={isDevPinModalOpen}
-        onClose={() => setIsDevPinModalOpen(false)}
-        onSuccess={() => {
-          setIsDevPinModalOpen(false);
-          setIsDevUnlocked(true);
-          setIsAdminPanelOpen(true);
-        }}
-      />
+      {/* Modal Transparansi Statistik Anonim */}
+      <Modal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
+        title="Detail Transparansi Statistik (Opt-In)"
+        maxWidth="md"
+      >
+        <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300">
+            <p className="font-bold">Contoh Persis Payload JSON yang Dikirim:</p>
+            <p className="text-[11px] mt-0.5">
+              Berikut adalah bentuk data yang dikirim via HTTP POST ke server maksimal 1 kali sehari HANYA jika Anda mengaktifkan fitur ini:
+            </p>
+          </div>
 
-      {/* Admin Panel & User Stats Modal */}
-      <AdminPanelModal
-        isOpen={isAdminPanelOpen}
-        onClose={() => setIsAdminPanelOpen(false)}
-        onLockDev={() => {
-          setIsDevUnlocked(false);
-          setIsAdminPanelOpen(false);
-          showToast('Sesi Developer telah dikunci.');
-        }}
-      />
+          <div className="p-3.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto shadow-inner">
+            <pre>
+              {JSON.stringify(getExamplePayload(), null, 2)}
+            </pre>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-slate-800 dark:text-slate-100">Penjelasan Field:</h4>
+            <ul className="list-disc pl-5 space-y-1.5 text-[11px]">
+              <li>
+                <strong>install_id</strong>: Kode acak UUID v4 yang dibuat murni di perangkat Anda. Kode ini tidak terhubung ke nomor HP, email, nama, maupun serial perangkat fisik, dan langsung dihapus saat fitur dimatikan.
+              </li>
+              <li>
+                <strong>app_version</strong>: Versi rilis aplikasi saat ini untuk memantau keberhasilan pembaruan PWA.
+              </li>
+              <li>
+                <strong>platform</strong>: Klasifikasi kasar sistem operasi (<code>android</code>, <code>ios</code>, <code>desktop</code>, atau <code>web</code>) tanpa merk atau model perangkat.
+              </li>
+              <li>
+                <strong>date</strong>: Tanggal kalender (YYYY-MM-DD) saat ping dikirim, tanpa jam/menit dan tanpa lokasi geografis/negara.
+              </li>
+            </ul>
+          </div>
+
+          <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 space-y-1">
+            <p className="font-bold text-xs">Jaminan Mutlak:</p>
+            <p className="text-[11px]">
+              Alamat IP Anda <strong>TIDAK PERNAH DISIMPAN</strong> oleh server backend. Tidak ada catatan keuangan, transaksi, nominal saldo, atau nama dompet yang dikirim keluar perangkat.
+            </p>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setIsStatsModalOpen(false)}
+              className="px-5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl cursor-pointer"
+            >
+              Tutup Dialog
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

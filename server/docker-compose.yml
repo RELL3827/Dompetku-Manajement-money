@@ -1,0 +1,29 @@
+services:
+  stats-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dompetku-stats-server
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - HOST=0.0.0.0
+      - SESSION_SECRET=${SESSION_SECRET:-ganti-dengan-session-secret-rahasia-panjang}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN:-https://dompetku.vercel.app}
+      - DB_PATH=/app/data/dompetku_stats.db
+    volumes:
+      - stats-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  stats-data:
+    name: dompetku_stats_sqlite_data

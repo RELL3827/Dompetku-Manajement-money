@@ -14,8 +14,8 @@
 1. **Gratis & Open Source:** Dilisensikan di bawah lisensi MIT tanpa batasan.
 2. **100% Offline-First:** Setelah dibuka pertama kali, seluruh fitur (catat transaksi, transfer dompet, grafik analitik, set budget) berjalan tanpa butuh koneksi internet.
 3. **Tanpa Iklan, Tanpa Akun, Tanpa Langganan:** Buka dan langsung gunakan tanpa login atau syarat tersembunyi.
-4. **Zero-Tracking (Anti-Pelacak):** Tidak ada Google Analytics, Firebase, Sentry, Mixpanel, CDN eksternal, atau koneksi jaringan ke pihak ketiga mana pun.
-5. **Data Lokal di Perangkat:** Seluruh transaksi dan konfigurasi disimpan di IndexedDB browser Anda via Dexie.js. Tidak ada backend server.
+4. **Zero-Tracking & Privasi Penuh:** 100% offline, kecuali statistik anonim opsional (opt-in) yang **default-nya MATI** untuk membantu pengembang mengetahui perkiraan jumlah pengguna. Tidak ada pelacak pihak ketiga (Google Analytics, Firebase, Sentry, Mixpanel, iklan). Seluruh catatan keuangan 100% lokal di perangkat.
+5. **Data Finansial 100% Lokal di Perangkat:** Seluruh transaksi dan konfigurasi disimpan di IndexedDB browser Anda via Dexie.js. Tidak ada backend server untuk data keuangan.
 6. **Murni Static Site:** Dapat dihosting di GitHub Pages, Netlify, Vercel, atau dibuka langsung dari file lokal.
 7. **Semua Dependensi Di-bundle Lokal:** Tidak ada pemanggilan `<script src="https://...">` eksternal.
 
@@ -378,6 +378,107 @@ Untuk panduan pengujian offline terperinci langkah demi langkah (termasuk mode p
 ## 🤝 Kontribusi
 
 Kontribusi dari komunitas sangat disambut! Silakan baca panduan lengkap di [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+---
+
+## 🏛️ Arsitektur Monorepo & Ekosistem Proyek
+
+Proyek DompetKu dibagi menjadi 3 bagian yang bersih dan independen:
+
+```
+DompetKu/
+├── src/                # Aplikasi Utama DompetKu PWA (Client Offline-First)
+│   ├── telemetry/      # Modul opt-in statistik anonim (optInStats.ts)
+│   └── ...
+├── server/             # Backend Mandiri Fastify + SQLite (Self-Hosted Telemetry)
+│   ├── src/            # db.ts, auth.ts, routes/ping.ts, routes/admin.ts
+│   ├── Dockerfile      # Container image Alpine Node.js
+│   ├── docker-compose.yml
+│   └── Caddyfile       # Reverse proxy HTTPS otomatis tanpa logging IP
+├── admin/              # Dashboard Pengembang (React + Vite + Tailwind + Chart.js)
+│   ├── src/            # Dashboard, Login, TimelineChart, PlatformChart
+│   └── Dockerfile
+├── PRIVACY.md          # Dokumen transparansi privasi & Zero-PII lengkap
+└── README.md
+```
+
+---
+
+## 🚀 Panduan Menjalankan & Deploy
+
+### 1. Aplikasi Klien DompetKu (PWA)
+```bash
+# Jalankan di lokal
+npm install
+npm run dev
+
+# Build produksi
+npm run build
+```
+
+> **Cara Fork Murni 100% Offline (Tanpa Fitur Statistik):**
+> Jika Anda meng-clone atau mem-fork repositori ini dan menginginkan versi murni tanpa ada menu statistik sama sekali:
+> Kosongkan variabel `VITE_STATS_ENDPOINT=""` (atau hapus dari `.env`). Fitur dan toggle statistik tidak akan muncul sama sekali di antarmuka Pengaturan!
+
+### 2. Backend Statistik Pengguna (`/server`)
+Backend ringan self-hosted dengan Node.js + Fastify + SQLite (`better-sqlite3`).
+
+```bash
+cd server
+
+# Salin konfigurasi environment
+cp .env.example .env
+
+# Buat hash password admin (contoh: "Rahasia123!")
+npm run hash-password "Rahasia123!"
+# Salin nilai ADMIN_PASSWORD_HASH yang dihasilkan ke file .env
+
+# Jalankan lokal
+npm install
+npm run dev
+
+# Atau jalankan dengan Docker Compose
+docker compose up -d
+```
+
+### 3. Web Admin Panel Pengembang (`/admin`)
+Dashboard visual untuk melihat metrik agregat DAU/WAU/MAU, grafik garis instalasi baru, retensi 7 & 30 hari, serta distribusi sistem operasi & versi.
+
+```bash
+cd admin
+npm install
+npm run dev
+# Dashboard berjalan di http://localhost:5174 (default proxy ke server port 4000)
+```
+
+---
+
+## 🧪 Panduan Uji Manual Privasi (DevTools Verification)
+
+Untuk memverifikasi komitmen privasi secara langsung di browser:
+
+### Uji 1: Opt-In MATI (Default) = 0 Request Jaringan
+1. Buka DompetKu di browser (Chrome / Edge / Firefox / Safari).
+2. Tekan `F12` dan pilih tab **Network**.
+3. Pastikan filter disetel ke `All` atau `Fetch/XHR`.
+4. Tambahkan transaksi, pindah antar-menu, atau reload halaman.
+5. **Hasil yang diharapkan:** **TIDAK ADA SATUPUN REQUEST JARINGAN KELUAR**. Aplikasi bekerja 100% dari cache lokal dan IndexedDB.
+
+### Uji 2: Mengaktifkan Opt-In = 1 Ping Anonim
+1. Buka menu **Pengaturan** > bagian **Statistik Pengguna Anonim (Opt-In)**.
+2. Aktifkan tombol toggle.
+3. Di tab Network DevTools, amati request POST ke `/api/ping`.
+4. Periksa Request Payload:
+   - Hanya berisi: `install_id` (UUID v4 acak), `app_version`, `platform`, dan `date` (YYYY-MM-DD).
+   - **TIDAK ADA data keuangan, saldo, nama, email, atau device fingerprint**.
+5. Reload halaman atau lakukan transaksi lain. Perhatikan bahwa ping **tidak dikirim ulang** karena batas maksimal adalah 1x per hari kalender.
+
+### Uji 3: Menghapus Data Statistik dari Server
+1. Pada menu **Pengaturan** > bagian Statistik Anonim, klik tombol **"Hapus Data Statistik Saya dari Server"**.
+2. Amati di tab Network DevTools bahwa request `DELETE /api/install/<UUID>` berhasil dikirim dengan respon HTTP 200 `{ status: "ok" }`.
+3. Periksa `localStorage`: kunci `dompetku_stats_install_id` langsung terhapus bersih dan toggle kembali ke posisi MATI.
 
 ---
 

@@ -1,0 +1,29 @@
+# Caddy configuration for DompetKu Telemetry Server
+# Automatically provisions Let's Encrypt TLS / HTTPS
+# Privacy Rule: IP addresses are explicitly omitted from access logs!
+
+stats.yourdomain.com {
+    # Reverse proxy to Fastify server
+    reverse_proxy localhost:4000 {
+        header_up Host {host}
+        header_up X-Real-IP ""
+        header_up X-Forwarded-For ""
+    }
+
+    # Strict Privacy Logging: Format logs without recording client IP address
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 3
+        }
+        format filter {
+            wrap json
+            fields {
+                # Redact remote client IP address from server logs
+                request>remote_ip delete
+                request>client_ip delete
+                request>headers>X-Forwarded-For delete
+            }
+        }
+    }
+}
