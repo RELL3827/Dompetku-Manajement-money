@@ -173,21 +173,40 @@ export async function deleteMyStatsData(): Promise<{ success: boolean; message: 
   }
 }
 
+export function getCurrentInstallId(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_INSTALL_ID);
+  } catch {
+    return null;
+  }
+}
+
+export function getLastPingDate(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_LAST_PING);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Sends anonymous ping at most 1x per calendar day.
- * STRICTLY SILENT: Never shows error toasts, never interrupts user, never retries aggressively.
+ * Returns status object so settings UI can display clear feedback if tested manually.
  */
-export async function sendDailyPingIfDue(): Promise<void> {
-  if (!isStatsFeatureAvailable() || !isStatsOptInEnabled()) {
-    return;
+export async function sendDailyPingIfDue(force = false): Promise<{ success: boolean; message: string }> {
+  if (!isStatsFeatureAvailable()) {
+    return { success: false, message: 'Server statistik tidak dikonfigurasi (VITE_STATS_ENDPOINT kosong).' };
+  }
+  if (!isStatsOptInEnabled()) {
+    return { success: false, message: 'Fitur statistik belum diaktifkan (Opt-in MATI).' };
   }
 
   const today = new Date().toISOString().slice(0, 10);
   const lastPing = localStorage.getItem(STORAGE_KEY_LAST_PING);
 
-  // If already pinged today, skip silently
-  if (lastPing === today) {
-    return;
+  // If already pinged today and not forced, skip silently
+  if (lastPing === today && !force) {
+    return { success: true, message: 'Ping harian sudah berhasil tercatat untuk hari ini.' };
   }
 
   const installId = getOrCreateInstallId();
@@ -210,9 +229,19 @@ export async function sendDailyPingIfDue(): Promise<void> {
 
     if (res.ok) {
       localStorage.setItem(STORAGE_KEY_LAST_PING, today);
+      return { success: true, message: 'Ping berhasil diterima dan dicatat oleh server statistik!' };
+    } else {
+      const errData = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        message: errData.message || `Server merespons error HTTP ${res.status}`,
+      };
     }
-  } catch {
-    // Silent catch: network offline or server down should NEVER affect the app
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Tidak dapat menghubungi server di ${STATS_ENDPOINT}. Pastikan server backend sudah dinyalakan.`,
+    };
   }
 }
 

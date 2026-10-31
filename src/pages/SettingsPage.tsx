@@ -52,6 +52,10 @@ import {
   disableStatsOptIn,
   deleteMyStatsData,
   getExamplePayload,
+  sendDailyPingIfDue,
+  getLastPingDate,
+  getCurrentInstallId,
+  STATS_ENDPOINT,
 } from '../telemetry/optInStats';
 
 export const SettingsPage: React.FC = () => {
@@ -114,15 +118,31 @@ export const SettingsPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleToggleStats = (enabled: boolean) => {
+  const handleToggleStats = async (enabled: boolean) => {
     if (enabled) {
       enableStatsOptIn();
       setIsStatsOptIn(true);
-      showToast('Statistik anonim diaktifkan. Terima kasih atas partisipasi Anda!');
+      showToast('Mengaktifkan statistik & menghubungkan ke server...');
+      const pingRes = await sendDailyPingIfDue(true);
+      if (pingRes.success) {
+        showToast('✅ ' + pingRes.message);
+      } else {
+        showToast('⚠️ ' + pingRes.message);
+      }
     } else {
       disableStatsOptIn();
       setIsStatsOptIn(false);
       showToast('Statistik anonim dinonaktifkan. Data lokal telah dihapus.');
+    }
+  };
+
+  const handleSendManualPing = async () => {
+    showToast('Mengirim ping ke server...');
+    const pingRes = await sendDailyPingIfDue(true);
+    if (pingRes.success) {
+      showToast('✅ ' + pingRes.message);
+    } else {
+      showToast('⚠️ ' + pingRes.message);
     }
   };
 
@@ -648,15 +668,26 @@ export const SettingsPage: React.FC = () => {
             </button>
 
             {isStatsOptIn && (
-              <button
-                type="button"
-                disabled={isDeletingStats}
-                onClick={handleDeleteStatsFromServer}
-                className="text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
-              >
-                <Trash2 size={13} />
-                <span>{isDeletingStats ? 'Menghapus...' : 'Hapus Data Statistik Saya dari Server'}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSendManualPing}
+                  className="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                  title="Kirim ping sekarang untuk menguji koneksi ke server"
+                >
+                  <RefreshCw size={11} />
+                  <span>Kirim Ping (Test)</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeletingStats}
+                  onClick={handleDeleteStatsFromServer}
+                  className="text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                >
+                  <Trash2 size={13} />
+                  <span>{isDeletingStats ? 'Menghapus...' : 'Hapus Data Saya'}</span>
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -1062,6 +1093,11 @@ export const SettingsPage: React.FC = () => {
             <p className="text-[11px] mt-0.5">
               Berikut adalah bentuk data yang dikirim via HTTP POST ke server maksimal 1 kali sehari HANYA jika Anda mengaktifkan fitur ini:
             </p>
+            <div className="mt-2 pt-2 border-t border-teal-200/60 dark:border-teal-800/60 text-[10px] space-y-0.5 text-teal-900 dark:text-teal-200">
+              <p><strong>Target Server:</strong> <code>{STATS_ENDPOINT || '(Belum dikonfigurasi)'}</code></p>
+              <p><strong>ID Perangkat Anda:</strong> <code>{getCurrentInstallId() || '(Belum dibuat)'}</code></p>
+              <p><strong>Tanggal Terakhir Ping:</strong> <code>{getLastPingDate() || '(Belum pernah)'}</code></p>
+            </div>
           </div>
 
           <div className="p-3.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto shadow-inner">
