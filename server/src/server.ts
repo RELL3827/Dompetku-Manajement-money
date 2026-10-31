@@ -73,6 +73,7 @@ await fastify.register(cors, {
   },
   credentials: true,
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
 });
 
 // 4. Secure Cookie Plugin

@@ -12,7 +12,7 @@ import {
   Palette,
   HelpCircle,
 } from 'lucide-react';
-import { STATS_ENDPOINT, detectPlatform } from '../../telemetry/optInStats';
+import { getActiveStatsEndpoint, detectPlatform } from '../../telemetry/optInStats';
 import { APP_VERSION } from '../../utils/version';
 
 interface FeedbackModalProps {
@@ -91,8 +91,8 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
     setIsSubmitting(true);
     setStatusMessage(null);
 
-    // If server is configured, try sending to backend API
-    if (STATS_ENDPOINT) {
+    const endpoint = getActiveStatsEndpoint();
+    if (endpoint) {
       try {
         const payload = {
           rating,
@@ -103,9 +103,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
           platform: detectPlatform(),
         };
 
-        const res = await fetch(`${STATS_ENDPOINT}/api/feedback`, {
+        const res = await fetch(`${endpoint}/api/feedback`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify(payload),
         });
 

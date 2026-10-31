@@ -58,6 +58,8 @@ import {
   getLastPingDate,
   getCurrentInstallId,
   STATS_ENDPOINT,
+  getActiveStatsEndpoint,
+  setCustomStatsEndpoint,
 } from '../telemetry/optInStats';
 
 interface SettingsPageProps {
@@ -93,6 +95,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const [isStatsOptIn, setIsStatsOptIn] = useState(() => isStatsOptInEnabled());
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [isDeletingStats, setIsDeletingStats] = useState(false);
+  const [activeEndpoint, setActiveEndpoint] = useState(() => getActiveStatsEndpoint());
+  const [isEditingEndpoint, setIsEditingEndpoint] = useState(false);
+  const [endpointInput, setEndpointInput] = useState(() => getActiveStatsEndpoint());
 
   // Export password dialog state
   const [isExportPasswordModalOpen, setIsExportPasswordModalOpen] = useState(false);
@@ -669,6 +674,70 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-emerald-600"></div>
             </label>
+          </div>
+
+          {/* Active Target Server Indicator & Custom Endpoint for iOS/LAN */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-500 dark:text-slate-400">
+              <div className="truncate pr-2">
+                <span className="font-semibold text-slate-700 dark:text-slate-300">Server Target: </span>
+                <code className="text-teal-600 dark:text-teal-400 font-mono text-[10px]">{activeEndpoint || '(Belum diset)'}</code>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditingEndpoint((v) => !v)}
+                className="text-teal-600 dark:text-teal-400 hover:underline font-semibold shrink-0 cursor-pointer"
+              >
+                {isEditingEndpoint ? 'Tutup' : 'Ubah URL Server'}
+              </button>
+            </div>
+
+            {isEditingEndpoint && (
+              <div className="p-3 rounded-2xl bg-teal-50/50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-900/60 space-y-2">
+                <label className="block text-[11px] font-semibold text-teal-900 dark:text-teal-300">
+                  Ubah Alamat Server Statistik / Telemetri:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={endpointInput}
+                    onChange={(e) => setEndpointInput(e.target.value)}
+                    placeholder="Contoh: http://192.168.101.2:4000"
+                    className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-teal-300 dark:border-teal-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomStatsEndpoint(endpointInput);
+                      const updated = getActiveStatsEndpoint();
+                      setActiveEndpoint(updated);
+                      setIsEditingEndpoint(false);
+                      showToast(`Server diperbarui ke: ${updated}`);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs cursor-pointer"
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomStatsEndpoint('');
+                      const updated = getActiveStatsEndpoint();
+                      setEndpointInput(updated);
+                      setActiveEndpoint(updated);
+                      setIsEditingEndpoint(false);
+                      showToast('Server dikembalikan ke default otomatis.');
+                    }}
+                    className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs cursor-pointer"
+                  >
+                    Reset
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-snug">
+                  💡 Di perangkat iOS (iPhone / iPad), pastikan menggunakan IP komputer Anda (misal <code>http://192.168.101.2:4000</code>), bukan <code>localhost</code>.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
