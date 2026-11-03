@@ -89,33 +89,41 @@ export interface SharedSaving {
   updatedAt: string;
 }
 
-export interface InstallmentPayment {
+export type InstallmentFrequency = 'monthly' | 'weekly' | 'daily';
+
+export interface InstallmentSavingDeposit {
   id: string;
-  monthIndex: number; // Bulan ke-1, ke-2, dst.
+  installmentIndex: number; // Setoran cicilan ke-1, ke-2, dst.
   amount: number;
-  paidAt: string; // ISO date / YYYY-MM-DD
+  paidAt?: string; // Tanggal pembayaran cicilan (YYYY-MM-DD)
+  isPaid: boolean; // Status ceklist: sudah disetor atau belum
   notes?: string;
-  transactionId?: string; // ID transaksi pengeluaran terkait jika auto potong saldo
+  transactionId?: string; // ID transaksi terkait jika potong dompet
 }
 
-export interface Installment {
+export interface InstallmentSaving {
   id: string;
-  name: string; // Contoh: "iPhone 16 Pro", "Cicilan Mobil Avanza", "KPR Rumah", "Shopee Paylater"
-  category: string; // "Elektronik" | "Kendaraan" | "Properti / KPR" | "Paylater" | "Pinjaman" | "Pendidikan" | "Lainnya"
-  totalAmount: number; // Total harga kredit / pinjaman
-  monthlyAmount: number; // Nominal tagihan per bulan
-  totalMonths: number; // Tenor dalam bulan (misal 12, 24, 36)
-  paidMonths: number; // Berapa bulan yang sudah lunas
-  startDate: string; // YYYY-MM-DD (mulai cicilan)
-  dueDay: number; // Tanggal jatuh tempo per bulan (1 - 31)
-  walletId?: string; // Dompet pembayaran default
-  interestRate?: number; // Suku bunga (% flat / per tahun jika ada)
+  title: string; // Contoh: "Tabungan Qurban", "Nabung Beli Laptop", "Dana Darurat 12 Bulan"
+  category: string; // "Elektronik" | "Kendaraan" | "Ibadah & Qurban" | "Liburan" | "Dana Darurat" | "Gadget" | "Lainnya"
+  targetAmount: number; // Target total tabungan yang ingin dicapai
+  installmentAmount: number; // Nominal setoran yang dicicil per periode
+  frequency: InstallmentFrequency; // 'monthly' | 'weekly' | 'daily'
+  totalInstallments: number; // Berapa kali cicilan menabung (misal 10x, 12x, 24x)
+  paidInstallments: number; // Berapa kali cicilan sudah disetor
+  currentAmount: number; // Total akumulasi uang tabungan yang sudah terkumpul
+  startDate: string; // YYYY-MM-DD
+  targetDate?: string; // YYYY-MM-DD
+  dueDay?: number; // Tanggal rutin setor tiap bulan (1 - 31)
+  walletId?: string; // Dompet penyimpanan dana tabungan
   notes?: string;
   isCompleted: boolean;
-  payments: InstallmentPayment[];
+  deposits: InstallmentSavingDeposit[];
   createdAt: string;
   updatedAt: string;
 }
+
+// Backward compatibility alias
+export type Installment = InstallmentSaving;
 
 export interface SecuritySettings {
   isPinEnabled: boolean;

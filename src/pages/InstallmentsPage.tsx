@@ -1,53 +1,41 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { getInstallments } from '../db/services';
-import { InstallmentCard } from '../components/installments/InstallmentCard';
-import { InstallmentFormModal } from '../components/installments/InstallmentFormModal';
-import { InstallmentSimulatorModal } from '../components/installments/InstallmentSimulatorModal';
+import { getInstallmentSavings } from '../db/services';
+import { InstallmentSavingCard } from '../components/installments/InstallmentSavingCard';
+import { InstallmentSavingFormModal } from '../components/installments/InstallmentSavingFormModal';
 import { EmptyState } from '../components/common/EmptyState';
 import { formatRupiah } from '../utils/currency';
 import {
-  CreditCard,
+  Coins,
   Plus,
-  Calculator,
-  CheckCircle2,
-  TrendingUp,
+  Sparkles,
+  Trophy,
 } from 'lucide-react';
-import type { Installment, Wallet } from '../types';
+import type { InstallmentSaving, Wallet } from '../types';
 
 interface InstallmentsPageProps {
   onOpenTransactionModal?: () => void;
 }
 
 export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
-  const [installmentsList, setInstallmentsList] = useState<Installment[]>([]);
+  const [savingsList, setSavingsList] = useState<InstallmentSaving[]>([]);
   const [filterTab, setFilterTab] = useState<'active' | 'completed' | 'all'>('active');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Modal states
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [installmentToEdit, setInstallmentToEdit] = useState<Installment | null>(null);
-  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
-  const [presetFromSimulator, setPresetFromSimulator] = useState<{
-    name: string;
-    totalAmount: number;
-    monthlyAmount: number;
-    totalMonths: number;
-    interestRate: number;
-  } | null>(null);
+  const [savingToEdit, setSavingToEdit] = useState<InstallmentSaving | null>(null);
 
   // Reactive Dexie queries
   const wallets = useLiveQuery(() => db.wallets.toArray()) || [];
   const installmentsTrigger = useLiveQuery(() => db.installments.toArray());
-  const settingsRecord = useLiveQuery(() => db.settings.get('app_settings'));
 
   const walletMap = useMemo(() => new Map(wallets.map((w: Wallet) => [w.id, w])), [wallets]);
-  const monthlyIncome = settingsRecord?.value?.monthlyIncomeTarget || 0;
 
   const loadData = async () => {
-    const all = await getInstallments(true);
-    setInstallmentsList(all);
+    const all = await getInstallmentSavings(true);
+    setSavingsList(all);
   };
 
   useEffect(() => {
@@ -55,68 +43,39 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
   }, [installmentsTrigger]);
 
   // Aggregate Metrics
-  const activeInstallments = installmentsList.filter((i) => !i.isCompleted);
-  const completedInstallments = installmentsList.filter((i) => i.isCompleted);
+  const activeSavings = savingsList.filter((s) => !s.isCompleted);
+  const completedSavings = savingsList.filter((s) => s.isCompleted);
 
-  // Total Sisa Hutang
-  const totalRemainingDebt = activeInstallments.reduce((sum, i) => {
-    const remaining = Math.max(0, i.totalAmount - i.paidMonths * i.monthlyAmount);
-    return sum + remaining;
-  }, 0);
+  const totalCollected = savingsList.reduce((sum, s) => sum + s.currentAmount, 0);
+  const totalTarget = savingsList.reduce((sum, s) => sum + s.targetAmount, 0);
+  const overallPercentage = totalTarget > 0 ? (totalCollected / totalTarget) * 100 : 0;
 
-  // Total Beban Cicilan Per Bulan
-  const totalMonthlyBill = activeInstallments.reduce((sum, i) => sum + i.monthlyAmount, 0);
+  const totalPaidInstallments = savingsList.reduce((sum, s) => sum + s.paidInstallments, 0);
+  const totalAllInstallments = savingsList.reduce((sum, s) => sum + s.totalInstallments, 0);
 
-  // Status Bulan Berjalan
-  const currentMonthYearStr = new Date().toISOString().slice(0, 7);
-  const paidThisMonthCount = activeInstallments.filter((i) =>
-    i.payments.some((p) => p.paidAt.startsWith(currentMonthYearStr))
-  ).length;
-
-  // Debt Service Ratio (DSR)
-  const dsrPercentage = monthlyIncome > 0 ? (totalMonthlyBill / monthlyIncome) * 100 : 0;
-
+  // Categories present
   const categoriesPresent = useMemo(() => {
-    const cats = new Set(installmentsList.map((i) => i.category).filter(Boolean));
+    const cats = new Set(savingsList.map((s) => s.category).filter(Boolean));
     return Array.from(cats);
-  }, [installmentsList]);
+  }, [savingsList]);
 
   // Filtered List
   const filteredList = useMemo(() => {
-    return installmentsList.filter((i) => {
-      // Tab filter
-      if (filterTab === 'active' && i.isCompleted) return false;
-      if (filterTab === 'completed' && !i.isCompleted) return false;
-
-      // Category filter
-      if (selectedCategory !== 'all' && i.category !== selectedCategory) return false;
-
+    return savingsList.filter((s) => {
+      if (filterTab === 'active' && s.isCompleted) return false;
+      if (filterTab === 'completed' && !s.isCompleted) return false;
+      if (selectedCategory !== 'all' && s.category !== selectedCategory) return false;
       return true;
     });
-  }, [installmentsList, filterTab, selectedCategory]);
+  }, [savingsList, filterTab, selectedCategory]);
 
-  // Handlers
   const handleOpenAdd = () => {
-    setInstallmentToEdit(null);
-    setPresetFromSimulator(null);
+    setSavingToEdit(null);
     setIsFormModalOpen(true);
   };
 
-  const handleEdit = (inst: Installment) => {
-    setInstallmentToEdit(inst);
-    setPresetFromSimulator(null);
-    setIsFormModalOpen(true);
-  };
-
-  const handleApplySimulator = (data: {
-    name: string;
-    totalAmount: number;
-    monthlyAmount: number;
-    totalMonths: number;
-    interestRate: number;
-  }) => {
-    setInstallmentToEdit(null);
-    setPresetFromSimulator(data);
+  const handleEdit = (saving: InstallmentSaving) => {
+    setSavingToEdit(saving);
     setIsFormModalOpen(true);
   };
 
@@ -126,92 +85,54 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <CreditCard className="text-emerald-500" size={22} />
-            <span>Cicilan & Tagihan Rutin</span>
+            <Coins className="text-emerald-500" size={22} />
+            <span>Tabungan Cicilan (Menabung Berkala)</span>
           </h1>
           <p className="text-xs text-slate-500">
-            Pantau beban cicilan bulanan, sisa hutang, dan tanggal jatuh tempo secara disiplin
+            Nabung secara berkala dengan target cicilan per periode & ceklist setoran
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsSimulatorOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 text-xs font-semibold transition-all shadow-xs"
-          >
-            <Calculator size={14} className="text-indigo-500" />
-            <span>Simulasi Cicilan</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all"
-          >
-            <Plus size={15} />
-            <span>+ Tambah Cicilan</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleOpenAdd}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all w-fit"
+        >
+          <Plus size={15} />
+          <span>+ Buat Tabungan Cicilan</span>
+        </button>
       </div>
 
       {/* Hero KPI Summary Dashboard */}
-      <div className="p-5 rounded-3xl bg-gradient-to-br from-indigo-700 via-purple-800 to-slate-950 text-white shadow-xl shadow-indigo-700/15 relative overflow-hidden space-y-4">
+      <div className="p-5 rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white shadow-xl shadow-emerald-700/15 relative overflow-hidden space-y-4">
         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs text-indigo-200 font-semibold flex items-center gap-1.5">
-              <CreditCard size={14} /> Total Sisa Hutang Cicilan
+        <div className="relative z-10 space-y-4">
+          <div className="flex items-center justify-between text-xs text-emerald-100">
+            <span className="font-semibold flex items-center gap-1.5">
+              <Sparkles size={14} /> Total Tabungan Cicilan Terkumpul
             </span>
-            <p className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">
-              {formatRupiah(totalRemainingDebt)}
+            <span className="text-[11px] bg-white/10 px-2 py-0.5 rounded-full">
+              {totalPaidInstallments} dari {totalAllInstallments} cicilan disetor
+            </span>
+          </div>
+
+          <div>
+            <p className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              {formatRupiah(totalCollected)}
             </p>
-            <p className="text-[11px] text-indigo-200/80 mt-0.5">
-              dari {activeInstallments.length} cicilan aktif yang sedang berjalan
+            <p className="text-xs text-emerald-100/80 mt-0.5">
+              dari total target {formatRupiah(totalTarget)} ({Math.round(overallPercentage)}%)
             </p>
           </div>
 
-          <div className="sm:text-right border-t sm:border-t-0 sm:border-l border-white/10 pt-3 sm:pt-0 sm:pl-4">
-            <span className="text-xs text-indigo-200 font-semibold block">
-              Beban Cicilan Bulan Ini
-            </span>
-            <p className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1 text-emerald-300">
-              {formatRupiah(totalMonthlyBill)}
-              <span className="text-xs text-white/70 font-normal"> / bln</span>
-            </p>
-            <p className="text-[11px] text-indigo-200/80 mt-0.5">
-              {paidThisMonthCount} dari {activeInstallments.length} cicilan bulan ini lunas
-            </p>
+          <div className="w-full h-2.5 rounded-full bg-white/20 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-white transition-all duration-500"
+              style={{ width: `${Math.min(100, overallPercentage)}%` }}
+            />
           </div>
         </div>
-
-        {/* Debt Service Ratio (DSR) Indicator */}
-        {monthlyIncome > 0 && (
-          <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
-            <div className="flex items-center gap-1.5 text-indigo-100">
-              <TrendingUp size={13} />
-              <span>Rasio Cicilan terhadap Gaji (DSR): <strong>{Math.round(dsrPercentage)}%</strong></span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  dsrPercentage <= 30
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'
-                    : dsrPercentage <= 40
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-400/30'
-                }`}
-              >
-                {dsrPercentage <= 30
-                  ? 'Kondisi Sehat (< 30%)'
-                  : dsrPercentage <= 40
-                  ? 'Waspada (30 - 40%)'
-                  : 'Bahaya / Terlalu Tinggi (> 40%)'}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Filter Tabs */}
@@ -222,11 +143,11 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
             onClick={() => setFilterTab('active')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filterTab === 'active'
-                ? 'bg-indigo-600 text-white shadow-xs'
+                ? 'bg-emerald-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            Sedang Berjalan ({activeInstallments.length})
+            Sedang Berjalan ({activeSavings.length})
           </button>
 
           <button
@@ -234,12 +155,12 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
             onClick={() => setFilterTab('completed')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 ${
               filterTab === 'completed'
-                ? 'bg-indigo-600 text-white shadow-xs'
+                ? 'bg-emerald-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <CheckCircle2 size={13} />
-            <span>Lunas ({completedInstallments.length})</span>
+            <Trophy size={13} />
+            <span>Tercapai ({completedSavings.length})</span>
           </button>
 
           <button
@@ -247,15 +168,15 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
             onClick={() => setFilterTab('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filterTab === 'all'
-                ? 'bg-indigo-600 text-white shadow-xs'
+                ? 'bg-emerald-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            Semua ({installmentsList.length})
+            Semua ({savingsList.length})
           </button>
         </div>
 
-        {/* Category Pills if more than 1 category */}
+        {/* Category Pills */}
         {categoriesPresent.length > 1 && (
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-1">
             <button
@@ -267,7 +188,7 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
               }`}
             >
-              Semua Kategori
+              Semua
             </button>
             {categoriesPresent.map((cat) => (
               <button
@@ -287,30 +208,30 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
         )}
       </div>
 
-      {/* Installments Grid */}
+      {/* Grid */}
       {filteredList.length === 0 ? (
         <EmptyState
-          icon="CreditCard"
+          icon="Coins"
           title={
             filterTab === 'completed'
-              ? 'Belum Ada Cicilan Lunas'
-              : 'Belum Ada Cicilan yang Dicatat'
+              ? 'Belum Ada Tabungan Cicilan Tercapai'
+              : 'Belum Ada Tabungan Cicilan'
           }
           description={
             filterTab === 'completed'
-              ? 'Lunasi pembayaran cicilan setiap bulan agar status cicilan berpindah ke lunas.'
-              : 'Catat cicilan motor, gadget, pinjaman, KPR, atau paylater Anda. Dilengkapi pengingat jatuh tempo bulanan dan ceklist pembayaran yang teratur.'
+              ? 'Terus menabung secara konsisten setiap cicilan untuk menyelesaikan target Anda.'
+              : 'Mulai menabung dengan skema cicilan: misalnya Tabungan Qurban, Beli Gadget Impian, Dana Darurat, atau Liburan. Terdapat ceklist setoran tiap kali menabung!'
           }
-          actionLabel={filterTab !== 'completed' ? '+ Tambah Cicilan Pertama' : undefined}
+          actionLabel={filterTab !== 'completed' ? '+ Buat Tabungan Cicilan Pertama' : undefined}
           onAction={handleOpenAdd}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredList.map((inst) => (
-            <InstallmentCard
-              key={inst.id}
-              installment={inst}
-              associatedWallet={inst.walletId ? walletMap.get(inst.walletId) : undefined}
+          {filteredList.map((s) => (
+            <InstallmentSavingCard
+              key={s.id}
+              saving={s}
+              associatedWallet={s.walletId ? walletMap.get(s.walletId) : undefined}
               onEdit={handleEdit}
               onDeleted={loadData}
               onRefresh={loadData}
@@ -320,19 +241,11 @@ export const InstallmentsPage: React.FC<InstallmentsPageProps> = () => {
       )}
 
       {/* Form Modal */}
-      <InstallmentFormModal
+      <InstallmentSavingFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
-        installmentToEdit={installmentToEdit}
-        initialPreset={presetFromSimulator}
+        savingToEdit={savingToEdit}
         onSaved={loadData}
-      />
-
-      {/* Simulator Modal */}
-      <InstallmentSimulatorModal
-        isOpen={isSimulatorOpen}
-        onClose={() => setIsSimulatorOpen(false)}
-        onApplyToNewInstallment={handleApplySimulator}
       />
     </div>
   );

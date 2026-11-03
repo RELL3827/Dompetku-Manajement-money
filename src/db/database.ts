@@ -77,7 +77,7 @@ export class DompetKuDatabase extends Dexie {
       sharedSavings: 'id, title, isCompleted, targetDate, createdAt',
     });
 
-    // Schema definition version 6 (Adding Cicilan / Installments & Loans)
+    // Schema definition version 6 (Adding Tabungan Cicilan / Installment Savings)
     this.version(6).stores({
       wallets: 'id, name, type, isArchived, createdAt',
       categories: 'id, name, type, isDefault, createdAt',
@@ -88,7 +88,7 @@ export class DompetKuDatabase extends Dexie {
       notes: 'id, title, category, isPinned, createdAt, updatedAt',
       calendarEvents: 'id, title, type, date, isDone, createdAt',
       sharedSavings: 'id, title, isCompleted, targetDate, createdAt',
-      installments: 'id, name, category, isCompleted, dueDay, startDate, createdAt',
+      installments: 'id, title, category, isCompleted, dueDay, targetDate, createdAt',
     });
   }
 

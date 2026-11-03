@@ -6,8 +6,8 @@ import type {
   Budget,
   SavingGoal,
   SharedSaving,
-  Installment,
-  InstallmentPayment,
+  InstallmentSaving,
+  InstallmentSavingDeposit,
   FinancialNote,
   NoteTag,
   NoteChecklistItem,
@@ -1307,84 +1307,114 @@ export async function updateSharedSavingMemberContribution(
 }
 
 // ----------------------------------------------------
-// INSTALLMENTS / CICILAN SERVICES
+// TABUNGAN CICILAN / INSTALLMENT SAVINGS SERVICES
 // ----------------------------------------------------
 
-export async function getInstallments(includeCompleted = true): Promise<Installment[]> {
+export async function getInstallmentSavings(includeCompleted = true): Promise<InstallmentSaving[]> {
   const all = await db.installments.toArray();
   const sorted = all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   if (includeCompleted) return sorted;
   return sorted.filter((i) => !i.isCompleted);
 }
 
-export async function getInstallmentById(id: string): Promise<Installment | undefined> {
+export async function getInstallmentSavingById(id: string): Promise<InstallmentSaving | undefined> {
   return db.installments.get(id);
 }
 
-export async function addInstallment(
-  data: Omit<Installment, 'id' | 'isCompleted' | 'payments' | 'createdAt' | 'updatedAt'> & {
-    initialPaidMonths?: number;
+export async function addInstallmentSaving(
+  data: Omit<InstallmentSaving, 'id' | 'currentAmount' | 'paidInstallments' | 'isCompleted' | 'deposits' | 'createdAt' | 'updatedAt'> & {
+    initialPaidInstallments?: number;
   }
-): Promise<Installment> {
+): Promise<InstallmentSaving> {
   const now = new Date().toISOString();
-  const id = `inst_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-  const initialPaid = Math.max(0, Math.min(data.totalMonths, data.initialPaidMonths || 0));
+  const id = `inst_save_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const initialPaid = Math.max(0, Math.min(data.totalInstallments, data.initialPaidInstallments || 0));
 
-  const payments: InstallmentPayment[] = [];
-  for (let m = 1; m <= initialPaid; m++) {
-    payments.push({
-      id: `pay_${Date.now()}_${m}`,
-      monthIndex: m,
-      amount: data.monthlyAmount,
-      paidAt: now.slice(0, 10),
-      notes: 'Lunas saat input data cicilan',
+  const deposits: InstallmentSavingDeposit[] = [];
+  for (let i = 1; i <= data.totalInstallments; i++) {
+    const isPaid = i <= initialPaid;
+    deposits.push({
+      id: `dep_${Date.now()}_${i}`,
+      installmentIndex: i,
+      amount: data.installmentAmount,
+      paidAt: isPaid ? now.slice(0, 10) : undefined,
+      isPaid,
+      notes: isPaid ? 'Setoran cicilan saat pendaftaran' : undefined,
     });
   }
 
-  const isCompleted = initialPaid >= data.totalMonths && data.totalMonths > 0;
+  const currentAmount = deposits.filter((d) => d.isPaid).reduce((sum, d) => sum + d.amount, 0);
+  const isCompleted = currentAmount >= data.targetAmount && data.targetAmount > 0;
 
-  const newInstallment: Installment = {
+  const newInstallmentSaving: InstallmentSaving = {
     ...data,
     id,
-    paidMonths: initialPaid,
-    payments,
+    paidInstallments: initialPaid,
+    currentAmount,
+    deposits,
     isCompleted,
     createdAt: now,
     updatedAt: now,
   };
 
-  await db.installments.add(newInstallment);
-  return newInstallment;
+  await db.installments.add(newInstallmentSaving);
+  return newInstallmentSaving;
 }
 
-export async function updateInstallment(
+export async function updateInstallmentSaving(
   id: string,
-  partial: Partial<Installment>
+  partial: Partial<InstallmentSaving>
 ): Promise<void> {
   const existing = await db.installments.get(id);
   if (!existing) return;
 
   const now = new Date().toISOString();
-  const updatedPaidMonths = partial.paidMonths !== undefined ? partial.paidMonths : existing.paidMonths;
-  const updatedTotalMonths = partial.totalMonths !== undefined ? partial.totalMonths : existing.totalMonths;
-  const isCompleted = updatedPaidMonths >= updatedTotalMonths && updatedTotalMonths > 0;
+  let updatedDeposits = existing.deposits;
+
+  // If totalInstallments changed, adjust deposits array
+  if (partial.totalInstallments && partial.totalInstallments !== existing.totalInstallments) {
+    const newTotal = partial.totalInstallments;
+    const newInstAmount = partial.installmentAmount || existing.installmentAmount;
+    if (newTotal > existing.deposits.length) {
+      const addedCount = newTotal - existing.deposits.length;
+      const extra: InstallmentSavingDeposit[] = [];
+      for (let i = 1; i <= addedCount; i++) {
+        const idx = existing.deposits.length + i;
+        extra.push({
+          id: `dep_${Date.now()}_${idx}`,
+          installmentIndex: idx,
+          amount: newInstAmount,
+          isPaid: false,
+        });
+      }
+      updatedDeposits = [...existing.deposits, ...extra];
+    } else {
+      updatedDeposits = existing.deposits.slice(0, newTotal);
+    }
+  }
+
+  const currentAmount = updatedDeposits.filter((d) => d.isPaid).reduce((sum, d) => sum + d.amount, 0);
+  const paidInstallments = updatedDeposits.filter((d) => d.isPaid).length;
+  const targetAmount = partial.targetAmount ?? existing.targetAmount;
+  const isCompleted = currentAmount >= targetAmount && targetAmount > 0;
 
   await db.installments.update(id, {
     ...partial,
-    paidMonths: updatedPaidMonths,
-    totalMonths: updatedTotalMonths,
+    deposits: updatedDeposits,
+    paidInstallments,
+    currentAmount,
     isCompleted,
     updatedAt: now,
   });
 }
 
-export async function deleteInstallment(id: string): Promise<void> {
+export async function deleteInstallmentSaving(id: string): Promise<void> {
   await db.installments.delete(id);
 }
 
-export async function payInstallmentMonth(
-  installmentId: string,
-  monthIndex: number,
+export async function toggleInstallmentSavingDeposit(
+  savingId: string,
+  installmentIndex: number,
   options?: {
     amount?: number;
     notes?: string;
@@ -1392,92 +1422,74 @@ export async function payInstallmentMonth(
     deductWallet?: boolean;
     walletId?: string;
   }
-): Promise<Installment | undefined> {
-  const inst = await db.installments.get(installmentId);
-  if (!inst) return undefined;
+): Promise<InstallmentSaving | undefined> {
+  const saving = await db.installments.get(savingId);
+  if (!saving) return undefined;
 
   const now = new Date().toISOString();
-  const paymentAmount = options?.amount ?? inst.monthlyAmount;
-  const paidDate = options?.paidAt ?? now.slice(0, 10);
+  const todayStr = now.slice(0, 10);
+  const target = saving.deposits.find((d) => d.installmentIndex === installmentIndex);
+  if (!target) return undefined;
 
-  let txId: string | undefined = undefined;
+  const willBePaid = !target.isPaid;
+  let txId: string | undefined = target.transactionId;
 
-  // If user selected to deduct wallet
-  const targetWalletId = options?.walletId || inst.walletId;
-  if (options?.deductWallet && targetWalletId) {
-    const categories = await db.categories.toArray();
-    let cicilanCategory = categories.find(
-      (c) => c.type === 'expense' && (c.name.toLowerCase().includes('cicilan') || c.name.toLowerCase().includes('tagihan'))
-    );
-    if (!cicilanCategory) {
-      cicilanCategory = categories.find((c) => c.type === 'expense');
+  if (willBePaid) {
+    const targetWalletId = options?.walletId || saving.walletId;
+    if (options?.deductWallet && targetWalletId) {
+      const categories = await db.categories.toArray();
+      let tabunganCat = categories.find(
+        (c) => c.type === 'expense' && (c.name.toLowerCase().includes('tabungan') || c.name.toLowerCase().includes('investasi'))
+      );
+      if (!tabunganCat) {
+        tabunganCat = categories.find((c) => c.type === 'expense');
+      }
+
+      if (tabunganCat) {
+        const depositAmt = options?.amount ?? target.amount;
+        const tx = await saveTransaction({
+          amount: depositAmt,
+          type: 'expense',
+          categoryId: tabunganCat.id,
+          walletId: targetWalletId,
+          date: options?.paidAt || todayStr,
+          notes: `Setor tabungan cicilan ke-${installmentIndex}: ${saving.title}${options?.notes ? ` - ${options.notes}` : ''}`,
+        });
+        txId = tx.id;
+      }
     }
-
-    if (cicilanCategory) {
-      const tx = await saveTransaction({
-        amount: paymentAmount,
-        type: 'expense',
-        categoryId: cicilanCategory.id,
-        walletId: targetWalletId,
-        date: paidDate,
-        notes: `Bayar cicilan ${inst.name} (Bulan ke-${monthIndex})${options?.notes ? ` - ${options.notes}` : ''}`,
-      });
-      txId = tx.id;
+  } else {
+    if (txId) {
+      try {
+        await db.transactions.delete(txId);
+      } catch {
+        // ignore
+      }
+      txId = undefined;
     }
   }
 
-  // Add or update payment entry for this month
-  const existingPayments = inst.payments.filter((p) => p.monthIndex !== monthIndex);
-  const newPayment: InstallmentPayment = {
-    id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-    monthIndex,
-    amount: paymentAmount,
-    paidAt: paidDate,
-    notes: options?.notes,
-    transactionId: txId,
-  };
+  const updatedDeposits = saving.deposits.map((d) => {
+    if (d.installmentIndex !== installmentIndex) return d;
+    return {
+      ...d,
+      isPaid: willBePaid,
+      amount: options?.amount ?? d.amount,
+      paidAt: willBePaid ? (options?.paidAt || todayStr) : undefined,
+      notes: willBePaid ? (options?.notes ?? d.notes) : undefined,
+      transactionId: willBePaid ? txId : undefined,
+    };
+  });
 
-  const updatedPayments = [...existingPayments, newPayment].sort((a, b) => a.monthIndex - b.monthIndex);
-  const newPaidMonths = updatedPayments.length;
-  const isCompleted = newPaidMonths >= inst.totalMonths;
+  const currentAmount = updatedDeposits.filter((d) => d.isPaid).reduce((sum, d) => sum + d.amount, 0);
+  const paidInstallments = updatedDeposits.filter((d) => d.isPaid).length;
+  const isCompleted = currentAmount >= saving.targetAmount && saving.targetAmount > 0;
 
-  const updated: Installment = {
-    ...inst,
-    payments: updatedPayments,
-    paidMonths: newPaidMonths,
-    isCompleted,
-    updatedAt: now,
-  };
-
-  await db.installments.put(updated);
-  return updated;
-}
-
-export async function unpayInstallmentMonth(
-  installmentId: string,
-  monthIndex: number
-): Promise<Installment | undefined> {
-  const inst = await db.installments.get(installmentId);
-  if (!inst) return undefined;
-
-  const targetPayment = inst.payments.find((p) => p.monthIndex === monthIndex);
-  if (targetPayment?.transactionId) {
-    try {
-      await db.transactions.delete(targetPayment.transactionId);
-    } catch {
-      // ignore if transaction already deleted
-    }
-  }
-
-  const updatedPayments = inst.payments.filter((p) => p.monthIndex !== monthIndex);
-  const newPaidMonths = updatedPayments.length;
-  const isCompleted = false;
-  const now = new Date().toISOString();
-
-  const updated: Installment = {
-    ...inst,
-    payments: updatedPayments,
-    paidMonths: newPaidMonths,
+  const updated: InstallmentSaving = {
+    ...saving,
+    deposits: updatedDeposits,
+    paidInstallments,
+    currentAmount,
     isCompleted,
     updatedAt: now,
   };

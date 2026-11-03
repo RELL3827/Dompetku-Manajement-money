@@ -31,7 +31,7 @@ import {
   FileText,
   Calculator,
   Calendar,
-  CreditCard,
+  Coins,
 } from 'lucide-react';
 import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
@@ -115,13 +115,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   const totalSavingsTarget = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.targetAmount, 0);
   const savingsPercentage = totalSavingsTarget > 0 ? (totalSavingsCollected / totalSavingsTarget) * 100 : 0;
 
-  // Installments summary calculation
+  // Installments savings summary calculation
   const activeInstallments = installments.filter((i: any) => !i.isCompleted);
-  const totalRemainingDebt = activeInstallments.reduce(
-    (sum: number, i: any) => sum + Math.max(0, i.totalAmount - i.paidMonths * i.monthlyAmount),
-    0
-  );
-  const totalMonthlyBill = activeInstallments.reduce((sum: number, i: any) => sum + i.monthlyAmount, 0);
+  const totalInstallmentSavingsCollected = installments.reduce((sum: number, i: any) => sum + (i.currentAmount || 0), 0);
+  const totalInstallmentSavingsTarget = installments.reduce((sum: number, i: any) => sum + (i.targetAmount || 0), 0);
+  const installmentSavingsPercentage = totalInstallmentSavingsTarget > 0 ? (totalInstallmentSavingsCollected / totalInstallmentSavingsTarget) * 100 : 0;
 
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
@@ -315,34 +313,34 @@ export const HomePage: React.FC<HomePageProps> = ({
         </button>
       </div>
 
-      {/* Installments & Monthly Bills Banner */}
+      {/* Tabungan Cicilan (Menabung Berkala) Banner */}
       <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-            <CreditCard size={22} />
+          <div className="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+            <Coins size={22} />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Cicilan & Tagihan
+                Tabungan Cicilan
               </h3>
-              {activeInstallments.length > 0 && (
-                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/40 px-1.5 py-0.5 rounded-md">
-                  {activeInstallments.length} aktif
+              {installments.length > 0 && (
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold bg-teal-50 dark:bg-teal-950/40 px-1.5 py-0.5 rounded-md">
+                  {Math.round(installmentSavingsPercentage)}%
                 </span>
               )}
             </div>
             <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
-              {activeInstallments.length > 0 ? (
+              {installments.length > 0 ? (
                 <>
-                  {formatRupiah(totalMonthlyBill)}
+                  {formatRupiah(totalInstallmentSavingsCollected)}
                   <span className="text-[10px] font-normal text-slate-400">
-                    {' '}/ bln (Sisa {formatRupiah(totalRemainingDebt)})
+                    {' '}/ {formatRupiah(totalInstallmentSavingsTarget)} ({activeInstallments.length} aktif)
                   </span>
                 </>
               ) : (
                 <span className="text-[11px] font-normal text-slate-400">
-                  Bebas cicilan atau belum ada data cicilan
+                  Nabung teratur berkala (Qurban, Gadget, Liburan)
                 </span>
               )}
             </p>
@@ -352,9 +350,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('installments')}
-          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1 shrink-0"
+          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:text-teal-300 dark:hover:bg-teal-900/60 transition-colors flex items-center gap-1 shrink-0"
         >
-          <span>Buka Cicilan</span>
+          <span>Buka Tab. Cicilan</span>
           <ChevronRight size={14} />
         </button>
       </div>

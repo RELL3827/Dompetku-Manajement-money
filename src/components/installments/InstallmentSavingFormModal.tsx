@@ -8,65 +8,58 @@ import {
   Tag,
   Clock,
 } from 'lucide-react';
-import { addInstallment, updateInstallment } from '../../db/services';
+import { addInstallmentSaving, updateInstallmentSaving } from '../../db/services';
 import { db } from '../../db/database';
 import { useLiveQuery } from 'dexie-react-hooks';
-import type { Installment } from '../../types';
+import type { InstallmentSaving, InstallmentFrequency } from '../../types';
 import { formatRupiah } from '../../utils/currency';
 
-interface InstallmentFormModalProps {
+interface InstallmentSavingFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaved: () => void;
-  installmentToEdit?: Installment | null;
-  initialPreset?: {
-    name: string;
-    totalAmount: number;
-    monthlyAmount: number;
-    totalMonths: number;
-    interestRate: number;
-  } | null;
+  savingToEdit?: InstallmentSaving | null;
 }
 
 const CATEGORY_OPTIONS = [
+  'Ibadah & Qurban',
   'Elektronik',
   'Kendaraan',
-  'Properti / KPR',
+  'Liburan',
+  'Dana Darurat',
   'Gadget',
-  'Paylater',
-  'Pinjaman Bank',
   'Pendidikan',
   'Lainnya',
 ];
 
 const PRESET_IDEAS = [
-  'Cicilan Motor Vario',
-  'Cicilan iPhone 16',
-  'Shopee Paylater',
-  'KPR Rumah BTN',
-  'Laptop Kerja',
-  'Kartu Kredit BCA',
+  'Tabungan Qurban',
+  'Nabung Beli iPhone',
+  'Cicil Dana Darurat',
+  'Nabung Liburan Bareng',
+  'Tabungan Emas Batangan',
+  'Tabungan Mudik Lebaran',
 ];
 
-const TENOR_CHIPS = [3, 6, 12, 24, 36, 48, 60];
+const TENOR_CHIPS = [3, 6, 10, 12, 24, 36, 52];
 
-export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
+export const InstallmentSavingFormModal: React.FC<InstallmentSavingFormModalProps> = ({
   isOpen,
   onClose,
   onSaved,
-  installmentToEdit,
-  initialPreset,
+  savingToEdit,
 }) => {
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('Elektronik');
-  const [totalAmount, setTotalAmount] = useState<number>(12000000);
-  const [monthlyAmount, setMonthlyAmount] = useState<number>(1000000);
-  const [totalMonths, setTotalMonths] = useState<number>(12);
-  const [paidMonths, setPaidMonths] = useState<number>(0);
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('Ibadah & Qurban');
+  const [frequency, setFrequency] = useState<InstallmentFrequency>('monthly');
+  const [targetAmount, setTargetAmount] = useState<number>(6000000);
+  const [installmentAmount, setInstallmentAmount] = useState<number>(500000);
+  const [totalInstallments, setTotalInstallments] = useState<number>(12);
+  const [paidInstallments, setPaidInstallments] = useState<number>(0);
   const [startDate, setStartDate] = useState('');
+  const [targetDate, setTargetDate] = useState('');
   const [dueDay, setDueDay] = useState<number>(25);
   const [walletId, setWalletId] = useState('');
-  const [interestRate, setInterestRate] = useState<number>(0);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -74,88 +67,74 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
   const wallets = useLiveQuery(() => db.wallets.filter((w) => !w.isArchived).toArray()) || [];
 
   useEffect(() => {
-    if (installmentToEdit && isOpen) {
-      setName(installmentToEdit.name);
-      setCategory(installmentToEdit.category || 'Elektronik');
-      setTotalAmount(installmentToEdit.totalAmount);
-      setMonthlyAmount(installmentToEdit.monthlyAmount);
-      setTotalMonths(installmentToEdit.totalMonths);
-      setPaidMonths(installmentToEdit.paidMonths);
-      setStartDate(installmentToEdit.startDate);
-      setDueDay(installmentToEdit.dueDay);
-      setWalletId(installmentToEdit.walletId || '');
-      setInterestRate(installmentToEdit.interestRate || 0);
-      setNotes(installmentToEdit.notes || '');
-    } else if (initialPreset && isOpen) {
-      setName(initialPreset.name);
-      setCategory('Elektronik');
-      setTotalAmount(initialPreset.totalAmount);
-      setMonthlyAmount(initialPreset.monthlyAmount);
-      setTotalMonths(initialPreset.totalMonths);
-      setPaidMonths(0);
-      setStartDate(new Date().toISOString().slice(0, 10));
-      setDueDay(25);
-      setWalletId('');
-      setInterestRate(initialPreset.interestRate || 0);
-      setNotes('');
+    if (savingToEdit && isOpen) {
+      setTitle(savingToEdit.title);
+      setCategory(savingToEdit.category || 'Ibadah & Qurban');
+      setFrequency(savingToEdit.frequency || 'monthly');
+      setTargetAmount(savingToEdit.targetAmount);
+      setInstallmentAmount(savingToEdit.installmentAmount);
+      setTotalInstallments(savingToEdit.totalInstallments);
+      setPaidInstallments(savingToEdit.paidInstallments);
+      setStartDate(savingToEdit.startDate);
+      setTargetDate(savingToEdit.targetDate || '');
+      setDueDay(savingToEdit.dueDay || 25);
+      setWalletId(savingToEdit.walletId || '');
+      setNotes(savingToEdit.notes || '');
     } else if (isOpen) {
-      setName('');
-      setCategory('Elektronik');
-      setTotalAmount(12000000);
-      setMonthlyAmount(1000000);
-      setTotalMonths(12);
-      setPaidMonths(0);
+      setTitle('');
+      setCategory('Ibadah & Qurban');
+      setFrequency('monthly');
+      setTargetAmount(6000000);
+      setInstallmentAmount(500000);
+      setTotalInstallments(12);
+      setPaidInstallments(0);
       setStartDate(new Date().toISOString().slice(0, 10));
+      setTargetDate('');
       setDueDay(25);
       setWalletId('');
-      setInterestRate(0);
       setNotes('');
     }
     setError('');
-  }, [installmentToEdit, initialPreset, isOpen]);
+  }, [savingToEdit, isOpen]);
 
   // Sync calculations
-  const handleTotalAmountChange = (val: number) => {
-    setTotalAmount(val);
-    if (totalMonths > 0) {
-      setMonthlyAmount(Math.round(val / totalMonths));
+  const handleTargetAmountChange = (val: number) => {
+    setTargetAmount(val);
+    if (totalInstallments > 0) {
+      setInstallmentAmount(Math.round(val / totalInstallments));
     }
   };
 
-  const handleMonthlyAmountChange = (val: number) => {
-    setMonthlyAmount(val);
-    if (totalMonths > 0) {
-      setTotalAmount(val * totalMonths);
+  const handleInstallmentAmountChange = (val: number) => {
+    setInstallmentAmount(val);
+    if (totalInstallments > 0) {
+      setTargetAmount(val * totalInstallments);
     }
   };
 
-  const handleTenorChange = (months: number) => {
-    setTotalMonths(months);
-    if (months > 0 && totalAmount > 0) {
-      setMonthlyAmount(Math.round(totalAmount / months));
+  const handleTenorChange = (tenor: number) => {
+    setTotalInstallments(tenor);
+    if (tenor > 0 && targetAmount > 0) {
+      setInstallmentAmount(Math.round(targetAmount / tenor));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setError('Nama cicilan wajib diisi.');
+    if (!title.trim()) {
+      setError('Nama tabungan cicilan wajib diisi.');
       return;
     }
-    if (totalAmount <= 0) {
-      setError('Total hutang / harga kredit harus lebih dari Rp 0.');
+    if (targetAmount <= 0) {
+      setError('Target total tabungan harus lebih dari Rp 0.');
       return;
     }
-    if (monthlyAmount <= 0) {
-      setError('Nominal cicilan per bulan harus lebih dari Rp 0.');
+    if (installmentAmount <= 0) {
+      setError('Nominal per cicilan harus lebih dari Rp 0.');
       return;
     }
-    if (totalMonths <= 0) {
-      setError('Tenor harus minimal 1 bulan.');
-      return;
-    }
-    if (dueDay < 1 || dueDay > 31) {
-      setError('Tanggal jatuh tempo harus antara 1 sampai 31.');
+    if (totalInstallments <= 0) {
+      setError('Jumlah kali cicilan harus minimal 1 kali.');
       return;
     }
 
@@ -163,32 +142,33 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
       setLoading(true);
       setError('');
 
-      if (installmentToEdit) {
-        await updateInstallment(installmentToEdit.id, {
-          name: name.trim(),
+      if (savingToEdit) {
+        await updateInstallmentSaving(savingToEdit.id, {
+          title: title.trim(),
           category,
-          totalAmount,
-          monthlyAmount,
-          totalMonths,
+          frequency,
+          targetAmount,
+          installmentAmount,
+          totalInstallments,
           startDate,
-          dueDay,
+          targetDate: targetDate || undefined,
+          dueDay: dueDay || undefined,
           walletId: walletId || undefined,
-          interestRate: interestRate || undefined,
           notes: notes.trim() || undefined,
         });
       } else {
-        await addInstallment({
-          name: name.trim(),
+        await addInstallmentSaving({
+          title: title.trim(),
           category,
-          totalAmount,
-          monthlyAmount,
-          totalMonths,
-          paidMonths,
-          initialPaidMonths: paidMonths,
+          frequency,
+          targetAmount,
+          installmentAmount,
+          totalInstallments,
+          initialPaidInstallments: paidInstallments,
           startDate: startDate || new Date().toISOString().slice(0, 10),
-          dueDay,
+          targetDate: targetDate || undefined,
+          dueDay: dueDay || undefined,
           walletId: walletId || undefined,
-          interestRate: interestRate || undefined,
           notes: notes.trim() || undefined,
         });
       }
@@ -196,7 +176,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
       onSaved();
       onClose();
     } catch (err: any) {
-      setError(err?.message || 'Gagal menyimpan data cicilan.');
+      setError(err?.message || 'Gagal menyimpan tabungan cicilan.');
     } finally {
       setLoading(false);
     }
@@ -206,7 +186,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={installmentToEdit ? 'Ubah Data Cicilan' : 'Tambah Cicilan / Tagihan Rutin'}
+      title={savingToEdit ? 'Ubah Tabungan Cicilan' : 'Buat Tabungan Cicilan (Berkala)'}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
@@ -216,20 +196,20 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
         )}
 
         {/* Preset Ideas */}
-        {!installmentToEdit && (
+        {!savingToEdit && (
           <div>
             <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mb-1.5">
               <Sparkles size={12} className="text-amber-500" />
-              <span>Contoh Cicilan Cepat:</span>
+              <span>Ide Rencana Tabungan Cicilan:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {PRESET_IDEAS.map((idea) => (
                 <button
                   key={idea}
                   type="button"
-                  onClick={() => setName(idea)}
+                  onClick={() => setTitle(idea)}
                   className={`text-[10px] px-2.5 py-1 rounded-full border transition-all ${
-                    name === idea
+                    title === idea
                       ? 'bg-emerald-600 text-white border-emerald-600 font-semibold'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
                   }`}
@@ -241,26 +221,26 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
           </div>
         )}
 
-        {/* Nama Cicilan */}
+        {/* Nama Tabungan */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Nama Cicilan / Tagihan *
+            Nama Tabungan Cicilan *
           </label>
           <input
             type="text"
             required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Contoh: Cicilan Motor Vario, iPhone 16 Pro, Shopee Paylater"
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Contoh: Tabungan Qurban, Nabung Beli iPhone, Liburan"
+            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
           />
         </div>
 
-        {/* Kategori Cicilan */}
+        {/* Kategori */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
             <Tag size={13} className="text-slate-400" />
-            <span>Kategori Tagihan</span>
+            <span>Kategori</span>
           </label>
           <div className="flex flex-wrap gap-1.5">
             {CATEGORY_OPTIONS.map((cat) => (
@@ -268,7 +248,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
                 key={cat}
                 type="button"
                 onClick={() => setCategory(cat)}
-                className={`text-[11px] px-3 py-1.5 rounded-xl border transition-all ${
+                className={`text-[11px] px-3 py-1 rounded-xl border transition-all ${
                   category === cat
                     ? 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-xs'
                     : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
@@ -280,11 +260,38 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
           </div>
         </div>
 
-        {/* Tenor Quick Chips */}
+        {/* Frekuensi Menabung */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            Frekuensi Cicilan Menabung
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'monthly' as InstallmentFrequency, label: 'Bulanan' },
+              { id: 'weekly' as InstallmentFrequency, label: 'Mingguan' },
+              { id: 'daily' as InstallmentFrequency, label: 'Harian' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFrequency(f.id)}
+                className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  frequency === f.id
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                    : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tenor / Jumlah Kali Cicilan */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
             <Clock size={13} className="text-slate-400" />
-            <span>Tenor (Jumlah Bulan): <strong>{totalMonths} Bulan</strong></span>
+            <span>Jumlah Kali Cicilan: <strong>{totalInstallments}x Setoran</strong></span>
           </label>
           <div className="flex flex-wrap items-center gap-1.5">
             {TENOR_CHIPS.map((chip) => (
@@ -293,7 +300,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
                 type="button"
                 onClick={() => handleTenorChange(chip)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  totalMonths === chip
+                  totalInstallments === chip
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                 }`}
@@ -306,44 +313,44 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
               <input
                 type="number"
                 min="1"
-                max="360"
-                value={totalMonths || ''}
+                max="365"
+                value={totalInstallments || ''}
                 onChange={(e) => handleTenorChange(parseInt(e.target.value, 10) || 1)}
                 className="w-16 px-2 py-1 text-xs font-bold text-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
               />
-              <span className="text-xs text-slate-400">bln</span>
+              <span className="text-xs text-slate-400">kali</span>
             </div>
           </div>
         </div>
 
-        {/* Total Pinjaman & Cicilan Per Bulan */}
+        {/* Target Total & Nominal Per Cicilan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <CurrencyInput
-              label="Total Harga / Pokok Kredit (Rp) *"
-              value={totalAmount}
-              onChange={handleTotalAmountChange}
+              label="Target Total Tabungan (Rp) *"
+              value={targetAmount}
+              onChange={handleTargetAmountChange}
               placeholder="0"
               required
             />
           </div>
           <div>
             <CurrencyInput
-              label="Cicilan Per Bulan (Rp) *"
-              value={monthlyAmount}
-              onChange={handleMonthlyAmountChange}
+              label={`Nominal per Cicilan (${frequency === 'monthly' ? 'Bulan' : frequency === 'weekly' ? 'Minggu' : 'Hari'}) *`}
+              value={installmentAmount}
+              onChange={handleInstallmentAmountChange}
               placeholder="0"
               required
             />
           </div>
         </div>
 
-        {/* Tanggal Mulai & Tanggal Jatuh Tempo */}
+        {/* Tanggal Mulai & Tanggal Target Selesai */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
               <Calendar size={13} className="text-slate-400" />
-              <span>Tanggal Mulai Cicilan</span>
+              <span>Tanggal Mulai Menabung</span>
             </label>
             <input
               type="date"
@@ -356,61 +363,75 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Tanggal Jatuh Tempo Tiap Bulan (1 - 31) *
+              Tanggal Target Selesai (Opsional)
+            </label>
+            <input
+              type="date"
+              value={targetDate}
+              onChange={(e) => setTargetDate(e.target.value)}
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+        </div>
+
+        {/* Tanggal Rutin Setor per Bulan (Jika Bulanan) */}
+        {frequency === 'monthly' && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Tanggal Rutin Setor Tiap Bulan (1 - 31)
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
                 min="1"
                 max="31"
-                required
                 value={dueDay}
                 onChange={(e) => setDueDay(Math.min(31, Math.max(1, parseInt(e.target.value, 10) || 1)))}
                 className="w-full px-3.5 py-2.5 text-sm font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
-              <span className="text-xs text-slate-400 shrink-0">Tiap bln</span>
+              <span className="text-xs text-slate-400 shrink-0">Tiap bulan</span>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Sudah Berjalan Sebelumnya (Hanya saat create baru) */}
-        {!installmentToEdit && (
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-2">
+        {/* Sudah Pernah Menabung Sebelumnya? (Hanya saat create baru) */}
+        {!savingToEdit && (
+          <div className="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                Cicilan Sudah Berjalan Sebelumnya?
+                Sudah Menabung Berapa Kali Sebelumnya?
               </label>
               <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                {paidMonths} dari {totalMonths} bulan lunas
+                {paidInstallments} dari {totalInstallments} cicilan lunas ({formatRupiah(paidInstallments * installmentAmount)})
               </span>
             </div>
             <p className="text-[10px] text-slate-400">
-              Jika ini cicilan lama yang dipindahkan ke aplikasi, masukkan berapa bulan yang sudah Anda lunasi sebelumnya.
+              Jika ini tabungan berjalan yang dipindahkan ke aplikasi, masukkan berapa kali cicilan yang sudah Anda setor sebelumnya.
             </p>
             <input
               type="range"
               min="0"
-              max={totalMonths}
-              value={paidMonths}
-              onChange={(e) => setPaidMonths(parseInt(e.target.value, 10) || 0)}
+              max={totalInstallments}
+              value={paidInstallments}
+              onChange={(e) => setPaidInstallments(parseInt(e.target.value, 10) || 0)}
               className="w-full accent-emerald-600 cursor-pointer"
             />
           </div>
         )}
 
-        {/* Dompet Default & Catatan */}
+        {/* Dompet Penyimpanan Dana & Catatan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
               <WalletIcon size={13} className="text-slate-400" />
-              <span>Dompet Pembayaran (Opsional)</span>
+              <span>Dompet Penyimpanan Dana (Opsional)</span>
             </label>
             <select
               value={walletId}
               onChange={(e) => setWalletId(e.target.value)}
               className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
             >
-              <option value="">-- Tanpa Dompet Default --</option>
+              <option value="">-- Tanpa Dompet Khusus --</option>
               {wallets.map((w) => (
                 <option key={w.id} value={w.id}>
                   {w.name} ({formatRupiah(w.initialBalance)})
@@ -427,7 +448,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Contoh: No. Kontrak 12345, Bunga 0%"
+              placeholder="Contoh: Demi qurban Idul Adha tahun ini"
               className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
@@ -447,7 +468,7 @@ export const InstallmentFormModal: React.FC<InstallmentFormModalProps> = ({
             disabled={loading}
             className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-all disabled:opacity-50"
           >
-            {loading ? 'Menyimpan...' : installmentToEdit ? 'Simpan Perubahan' : '+ Tambah Cicilan'}
+            {loading ? 'Menyimpan...' : savingToEdit ? 'Simpan Perubahan' : '+ Buat Tabungan Cicilan'}
           </button>
         </div>
       </form>

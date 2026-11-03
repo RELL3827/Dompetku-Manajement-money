@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
 import { CurrencyInput } from '../common/CurrencyInput';
-import { CheckCircle2, Wallet as WalletIcon, Calendar } from 'lucide-react';
-import { payInstallmentMonth } from '../../db/services';
+import { CheckCircle2, Wallet as WalletIcon, Calendar, PiggyBank } from 'lucide-react';
+import { toggleInstallmentSavingDeposit } from '../../db/services';
 import { db } from '../../db/database';
 import { useLiveQuery } from 'dexie-react-hooks';
-import type { Installment } from '../../types';
+import type { InstallmentSaving } from '../../types';
 import { formatRupiah } from '../../utils/currency';
 
-interface PayInstallmentModalProps {
+interface DepositInstallmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  installment: Installment | null;
-  monthIndexToPay: number;
-  onPaid: () => void;
+  saving: InstallmentSaving | null;
+  installmentIndex: number;
+  onSuccess: () => void;
 }
 
-export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
+export const DepositInstallmentModal: React.FC<DepositInstallmentModalProps> = ({
   isOpen,
   onClose,
-  installment,
-  monthIndexToPay,
-  onPaid,
+  saving,
+  installmentIndex,
+  onSuccess,
 }) => {
   const [amount, setAmount] = useState<number>(0);
   const [paidDate, setPaidDate] = useState<string>('');
@@ -34,26 +34,27 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
   const wallets = useLiveQuery(() => db.wallets.filter((w) => !w.isArchived).toArray()) || [];
 
   useEffect(() => {
-    if (installment && isOpen) {
-      setAmount(installment.monthlyAmount);
+    if (saving && isOpen) {
+      const targetDeposit = saving.deposits.find((d) => d.installmentIndex === installmentIndex);
+      setAmount(targetDeposit ? targetDeposit.amount : saving.installmentAmount);
       setPaidDate(new Date().toISOString().slice(0, 10));
-      setDeductWallet(Boolean(installment.walletId) || wallets.length > 0);
-      setWalletId(installment.walletId || (wallets[0]?.id ?? ''));
-      setNotes(`Bayar cicilan ke-${monthIndexToPay}`);
+      setDeductWallet(Boolean(saving.walletId) || wallets.length > 0);
+      setWalletId(saving.walletId || (wallets[0]?.id ?? ''));
+      setNotes(`Setoran cicilan ke-${installmentIndex}`);
       setError('');
     }
-  }, [installment, monthIndexToPay, isOpen, wallets.length]);
+  }, [saving, installmentIndex, isOpen, wallets.length]);
 
-  if (!installment) return null;
+  if (!saving) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (amount <= 0) {
-      setError('Nominal pembayaran harus lebih besar dari Rp 0.');
+      setError('Nominal setoran harus lebih besar dari Rp 0.');
       return;
     }
     if (deductWallet && !walletId) {
-      setError('Pilih dompet yang akan dipotong saldonya.');
+      setError('Pilih dompet sumber dana.');
       return;
     }
 
@@ -61,7 +62,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
       setIsSubmitting(true);
       setError('');
 
-      await payInstallmentMonth(installment.id, monthIndexToPay, {
+      await toggleInstallmentSavingDeposit(saving.id, installmentIndex, {
         amount,
         notes: notes.trim() || undefined,
         paidAt: paidDate,
@@ -69,10 +70,10 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
         walletId: deductWallet ? walletId : undefined,
       });
 
-      onPaid();
+      onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err?.message || 'Gagal memproses pembayaran cicilan.');
+      setError(err?.message || 'Gagal memproses setoran cicilan.');
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +83,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Bayar Cicilan Bulan ke-${monthIndexToPay}`}
+      title={`Setor Cicilan Tabungan ke-${installmentIndex}`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
@@ -91,30 +92,35 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
           </div>
         )}
 
-        {/* Info Banner */}
-        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-              Nama Cicilan
-            </span>
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              {installment.name}
-            </p>
+        {/* Info Box */}
+        <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+              <PiggyBank size={18} />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block tracking-wider">
+                Tabungan
+              </span>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                {saving.title}
+              </p>
+            </div>
           </div>
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-              Tagihan Normal
+              Target Per Cicilan
             </span>
-            <p className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
-              {formatRupiah(installment.monthlyAmount)}
+            <p className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+              {formatRupiah(saving.installmentAmount)}
             </p>
           </div>
         </div>
 
-        {/* Nominal input */}
+        {/* Amount */}
         <div>
           <CurrencyInput
-            label="Nominal yang Dibayarkan (Rp) *"
+            label="Nominal yang Disetor (Rp) *"
             value={amount}
             onChange={(val) => setAmount(val)}
             placeholder="0"
@@ -122,11 +128,11 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
           />
         </div>
 
-        {/* Tanggal Bayar */}
+        {/* Date */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
             <Calendar size={13} className="text-slate-400" />
-            <span>Tanggal Pembayaran</span>
+            <span>Tanggal Setor</span>
           </label>
           <input
             type="date"
@@ -147,7 +153,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
                   Potong Saldo Dompet Otomatis
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  Otomatis catat pengeluaran di DompetKu
+                  Catat pengeluaran tabungan di DompetKu
                 </span>
               </div>
             </div>
@@ -179,7 +185,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
           )}
         </div>
 
-        {/* Catatan / Notes */}
+        {/* Notes */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
             Catatan Tambahan (Opsional)
@@ -188,7 +194,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Contoh: No. referensi transfer, lewat ATM, dsb."
+            placeholder="Contoh: Setoran via M-Banking BCA"
             className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -208,7 +214,7 @@ export const PayInstallmentModal: React.FC<PayInstallmentModalProps> = ({
             className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50"
           >
             <CheckCircle2 size={15} />
-            <span>{isSubmitting ? 'Memproses...' : 'Konfirmasi Pembayaran'}</span>
+            <span>{isSubmitting ? 'Memproses...' : 'Konfirmasi Setor Cicilan'}</span>
           </button>
         </div>
       </form>
