@@ -31,6 +31,7 @@ import {
   FileText,
   Calculator,
   Calendar,
+  CreditCard,
 } from 'lucide-react';
 import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
@@ -60,6 +61,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const wallets = useLiveQuery(() => db.wallets.toArray()) || [];
   const savingsGoals = useLiveQuery(() => db.savings.toArray()) || [];
   const calendarEvents = useLiveQuery(() => db.calendarEvents.toArray()) || [];
+  const installments = useLiveQuery(() => db.installments.toArray()) || [];
 
   const todayDateStr = new Date().toISOString().slice(0, 10);
   const upcomingEvent = calendarEvents
@@ -112,6 +114,14 @@ export const HomePage: React.FC<HomePageProps> = ({
   const totalSavingsCollected = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.currentAmount, 0);
   const totalSavingsTarget = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.targetAmount, 0);
   const savingsPercentage = totalSavingsTarget > 0 ? (totalSavingsCollected / totalSavingsTarget) * 100 : 0;
+
+  // Installments summary calculation
+  const activeInstallments = installments.filter((i: any) => !i.isCompleted);
+  const totalRemainingDebt = activeInstallments.reduce(
+    (sum: number, i: any) => sum + Math.max(0, i.totalAmount - i.paidMonths * i.monthlyAmount),
+    0
+  );
+  const totalMonthlyBill = activeInstallments.reduce((sum: number, i: any) => sum + i.monthlyAmount, 0);
 
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
@@ -301,6 +311,50 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="px-3.5 py-2 rounded-xl text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 transition-colors flex items-center gap-1 shrink-0"
         >
           <span>Buka Kalender</span>
+          <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* Installments & Monthly Bills Banner */}
+      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <CreditCard size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Cicilan & Tagihan
+              </h3>
+              {activeInstallments.length > 0 && (
+                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/40 px-1.5 py-0.5 rounded-md">
+                  {activeInstallments.length} aktif
+                </span>
+              )}
+            </div>
+            <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
+              {activeInstallments.length > 0 ? (
+                <>
+                  {formatRupiah(totalMonthlyBill)}
+                  <span className="text-[10px] font-normal text-slate-400">
+                    {' '}/ bln (Sisa {formatRupiah(totalRemainingDebt)})
+                  </span>
+                </>
+              ) : (
+                <span className="text-[11px] font-normal text-slate-400">
+                  Bebas cicilan atau belum ada data cicilan
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigate('installments')}
+          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1 shrink-0"
+        >
+          <span>Buka Cicilan</span>
           <ChevronRight size={14} />
         </button>
       </div>

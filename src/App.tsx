@@ -16,6 +16,7 @@ import { UpdateToastBanner } from './components/common/UpdateToastBanner';
 import { HomePage } from './pages/HomePage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { CalendarPage } from './pages/CalendarPage';
+import { InstallmentsPage } from './pages/InstallmentsPage';
 import { SavingsPage } from './pages/SavingsPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { WalletsPage } from './pages/WalletsPage';
@@ -122,6 +123,10 @@ export const App: React.FC = () => {
 
           {currentTab === 'calendar' && (
             <CalendarPage onOpenTransactionModal={handleOpenAddTransaction} />
+          )}
+
+          {currentTab === 'installments' && (
+            <InstallmentsPage onOpenTransactionModal={() => handleOpenAddTransaction('expense')} />
           )}
 
           {currentTab === 'savings' && <SavingsPage />}

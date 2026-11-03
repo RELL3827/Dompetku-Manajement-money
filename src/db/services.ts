@@ -6,6 +6,8 @@ import type {
   Budget,
   SavingGoal,
   SharedSaving,
+  Installment,
+  InstallmentPayment,
   FinancialNote,
   NoteTag,
   NoteChecklistItem,
@@ -1305,17 +1307,198 @@ export async function updateSharedSavingMemberContribution(
 }
 
 // ----------------------------------------------------
+// INSTALLMENTS / CICILAN SERVICES
+// ----------------------------------------------------
+
+export async function getInstallments(includeCompleted = true): Promise<Installment[]> {
+  const all = await db.installments.toArray();
+  const sorted = all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  if (includeCompleted) return sorted;
+  return sorted.filter((i) => !i.isCompleted);
+}
+
+export async function getInstallmentById(id: string): Promise<Installment | undefined> {
+  return db.installments.get(id);
+}
+
+export async function addInstallment(
+  data: Omit<Installment, 'id' | 'isCompleted' | 'payments' | 'createdAt' | 'updatedAt'> & {
+    initialPaidMonths?: number;
+  }
+): Promise<Installment> {
+  const now = new Date().toISOString();
+  const id = `inst_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const initialPaid = Math.max(0, Math.min(data.totalMonths, data.initialPaidMonths || 0));
+
+  const payments: InstallmentPayment[] = [];
+  for (let m = 1; m <= initialPaid; m++) {
+    payments.push({
+      id: `pay_${Date.now()}_${m}`,
+      monthIndex: m,
+      amount: data.monthlyAmount,
+      paidAt: now.slice(0, 10),
+      notes: 'Lunas saat input data cicilan',
+    });
+  }
+
+  const isCompleted = initialPaid >= data.totalMonths && data.totalMonths > 0;
+
+  const newInstallment: Installment = {
+    ...data,
+    id,
+    paidMonths: initialPaid,
+    payments,
+    isCompleted,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await db.installments.add(newInstallment);
+  return newInstallment;
+}
+
+export async function updateInstallment(
+  id: string,
+  partial: Partial<Installment>
+): Promise<void> {
+  const existing = await db.installments.get(id);
+  if (!existing) return;
+
+  const now = new Date().toISOString();
+  const updatedPaidMonths = partial.paidMonths !== undefined ? partial.paidMonths : existing.paidMonths;
+  const updatedTotalMonths = partial.totalMonths !== undefined ? partial.totalMonths : existing.totalMonths;
+  const isCompleted = updatedPaidMonths >= updatedTotalMonths && updatedTotalMonths > 0;
+
+  await db.installments.update(id, {
+    ...partial,
+    paidMonths: updatedPaidMonths,
+    totalMonths: updatedTotalMonths,
+    isCompleted,
+    updatedAt: now,
+  });
+}
+
+export async function deleteInstallment(id: string): Promise<void> {
+  await db.installments.delete(id);
+}
+
+export async function payInstallmentMonth(
+  installmentId: string,
+  monthIndex: number,
+  options?: {
+    amount?: number;
+    notes?: string;
+    paidAt?: string;
+    deductWallet?: boolean;
+    walletId?: string;
+  }
+): Promise<Installment | undefined> {
+  const inst = await db.installments.get(installmentId);
+  if (!inst) return undefined;
+
+  const now = new Date().toISOString();
+  const paymentAmount = options?.amount ?? inst.monthlyAmount;
+  const paidDate = options?.paidAt ?? now.slice(0, 10);
+
+  let txId: string | undefined = undefined;
+
+  // If user selected to deduct wallet
+  const targetWalletId = options?.walletId || inst.walletId;
+  if (options?.deductWallet && targetWalletId) {
+    const categories = await db.categories.toArray();
+    let cicilanCategory = categories.find(
+      (c) => c.type === 'expense' && (c.name.toLowerCase().includes('cicilan') || c.name.toLowerCase().includes('tagihan'))
+    );
+    if (!cicilanCategory) {
+      cicilanCategory = categories.find((c) => c.type === 'expense');
+    }
+
+    if (cicilanCategory) {
+      const tx = await saveTransaction({
+        amount: paymentAmount,
+        type: 'expense',
+        categoryId: cicilanCategory.id,
+        walletId: targetWalletId,
+        date: paidDate,
+        notes: `Bayar cicilan ${inst.name} (Bulan ke-${monthIndex})${options?.notes ? ` - ${options.notes}` : ''}`,
+      });
+      txId = tx.id;
+    }
+  }
+
+  // Add or update payment entry for this month
+  const existingPayments = inst.payments.filter((p) => p.monthIndex !== monthIndex);
+  const newPayment: InstallmentPayment = {
+    id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    monthIndex,
+    amount: paymentAmount,
+    paidAt: paidDate,
+    notes: options?.notes,
+    transactionId: txId,
+  };
+
+  const updatedPayments = [...existingPayments, newPayment].sort((a, b) => a.monthIndex - b.monthIndex);
+  const newPaidMonths = updatedPayments.length;
+  const isCompleted = newPaidMonths >= inst.totalMonths;
+
+  const updated: Installment = {
+    ...inst,
+    payments: updatedPayments,
+    paidMonths: newPaidMonths,
+    isCompleted,
+    updatedAt: now,
+  };
+
+  await db.installments.put(updated);
+  return updated;
+}
+
+export async function unpayInstallmentMonth(
+  installmentId: string,
+  monthIndex: number
+): Promise<Installment | undefined> {
+  const inst = await db.installments.get(installmentId);
+  if (!inst) return undefined;
+
+  const targetPayment = inst.payments.find((p) => p.monthIndex === monthIndex);
+  if (targetPayment?.transactionId) {
+    try {
+      await db.transactions.delete(targetPayment.transactionId);
+    } catch {
+      // ignore if transaction already deleted
+    }
+  }
+
+  const updatedPayments = inst.payments.filter((p) => p.monthIndex !== monthIndex);
+  const newPaidMonths = updatedPayments.length;
+  const isCompleted = false;
+  const now = new Date().toISOString();
+
+  const updated: Installment = {
+    ...inst,
+    payments: updatedPayments,
+    paidMonths: newPaidMonths,
+    isCompleted,
+    updatedAt: now,
+  };
+
+  await db.installments.put(updated);
+  return updated;
+}
+
+// ----------------------------------------------------
 // BACKUP & RESTORE SERVICES
 // ----------------------------------------------------
 
 export async function exportAllData(): Promise<BackupData> {
-  const [wallets, categories, transactions, budgets, savings, sharedSavings, notes, calendarEvents, settingsRecord] = await Promise.all([
+  const [wallets, categories, transactions, budgets, savings, sharedSavings, installments, notes, calendarEvents, settingsRecord] = await Promise.all([
     db.wallets.toArray(),
     db.categories.toArray(),
     db.transactions.toArray(),
     db.budgets.toArray(),
     db.savings.toArray(),
     db.sharedSavings.toArray(),
+    db.installments.toArray(),
     db.notes.toArray(),
     db.calendarEvents.toArray(),
     db.settings.get('app_settings'),
@@ -1324,7 +1507,7 @@ export async function exportAllData(): Promise<BackupData> {
   const appSettings = settingsRecord ? settingsRecord.value : undefined;
 
   return {
-    version: 5,
+    version: 6,
     appName: 'DompetKu',
     exportDate: new Date().toISOString(),
     wallets,
@@ -1333,6 +1516,7 @@ export async function exportAllData(): Promise<BackupData> {
     budgets,
     savings,
     sharedSavings,
+    installments,
     notes,
     calendarEvents,
     settings: appSettings,
@@ -1351,13 +1535,14 @@ export async function restoreAllData(
   let updated = 0;
 
   if (mode === 'overwrite') {
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.installments, db.notes, db.calendarEvents], async () => {
       await db.wallets.clear();
       await db.categories.clear();
       await db.transactions.clear();
       await db.budgets.clear();
       await db.savings.clear();
       await db.sharedSavings.clear();
+      await db.installments.clear();
       await db.notes.clear();
       await db.calendarEvents.clear();
 
@@ -1372,6 +1557,9 @@ export async function restoreAllData(
       }
       if (data.sharedSavings && data.sharedSavings.length > 0) {
         await db.sharedSavings.bulkAdd(data.sharedSavings);
+      }
+      if (data.installments && data.installments.length > 0) {
+        await db.installments.bulkAdd(data.installments);
       }
       if (data.notes && data.notes.length > 0) {
         await db.notes.bulkAdd(data.notes);
@@ -1388,11 +1576,12 @@ export async function restoreAllData(
       (data.budgets?.length || 0) +
       (data.savings?.length || 0) +
       (data.sharedSavings?.length || 0) +
+      (data.installments?.length || 0) +
       (data.notes?.length || 0) +
       (data.calendarEvents?.length || 0);
   } else {
     // Merge mode: Add missing records or update existing
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.installments, db.notes, db.calendarEvents], async () => {
       // Merge Wallets
       for (const w of data.wallets) {
         const exist = await db.wallets.get(w.id);
@@ -1471,6 +1660,20 @@ export async function restoreAllData(
         }
       }
 
+      // Merge Installments
+      if (data.installments) {
+        for (const inst of data.installments) {
+          const exist = await db.installments.get(inst.id);
+          if (exist) {
+            await db.installments.put(inst);
+            updated++;
+          } else {
+            await db.installments.add(inst);
+            added++;
+          }
+        }
+      }
+
       // Merge Notes
       if (data.notes) {
         for (const n of data.notes) {
@@ -1512,13 +1715,14 @@ export async function restoreAllData(
 }
 
 export async function resetAllData(): Promise<void> {
-  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents, db.settings], async () => {
+  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.installments, db.notes, db.calendarEvents, db.settings], async () => {
     await db.wallets.clear();
     await db.categories.clear();
     await db.transactions.clear();
     await db.budgets.clear();
     await db.savings.clear();
     await db.sharedSavings.clear();
+    await db.installments.clear();
     await db.notes.clear();
     await db.calendarEvents.clear();
     await db.settings.clear();

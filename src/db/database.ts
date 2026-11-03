@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Wallet, Category, Transaction, Budget, SavingGoal, FinancialNote, CalendarEvent, SharedSaving, AppSettings } from '../types';
+import type { Wallet, Category, Transaction, Budget, SavingGoal, FinancialNote, CalendarEvent, SharedSaving, Installment, AppSettings } from '../types';
 import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_WALLETS } from './defaultData';
 
 export interface SettingRecord {
@@ -16,6 +16,7 @@ export class DompetKuDatabase extends Dexie {
   notes!: Table<FinancialNote, string>;
   calendarEvents!: Table<CalendarEvent, string>;
   sharedSavings!: Table<SharedSaving, string>;
+  installments!: Table<Installment, string>;
   settings!: Table<SettingRecord, string>;
 
   constructor() {
@@ -74,6 +75,20 @@ export class DompetKuDatabase extends Dexie {
       notes: 'id, title, category, isPinned, createdAt, updatedAt',
       calendarEvents: 'id, title, type, date, isDone, createdAt',
       sharedSavings: 'id, title, isCompleted, targetDate, createdAt',
+    });
+
+    // Schema definition version 6 (Adding Cicilan / Installments & Loans)
+    this.version(6).stores({
+      wallets: 'id, name, type, isArchived, createdAt',
+      categories: 'id, name, type, isDefault, createdAt',
+      transactions: 'id, amount, type, categoryId, walletId, toWalletId, date, createdAt',
+      budgets: 'id, categoryId, period, createdAt',
+      settings: 'key',
+      savings: 'id, name, isCompleted, walletId, targetDate, createdAt',
+      notes: 'id, title, category, isPinned, createdAt, updatedAt',
+      calendarEvents: 'id, title, type, date, isDone, createdAt',
+      sharedSavings: 'id, title, isCompleted, targetDate, createdAt',
+      installments: 'id, name, category, isCompleted, dueDay, startDate, createdAt',
     });
   }
 

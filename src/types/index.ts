@@ -89,6 +89,34 @@ export interface SharedSaving {
   updatedAt: string;
 }
 
+export interface InstallmentPayment {
+  id: string;
+  monthIndex: number; // Bulan ke-1, ke-2, dst.
+  amount: number;
+  paidAt: string; // ISO date / YYYY-MM-DD
+  notes?: string;
+  transactionId?: string; // ID transaksi pengeluaran terkait jika auto potong saldo
+}
+
+export interface Installment {
+  id: string;
+  name: string; // Contoh: "iPhone 16 Pro", "Cicilan Mobil Avanza", "KPR Rumah", "Shopee Paylater"
+  category: string; // "Elektronik" | "Kendaraan" | "Properti / KPR" | "Paylater" | "Pinjaman" | "Pendidikan" | "Lainnya"
+  totalAmount: number; // Total harga kredit / pinjaman
+  monthlyAmount: number; // Nominal tagihan per bulan
+  totalMonths: number; // Tenor dalam bulan (misal 12, 24, 36)
+  paidMonths: number; // Berapa bulan yang sudah lunas
+  startDate: string; // YYYY-MM-DD (mulai cicilan)
+  dueDay: number; // Tanggal jatuh tempo per bulan (1 - 31)
+  walletId?: string; // Dompet pembayaran default
+  interestRate?: number; // Suku bunga (% flat / per tahun jika ada)
+  notes?: string;
+  isCompleted: boolean;
+  payments: InstallmentPayment[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SecuritySettings {
   isPinEnabled: boolean;
   pinHash?: string; // PBKDF2 hash (hex or base64)
@@ -185,6 +213,7 @@ export interface BackupData {
   budgets: Budget[];
   savings?: SavingGoal[];
   sharedSavings?: SharedSaving[];
+  installments?: Installment[];
   notes?: FinancialNote[];
   calendarEvents?: CalendarEvent[];
   settings?: Partial<AppSettings>;
@@ -211,10 +240,11 @@ export type NavTab =
   | 'home'
   | 'transactions'
   | 'calendar'
-  | 'wallets'
+  | 'installments'
   | 'savings'
   | 'budgets'
   | 'notes'
   | 'calculator'
+  | 'wallets'
   | 'analytics'
   | 'settings';
