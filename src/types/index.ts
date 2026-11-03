@@ -63,6 +63,32 @@ export interface SavingGoal {
   updatedAt: string;
 }
 
+export interface SharedSavingMember {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  isPaid: boolean; // Status checklist: apakah sudah membayar/lunas
+  paidAt?: string; // Tanggal pembayaran
+  notes?: string;
+}
+
+export interface SharedSaving {
+  id: string;
+  title: string;
+  description?: string;
+  targetAmount: number;
+  currentAmount: number;
+  targetDate?: string; // YYYY-MM-DD
+  walletId?: string; // Dompet penampung dana (opsional)
+  members: SharedSavingMember[];
+  icon?: string;
+  color?: string;
+  isCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SecuritySettings {
   isPinEnabled: boolean;
   pinHash?: string; // PBKDF2 hash (hex or base64)
@@ -158,6 +184,7 @@ export interface BackupData {
   transactions: Transaction[];
   budgets: Budget[];
   savings?: SavingGoal[];
+  sharedSavings?: SharedSaving[];
   notes?: FinancialNote[];
   calendarEvents?: CalendarEvent[];
   settings?: Partial<AppSettings>;

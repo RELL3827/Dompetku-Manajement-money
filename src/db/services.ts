@@ -5,6 +5,7 @@ import type {
   Transaction,
   Budget,
   SavingGoal,
+  SharedSaving,
   FinancialNote,
   NoteTag,
   NoteChecklistItem,
@@ -1158,16 +1159,163 @@ export async function getUpcomingCalendarEvents(limit = 5): Promise<CalendarEven
 }
 
 // ----------------------------------------------------
+// SHARED SAVINGS SERVICES (Nabung Bersama & Patungan)
+// ----------------------------------------------------
+
+export async function getSharedSavings(includeCompleted = true): Promise<SharedSaving[]> {
+  const all = await db.sharedSavings.toArray();
+  const sorted = all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  if (includeCompleted) return sorted;
+  return sorted.filter((s) => !s.isCompleted);
+}
+
+export async function getSharedSavingById(id: string): Promise<SharedSaving | undefined> {
+  return db.sharedSavings.get(id);
+}
+
+export async function addSharedSaving(
+  data: Omit<SharedSaving, 'id' | 'currentAmount' | 'isCompleted' | 'createdAt' | 'updatedAt'>
+): Promise<SharedSaving> {
+  const now = new Date().toISOString();
+  const members = (data.members || []).map((m) => ({
+    ...m,
+    id: m.id || `mem_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    currentAmount: m.isPaid ? m.targetAmount : (m.currentAmount || 0),
+    isPaid: Boolean(m.isPaid),
+    paidAt: m.isPaid ? (m.paidAt || now) : undefined,
+  }));
+
+  const currentAmount = members.reduce((sum, m) => sum + (m.currentAmount || 0), 0);
+  const isCompleted = currentAmount >= data.targetAmount && data.targetAmount > 0;
+
+  const newSharedSaving: SharedSaving = {
+    ...data,
+    id: `shared_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    members,
+    currentAmount,
+    isCompleted,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await db.sharedSavings.add(newSharedSaving);
+  return newSharedSaving;
+}
+
+export async function updateSharedSaving(
+  id: string,
+  partial: Partial<SharedSaving>
+): Promise<void> {
+  const existing = await db.sharedSavings.get(id);
+  if (!existing) return;
+
+  const now = new Date().toISOString();
+  const updatedMembers = partial.members !== undefined ? partial.members : existing.members;
+  const currentAmount = updatedMembers.reduce((sum, m) => sum + (m.currentAmount || 0), 0);
+  const targetAmount = partial.targetAmount !== undefined ? partial.targetAmount : existing.targetAmount;
+  const isCompleted = currentAmount >= targetAmount && targetAmount > 0;
+
+  await db.sharedSavings.update(id, {
+    ...partial,
+    members: updatedMembers,
+    currentAmount,
+    isCompleted,
+    updatedAt: now,
+  });
+}
+
+export async function deleteSharedSaving(id: string): Promise<void> {
+  await db.sharedSavings.delete(id);
+}
+
+export async function toggleSharedSavingMemberPaid(
+  sharedSavingId: string,
+  memberId: string,
+  customAmount?: number
+): Promise<SharedSaving | undefined> {
+  const saving = await db.sharedSavings.get(sharedSavingId);
+  if (!saving) return undefined;
+
+  const now = new Date().toISOString();
+  const updatedMembers = saving.members.map((member) => {
+    if (member.id !== memberId) return member;
+
+    const willBePaid = !member.isPaid;
+    return {
+      ...member,
+      isPaid: willBePaid,
+      paidAt: willBePaid ? now : undefined,
+      currentAmount: willBePaid
+        ? (customAmount !== undefined ? customAmount : member.targetAmount)
+        : 0,
+    };
+  });
+
+  const currentAmount = updatedMembers.reduce((sum, m) => sum + (m.currentAmount || 0), 0);
+  const isCompleted = currentAmount >= saving.targetAmount && saving.targetAmount > 0;
+
+  const updated: SharedSaving = {
+    ...saving,
+    members: updatedMembers,
+    currentAmount,
+    isCompleted,
+    updatedAt: now,
+  };
+
+  await db.sharedSavings.put(updated);
+  return updated;
+}
+
+export async function updateSharedSavingMemberContribution(
+  sharedSavingId: string,
+  memberId: string,
+  amount: number,
+  notes?: string
+): Promise<SharedSaving | undefined> {
+  const saving = await db.sharedSavings.get(sharedSavingId);
+  if (!saving) return undefined;
+
+  const now = new Date().toISOString();
+  const updatedMembers = saving.members.map((member) => {
+    if (member.id !== memberId) return member;
+
+    const isPaid = amount >= member.targetAmount && member.targetAmount > 0;
+    return {
+      ...member,
+      currentAmount: Math.max(0, amount),
+      isPaid,
+      paidAt: amount > 0 ? now : undefined,
+      notes: notes !== undefined ? notes : member.notes,
+    };
+  });
+
+  const currentAmount = updatedMembers.reduce((sum, m) => sum + (m.currentAmount || 0), 0);
+  const isCompleted = currentAmount >= saving.targetAmount && saving.targetAmount > 0;
+
+  const updated: SharedSaving = {
+    ...saving,
+    members: updatedMembers,
+    currentAmount,
+    isCompleted,
+    updatedAt: now,
+  };
+
+  await db.sharedSavings.put(updated);
+  return updated;
+}
+
+// ----------------------------------------------------
 // BACKUP & RESTORE SERVICES
 // ----------------------------------------------------
 
 export async function exportAllData(): Promise<BackupData> {
-  const [wallets, categories, transactions, budgets, savings, notes, calendarEvents, settingsRecord] = await Promise.all([
+  const [wallets, categories, transactions, budgets, savings, sharedSavings, notes, calendarEvents, settingsRecord] = await Promise.all([
     db.wallets.toArray(),
     db.categories.toArray(),
     db.transactions.toArray(),
     db.budgets.toArray(),
     db.savings.toArray(),
+    db.sharedSavings.toArray(),
     db.notes.toArray(),
     db.calendarEvents.toArray(),
     db.settings.get('app_settings'),
@@ -1176,7 +1324,7 @@ export async function exportAllData(): Promise<BackupData> {
   const appSettings = settingsRecord ? settingsRecord.value : undefined;
 
   return {
-    version: 4,
+    version: 5,
     appName: 'DompetKu',
     exportDate: new Date().toISOString(),
     wallets,
@@ -1184,6 +1332,7 @@ export async function exportAllData(): Promise<BackupData> {
     transactions,
     budgets,
     savings,
+    sharedSavings,
     notes,
     calendarEvents,
     settings: appSettings,
@@ -1202,12 +1351,13 @@ export async function restoreAllData(
   let updated = 0;
 
   if (mode === 'overwrite') {
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents], async () => {
       await db.wallets.clear();
       await db.categories.clear();
       await db.transactions.clear();
       await db.budgets.clear();
       await db.savings.clear();
+      await db.sharedSavings.clear();
       await db.notes.clear();
       await db.calendarEvents.clear();
 
@@ -1219,6 +1369,9 @@ export async function restoreAllData(
       }
       if (data.savings && data.savings.length > 0) {
         await db.savings.bulkAdd(data.savings);
+      }
+      if (data.sharedSavings && data.sharedSavings.length > 0) {
+        await db.sharedSavings.bulkAdd(data.sharedSavings);
       }
       if (data.notes && data.notes.length > 0) {
         await db.notes.bulkAdd(data.notes);
@@ -1234,11 +1387,12 @@ export async function restoreAllData(
       data.transactions.length +
       (data.budgets?.length || 0) +
       (data.savings?.length || 0) +
+      (data.sharedSavings?.length || 0) +
       (data.notes?.length || 0) +
       (data.calendarEvents?.length || 0);
   } else {
     // Merge mode: Add missing records or update existing
-    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents], async () => {
+    await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents], async () => {
       // Merge Wallets
       for (const w of data.wallets) {
         const exist = await db.wallets.get(w.id);
@@ -1303,6 +1457,20 @@ export async function restoreAllData(
         }
       }
 
+      // Merge Shared Savings
+      if (data.sharedSavings) {
+        for (const ss of data.sharedSavings) {
+          const exist = await db.sharedSavings.get(ss.id);
+          if (exist) {
+            await db.sharedSavings.put(ss);
+            updated++;
+          } else {
+            await db.sharedSavings.add(ss);
+            added++;
+          }
+        }
+      }
+
       // Merge Notes
       if (data.notes) {
         for (const n of data.notes) {
@@ -1344,12 +1512,13 @@ export async function restoreAllData(
 }
 
 export async function resetAllData(): Promise<void> {
-  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.notes, db.calendarEvents, db.settings], async () => {
+  await db.transaction('rw', [db.wallets, db.categories, db.transactions, db.budgets, db.savings, db.sharedSavings, db.notes, db.calendarEvents, db.settings], async () => {
     await db.wallets.clear();
     await db.categories.clear();
     await db.transactions.clear();
     await db.budgets.clear();
     await db.savings.clear();
+    await db.sharedSavings.clear();
     await db.notes.clear();
     await db.calendarEvents.clear();
     await db.settings.clear();
