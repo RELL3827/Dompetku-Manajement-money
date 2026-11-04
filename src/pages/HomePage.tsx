@@ -31,7 +31,6 @@ import {
   FileText,
   Calculator,
   Calendar,
-  Coins,
 } from 'lucide-react';
 import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
@@ -110,16 +109,17 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Aggregate total balance across all active wallets
   const totalBalance = walletBalances.reduce((sum, w) => sum + w.balance, 0);
 
-  // Savings summary calculation
-  const totalSavingsCollected = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.currentAmount, 0);
-  const totalSavingsTarget = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.targetAmount, 0);
-  const savingsPercentage = totalSavingsTarget > 0 ? (totalSavingsCollected / totalSavingsTarget) * 100 : 0;
+  // Unified Savings summary calculation (Personal + Installment Savings)
+  const totalPersonalCollected = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.currentAmount, 0);
+  const totalInstallmentCollected = installments.reduce((sum: number, i: any) => sum + (i.currentAmount || 0), 0);
+  const totalCombinedSavingsCollected = totalPersonalCollected + totalInstallmentCollected;
 
-  // Installments savings summary calculation
-  const activeInstallments = installments.filter((i: any) => !i.isCompleted);
-  const totalInstallmentSavingsCollected = installments.reduce((sum: number, i: any) => sum + (i.currentAmount || 0), 0);
-  const totalInstallmentSavingsTarget = installments.reduce((sum: number, i: any) => sum + (i.targetAmount || 0), 0);
-  const installmentSavingsPercentage = totalInstallmentSavingsTarget > 0 ? (totalInstallmentSavingsCollected / totalInstallmentSavingsTarget) * 100 : 0;
+  const totalPersonalTarget = savingsGoals.reduce((sum, s: SavingGoal) => sum + s.targetAmount, 0);
+  const totalInstallmentTarget = installments.reduce((sum: number, i: any) => sum + (i.targetAmount || 0), 0);
+  const totalCombinedSavingsTarget = totalPersonalTarget + totalInstallmentTarget;
+
+  const combinedSavingsCount = savingsGoals.length + installments.length;
+  const savingsPercentage = totalCombinedSavingsTarget > 0 ? (totalCombinedSavingsCollected / totalCombinedSavingsTarget) * 100 : 0;
 
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
@@ -243,17 +243,19 @@ export const HomePage: React.FC<HomePageProps> = ({
               <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
                 Target Tabungan
               </h3>
-              {savingsGoals.length > 0 && (
+              {combinedSavingsCount > 0 && (
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md">
                   {Math.round(savingsPercentage)}%
                 </span>
               )}
             </div>
             <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
-              {formatRupiah(totalSavingsCollected)}
+              {formatRupiah(totalCombinedSavingsCollected)}
               <span className="text-[10px] font-normal text-slate-400">
                 {' '}
-                {totalSavingsTarget > 0 ? `/ ${formatRupiah(totalSavingsTarget)}` : `(${savingsGoals.length} target)`}
+                {totalCombinedSavingsTarget > 0
+                  ? `/ ${formatRupiah(totalCombinedSavingsTarget)} (${combinedSavingsCount} target)`
+                  : `(${combinedSavingsCount} target)`}
               </span>
             </p>
           </div>
@@ -309,50 +311,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="px-3.5 py-2 rounded-xl text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 transition-colors flex items-center gap-1 shrink-0"
         >
           <span>Buka Kalender</span>
-          <ChevronRight size={14} />
-        </button>
-      </div>
-
-      {/* Tabungan Cicilan (Menabung Berkala) Banner */}
-      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
-            <Coins size={22} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Tabungan Cicilan
-              </h3>
-              {installments.length > 0 && (
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold bg-teal-50 dark:bg-teal-950/40 px-1.5 py-0.5 rounded-md">
-                  {Math.round(installmentSavingsPercentage)}%
-                </span>
-              )}
-            </div>
-            <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
-              {installments.length > 0 ? (
-                <>
-                  {formatRupiah(totalInstallmentSavingsCollected)}
-                  <span className="text-[10px] font-normal text-slate-400">
-                    {' '}/ {formatRupiah(totalInstallmentSavingsTarget)} ({activeInstallments.length} aktif)
-                  </span>
-                </>
-              ) : (
-                <span className="text-[11px] font-normal text-slate-400">
-                  Nabung teratur berkala (Qurban, Gadget, Liburan)
-                </span>
-              )}
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onNavigate('installments')}
-          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:text-teal-300 dark:hover:bg-teal-900/60 transition-colors flex items-center gap-1 shrink-0"
-        >
-          <span>Buka Tab. Cicilan</span>
           <ChevronRight size={14} />
         </button>
       </div>

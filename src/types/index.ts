@@ -248,7 +248,6 @@ export type NavTab =
   | 'home'
   | 'transactions'
   | 'calendar'
-  | 'installments'
   | 'savings'
   | 'budgets'
   | 'notes'
