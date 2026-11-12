@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import type { CalendarEvent, CalendarEventType, Transaction } from '../types';
 import { CalendarEventModal } from '../components/calendar/CalendarEventModal';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { toggleCalendarEventDone, deleteCalendarEvent } from '../db/services';
 import { formatRupiah } from '../utils/currency';
 import { formatIndonesianDate } from '../utils/date';
@@ -56,6 +57,7 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenTransactionMod
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<CalendarEvent | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null);
 
   // Live query all events & transactions
   const allEvents = useLiveQuery(() => db.calendarEvents.toArray()) || [];
@@ -630,8 +632,9 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenTransactionMod
                         </button>
                         <button
                           type="button"
-                          onClick={() => deleteCalendarEvent(ev.id)}
+                          onClick={() => setEventToDelete(ev)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 transition-colors"
+                          title="Hapus agenda"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -739,6 +742,21 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenTransactionMod
         onClose={() => setIsModalOpen(false)}
         initialDate={selectedDate}
         eventToEdit={eventToEdit}
+      />
+
+      {/* Confirm Delete Event Dialog */}
+      <ConfirmDialog
+        isOpen={eventToDelete !== null}
+        onClose={() => setEventToDelete(null)}
+        onConfirm={async () => {
+          if (eventToDelete) {
+            await deleteCalendarEvent(eventToDelete.id);
+            setEventToDelete(null);
+          }
+        }}
+        title="Hapus Agenda Kalender"
+        message={`Apakah Anda yakin ingin menghapus agenda "${eventToDelete?.title || ''}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmLabel="Ya, Hapus"
       />
     </div>
   );

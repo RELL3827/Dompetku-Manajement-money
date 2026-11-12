@@ -17,6 +17,7 @@ import {
   deleteSharedSaving,
 } from '../../db/services';
 import { MemberPaymentModal } from './MemberPaymentModal';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 
 interface SharedSavingCardProps {
   saving: SharedSaving;
@@ -32,6 +33,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
   onDeleted,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [selectedMemberForPayment, setSelectedMemberForPayment] = useState<SharedSavingMember | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -54,10 +56,8 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
 
   // Delete
   const handleDelete = async () => {
-    if (window.confirm(`Yakin ingin menghapus tabungan bersama "${saving.title}"?`)) {
-      await deleteSharedSaving(saving.id);
-      onDeleted?.();
-    }
+    await deleteSharedSaving(saving.id);
+    onDeleted?.();
   };
 
   // WhatsApp Share Message Formatter
@@ -185,7 +185,10 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
               <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setShowConfirmDelete(true);
+                }}
                 className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Trash2 size={13} />
@@ -339,6 +342,16 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
         member={selectedMemberForPayment}
         savingTitle={saving.title}
         onSavePayment={handleSaveMemberPayment}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={handleDelete}
+        title="Hapus Tabungan Bersama"
+        message={`Apakah Anda yakin ingin menghapus tabungan bersama "${saving.title}"? Seluruh data iuran anggota pada target ini akan dihapus permanen.`}
+        confirmLabel="Ya, Hapus Tabungan"
       />
     </article>
   );

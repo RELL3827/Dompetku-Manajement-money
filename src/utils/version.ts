@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.7.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.7.1';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '13 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Perbaikan Sistem Hapus Data (ConfirmDialog)',
+    description: 'Mengganti dialog bawaan browser dengan modal konfirmasi interaktif yang stabil di mode PWA / mobile, lengkap dengan indikator proses dan proteksi integritas data.',
+    icon: '🛡️',
+  },
   {
     title: 'iOS 27 Hyper-Liquid & Spatial Visuals',
     description: 'Tampilan baru ultra-kaca (Liquid Glassmorphism) dengan saturasi warna 190%, specular edge highlights, dan kedalaman spasial elegan.',

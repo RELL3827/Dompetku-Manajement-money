@@ -16,6 +16,7 @@ import type { InstallmentSaving, Wallet } from '../../types';
 import { formatRupiah } from '../../utils/currency';
 import { deleteInstallmentSaving, toggleInstallmentSavingDeposit } from '../../db/services';
 import { DepositInstallmentModal } from './DepositInstallmentModal';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 
 interface InstallmentSavingCardProps {
   saving: InstallmentSaving;
@@ -33,6 +34,8 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
   onRefresh,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [cancelDepositIdx, setCancelDepositIdx] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [targetIndex, setTargetIndex] = useState(1);
@@ -59,12 +62,9 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
   };
 
   // Quick 1-click toggle
-  const handleQuickToggle = async (idx: number, isPaid: boolean) => {
+  const handleQuickToggle = (idx: number, isPaid: boolean) => {
     if (isPaid) {
-      if (window.confirm(`Batalkan status setoran cicilan ke-${idx}?`)) {
-        await toggleInstallmentSavingDeposit(saving.id, idx);
-        onRefresh?.();
-      }
+      setCancelDepositIdx(idx);
     } else {
       // Open modal to confirm or pick wallet
       setTargetIndex(idx);
@@ -72,11 +72,17 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm(`Yakin ingin menghapus tabungan cicilan "${saving.title}"?`)) {
-      await deleteInstallmentSaving(saving.id);
-      onDeleted?.();
+  const handleConfirmCancelDeposit = async () => {
+    if (cancelDepositIdx !== null) {
+      await toggleInstallmentSavingDeposit(saving.id, cancelDepositIdx);
+      setCancelDepositIdx(null);
+      onRefresh?.();
     }
+  };
+
+  const handleDelete = async () => {
+    await deleteInstallmentSaving(saving.id);
+    onDeleted?.();
   };
 
   const getShareText = () => {
@@ -195,7 +201,10 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
               <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setShowConfirmDelete(true);
+                }}
                 className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Trash2 size={13} />
@@ -361,6 +370,27 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
         saving={saving}
         installmentIndex={targetIndex}
         onSuccess={() => onRefresh?.()}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={handleDelete}
+        title="Hapus Tabungan Cicilan"
+        message={`Apakah Anda yakin ingin menghapus tabungan cicilan "${saving.title}"? Riwayat setoran cicilan yang tercatat akan dihapus permanen.`}
+        confirmLabel="Ya, Hapus Tabungan"
+      />
+
+      {/* Confirm Cancel Deposit Dialog */}
+      <ConfirmDialog
+        isOpen={cancelDepositIdx !== null}
+        onClose={() => setCancelDepositIdx(null)}
+        onConfirm={handleConfirmCancelDeposit}
+        title="Batalkan Setoran Cicilan"
+        message={`Apakah Anda yakin ingin membatalkan status pembayaran cicilan ke-${cancelDepositIdx}?`}
+        confirmLabel="Batalkan Pembayaran"
+        isDestructive={false}
       />
     </article>
   );

@@ -28,10 +28,21 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
     const res = await deleteWallet(wallet.id);
     if (!res.success) {
       setDeleteErrorMessage(res.message || 'Gagal menghapus dompet');
-    } else {
-      setShowConfirmDelete(false);
-      onUpdated();
+      return false;
     }
+    setShowConfirmDelete(false);
+    onUpdated();
+    return true;
+  };
+
+  const handleConfirmAction = async () => {
+    if (deleteErrorMessage) {
+      await handleToggleArchive();
+      setShowConfirmDelete(false);
+      setDeleteErrorMessage('');
+      return true;
+    }
+    return await handleDelete();
   };
 
   return (
@@ -161,13 +172,14 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
           setShowConfirmDelete(false);
           setDeleteErrorMessage('');
         }}
-        onConfirm={handleDelete}
-        title="Hapus Dompet"
+        onConfirm={handleConfirmAction}
+        title={deleteErrorMessage ? 'Perhatian: Riwayat Transaksi Ada' : 'Hapus Dompet'}
         message={
           deleteErrorMessage ||
           `Apakah Anda yakin ingin menghapus dompet "${wallet.name}"? Catatan: Jika dompet sudah memiliki transaksi, sistem akan meminta Anda mengarsipkannya agar pembukuan tidak rusak.`
         }
-        confirmLabel="Ya, Hapus"
+        confirmLabel={deleteErrorMessage ? 'Arsipkan Saja' : 'Ya, Hapus'}
+        isDestructive={!deleteErrorMessage}
       />
     </>
   );

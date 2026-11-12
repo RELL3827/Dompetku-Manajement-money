@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import { CurrencyInput } from '../common/CurrencyInput';
 import {
   Coins,
@@ -99,6 +100,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [notes, setNotes] = useState('');
   const [isDone, setIsDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -166,16 +168,15 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     if (!eventToEdit) return;
-    if (window.confirm('Yakin ingin menghapus tanda agenda ini?')) {
-      try {
-        await deleteCalendarEvent(eventToEdit.id);
-        onSaved?.();
-        onClose();
-      } catch (err: any) {
-        setError('Gagal menghapus agenda.');
-      }
+    try {
+      await deleteCalendarEvent(eventToEdit.id);
+      setShowConfirmDelete(false);
+      onSaved?.();
+      onClose();
+    } catch {
+      setError('Gagal menghapus agenda.');
     }
   };
 
@@ -326,8 +327,8 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
           {eventToEdit ? (
             <button
               type="button"
-              onClick={handleDelete}
-              className="px-3.5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold flex items-center gap-1.5 transition-all"
+              onClick={() => setShowConfirmDelete(true)}
+              className="ios-btn px-3.5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold flex items-center gap-1.5 transition-all"
             >
               <Trash2 size={15} />
               <span>Hapus</span>
@@ -341,20 +342,30 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-all"
+              className="ios-btn px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-all"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all active:scale-95 disabled:opacity-50"
+              className="ios-btn ios-btn-primary px-5 py-2.5 text-xs font-bold disabled:opacity-50"
             >
               {isSubmitting ? 'Menyimpan...' : eventToEdit ? 'Simpan Perubahan' : '+ Tambah ke Kalender'}
             </button>
           </div>
         </div>
       </form>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Agenda Kalender"
+        message="Apakah Anda yakin ingin menghapus tanda agenda ini? Data agenda tidak dapat dikembalikan."
+        confirmLabel="Ya, Hapus"
+      />
     </Modal>
   );
 };
