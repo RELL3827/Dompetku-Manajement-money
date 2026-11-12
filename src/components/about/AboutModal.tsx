@@ -8,7 +8,7 @@ import {
   Lock,
   EyeOff,
 } from 'lucide-react';
-import { APP_VERSION } from '../../utils/version';
+import { APP_VERSION, APP_RELEASE_DATE } from '../../utils/version';
 import { usePwaUpdate } from '../../context/PwaUpdateContext';
 
 interface AboutModalProps {
@@ -42,7 +42,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 
           <div className="flex flex-wrap items-center justify-center gap-2 mt-3.5 pt-3 border-t border-white/10 text-[11px]">
             <span className="px-2.5 py-0.5 rounded-full bg-white/20 font-bold">
-              Versi {APP_VERSION}
+              Versi {APP_VERSION} ({APP_RELEASE_DATE})
             </span>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 font-semibold flex items-center gap-1">
               <ShieldCheck size={13} /> 100% Offline

@@ -193,20 +193,20 @@ export const SavingsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
       {/* Category Type Switcher (Pribadi vs Tabungan Cicilan vs Nabung Bersama) */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl w-fit flex-wrap shadow-2xs">
+      <div className="ios-segmented w-full sm:w-fit overflow-x-auto scrollbar-none flex-wrap gap-1">
         <button
           type="button"
           onClick={() => setSavingsType('personal')}
-          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`ios-btn flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             savingsType === 'personal'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/25'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <RealisticIcon name="PiggyBank" size={17} />
           <span>Tabungan Bebas</span>
           <span
-            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
               savingsType === 'personal'
                 ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
                 : 'bg-slate-200/70 dark:bg-slate-700 text-slate-500'
@@ -219,16 +219,16 @@ export const SavingsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setSavingsType('installment')}
-          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`ios-btn flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             savingsType === 'installment'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/25'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <RealisticIcon name="Coins" size={17} />
           <span>Tabungan Cicilan</span>
           <span
-            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
               savingsType === 'installment'
                 ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
                 : 'bg-slate-200/70 dark:bg-slate-700 text-slate-500'
@@ -241,16 +241,16 @@ export const SavingsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setSavingsType('shared')}
-          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`ios-btn flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             savingsType === 'shared'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/25'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <RealisticIcon name="Users" size={17} />
           <span>Nabung Bersama</span>
           <span
-            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
               savingsType === 'shared'
                 ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
                 : 'bg-slate-200/70 dark:bg-slate-700 text-slate-500'

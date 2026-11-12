@@ -169,6 +169,15 @@ export const PwaUpdateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const updateApp = useCallback(async () => {
     setIsUpdating(true);
     try {
+      const nowFormatted = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Jakarta',
+      }).format(new Date());
+      localStorage.setItem('dompetku_installed_update_date', nowFormatted);
       // Execute skipWaiting and clientsClaim
       await updateServiceWorker(true);
     } catch (err) {

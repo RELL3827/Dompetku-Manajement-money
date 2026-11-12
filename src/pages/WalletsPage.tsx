@@ -65,7 +65,7 @@ export const WalletsPage: React.FC<WalletsPageProps> = ({ onOpenTransactionModal
             <button
               type="button"
               onClick={() => onOpenTransactionModal('transfer')}
-              className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold hover:bg-blue-100 transition-colors"
+              className="ios-btn flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50/80 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold hover:bg-blue-100 transition-colors"
             >
               <ArrowLeftRight size={14} />
               <span className="hidden sm:inline">Transfer Antar Dompet</span>
@@ -75,7 +75,7 @@ export const WalletsPage: React.FC<WalletsPageProps> = ({ onOpenTransactionModal
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="btn-tactile btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20"
+            className="ios-btn ios-btn-primary flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold"
           >
             <Plus size={15} />
             <span>Tambah Dompet</span>
@@ -84,15 +84,15 @@ export const WalletsPage: React.FC<WalletsPageProps> = ({ onOpenTransactionModal
       </div>
 
       {/* Aggregate Balance Card */}
-      <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+      <article className="ios-glass-card p-5.5 flex items-center justify-between">
         <div className="space-y-1">
           <span className="text-xs font-medium text-slate-400">Total Saldo Seluruh Dompet</span>
           <p className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight tabular-nums">
             {formatRupiah(totalActiveBalance)}
           </p>
         </div>
-        <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
-          <RealisticIcon name="WalletCards" size={26} />
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/60 dark:to-teal-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+          <RealisticIcon name="WalletCards" size={28} />
         </div>
       </article>
 

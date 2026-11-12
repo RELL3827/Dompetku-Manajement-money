@@ -81,7 +81,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
           <button
             type="button"
             onClick={() => setIs503020ModalOpen(true)}
-            className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-200/60 dark:border-purple-800/40 shadow-xs"
+            className="ios-btn flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-200/60 dark:border-purple-800/40 shadow-xs"
           >
             <RealisticIcon name="Sparkles" size={15} />
             <span>Setup 50/30/20</span>
@@ -90,7 +90,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="btn-tactile btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20"
+            className="ios-btn ios-btn-primary flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold"
           >
             <Plus size={15} />
             <span>Atur Kategori</span>
@@ -98,12 +98,12 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Tab Switcher: Metode 50/30/20 vs Per Kategori */}
-      <div className="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl w-full sm:w-fit">
+      {/* Tab Switcher: Metode 50/30/20 vs Per Kategori (iOS Segmented) */}
+      <div className="ios-segmented w-full sm:w-fit">
         <button
           type="button"
           onClick={() => setActiveTab('503020')}
-          className={`btn-tactile flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`ios-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === '503020'
               ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-xs'
               : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
@@ -116,7 +116,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
         <button
           type="button"
           onClick={() => setActiveTab('categories')}
-          className={`btn-tactile flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`ios-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'categories'
               ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-xs'
               : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
@@ -141,7 +141,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
         <div className="space-y-6">
           {/* Aggregate Budget Hero Card */}
           {budgetStatuses.length > 0 && (
-            <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4">
+            <article className="ios-glass-card p-5.5 space-y-4">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <RealisticIcon name="PiggyBank" size={18} />

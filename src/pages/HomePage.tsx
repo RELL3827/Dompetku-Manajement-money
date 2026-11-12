@@ -197,9 +197,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onOpenTransactionModal('expense')}
-          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-rose-300/80 dark:hover:border-rose-800/70 group"
+          className="ios-btn ios-glass-card p-4 flex flex-col items-center justify-center gap-2.5 hover:border-rose-300/80 dark:hover:border-rose-800/70 group"
         >
-          <div className="w-12 h-12 rounded-2xl bg-rose-50/90 dark:bg-rose-950/50 border border-rose-200/60 dark:border-rose-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950/60 dark:to-rose-900/40 border border-rose-200/70 dark:border-rose-800/60 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
             <RealisticIcon name="TrendingDown" size={28} />
           </div>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -210,9 +210,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onOpenTransactionModal('income')}
-          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-emerald-300/80 dark:hover:border-emerald-800/70 group"
+          className="ios-btn ios-glass-card p-4 flex flex-col items-center justify-center gap-2.5 hover:border-emerald-300/80 dark:hover:border-emerald-800/70 group"
         >
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/60 dark:to-emerald-900/40 border border-emerald-200/70 dark:border-emerald-800/60 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
             <RealisticIcon name="TrendingUp" size={28} />
           </div>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -223,9 +223,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onOpenTransactionModal('transfer')}
-          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-blue-300/80 dark:hover:border-blue-800/70 group"
+          className="ios-btn ios-glass-card p-4 flex flex-col items-center justify-center gap-2.5 hover:border-blue-300/80 dark:hover:border-blue-800/70 group"
         >
-          <div className="w-12 h-12 rounded-2xl bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/60 dark:to-blue-900/40 border border-blue-200/70 dark:border-blue-800/60 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
             <RealisticIcon name="ArrowLeftRight" size={28} />
           </div>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -235,9 +235,9 @@ export const HomePage: React.FC<HomePageProps> = ({
       </div>
 
       {/* Savings Summary Banner / Shortcut */}
-      <article className="card-elevated p-4 flex items-center justify-between gap-4">
+      <article className="ios-glass-card p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-pink-50/80 dark:bg-pink-950/40 border border-pink-200/60 dark:border-pink-900/40 flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/40 border border-pink-200/60 dark:border-pink-900/40 flex items-center justify-center shrink-0 shadow-xs">
             <RealisticIcon name="PiggyBank" size={28} />
           </div>
           <div>
@@ -266,7 +266,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('savings')}
-          className="btn-tactile px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200/70 dark:border-emerald-800/50 flex items-center gap-1 shrink-0"
+          className="ios-btn px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200/70 dark:border-emerald-800/50 flex items-center gap-1 shrink-0"
         >
           <span>Buka Tabungan</span>
           <ChevronRight size={14} />
@@ -274,9 +274,9 @@ export const HomePage: React.FC<HomePageProps> = ({
       </article>
 
       {/* Calendar & Agenda Banner (Gajian, Liburan, Tagihan) */}
-      <article className="card-elevated p-4 flex items-center justify-between gap-4">
+      <article className="ios-glass-card p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/40 border border-amber-200/60 dark:border-amber-900/40 flex items-center justify-center shrink-0 shadow-xs">
             <RealisticIcon name="Calendar" size={28} />
           </div>
           <div>
@@ -310,7 +310,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('calendar')}
-          className="btn-tactile px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 border border-amber-200/70 dark:border-amber-800/50 flex items-center gap-1 shrink-0"
+          className="ios-btn px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 border border-amber-200/70 dark:border-amber-800/50 flex items-center gap-1 shrink-0"
         >
           <span>Buka Kalender</span>
           <ChevronRight size={14} />

@@ -44,7 +44,7 @@ import {
 import type { BackupData, ThemeMode, NavTab } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import { usePwaUpdate } from '../context/PwaUpdateContext';
-import { APP_VERSION, APP_RELEASE_DATE } from '../utils/version';
+import { APP_VERSION, getInstalledUpdateInfo } from '../utils/version';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
 import { DonationModal } from '../components/common/DonationModal';
 import {
@@ -466,7 +466,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             </span>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
-                {APP_VERSION} ({APP_RELEASE_DATE})
+                {getInstalledUpdateInfo().version} • Terpasang: {getInstalledUpdateInfo().date}
               </span>
             </div>
           </div>

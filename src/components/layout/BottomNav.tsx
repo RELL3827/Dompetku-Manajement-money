@@ -34,10 +34,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
 
   return (
     <nav
-      aria-label="Navigasi bawah"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 pb-[env(safe-area-inset-bottom)] shadow-lg transition-colors"
+      aria-label="Navigasi bawah iOS"
+      className="md:hidden fixed bottom-3 left-3 right-3 z-30 max-w-lg mx-auto ios-glass-dock pb-[env(safe-area-inset-bottom)] transition-all"
     >
-      <div className="flex items-center overflow-x-auto scrollbar-none h-16 px-1">
+      <div className="flex items-center overflow-x-auto scrollbar-none h-[62px] px-1.5 gap-0.5">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
 
@@ -47,20 +47,24 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
               ref={isActive ? activeRef : null}
               type="button"
               onClick={() => onChangeTab(tab.id)}
-              className={`flex flex-col items-center justify-center gap-0.5 min-w-[64px] flex-1 py-1 transition-all cursor-pointer shrink-0 active:scale-90 ${
+              className={`ios-btn flex flex-col items-center justify-center gap-0.5 min-w-[58px] flex-1 py-1 transition-all cursor-pointer shrink-0 rounded-2xl ${
                 isActive
-                  ? 'text-emerald-600 dark:text-emerald-400 font-bold'
-                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 opacity-70 hover:opacity-100'
+                  ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
+                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 opacity-75 hover:opacity-100'
               }`}
             >
               <div
-                className={`p-1 rounded-xl transition-all ${
-                  isActive ? 'bg-emerald-500/10 dark:bg-emerald-500/20 scale-110 drop-shadow-xs' : ''
+                className={`p-1 rounded-2xl transition-all duration-300 ${
+                  isActive
+                    ? 'bg-emerald-500/15 dark:bg-emerald-400/20 scale-110 shadow-xs ring-1 ring-emerald-500/30'
+                    : 'hover:bg-slate-500/5'
                 }`}
               >
-                <RealisticIcon name={tab.iconName} size={20} />
+                <RealisticIcon name={tab.iconName} size={21} />
               </div>
-              <span className="text-[9px] tracking-tight truncate max-w-full px-0.5">{tab.label}</span>
+              <span className="text-[9px] font-semibold tracking-tight truncate max-w-full px-0.5">
+                {tab.label}
+              </span>
             </button>
           );
         })}

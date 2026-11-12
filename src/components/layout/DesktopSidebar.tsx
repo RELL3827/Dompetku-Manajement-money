@@ -66,7 +66,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         <button
           type="button"
           onClick={onOpenAddModal}
-          className="btn-glow-emerald w-full py-2.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"
+          className="ios-btn ios-btn-primary w-full py-2.5 px-4 font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <Plus size={16} strokeWidth={2.6} />
           <span>Catat Transaksi</span>
@@ -81,13 +81,13 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => onChangeTab(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all cursor-pointer active:scale-97 group ${
+                className={`ios-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all cursor-pointer group ${
                   isActive
-                    ? 'bg-emerald-50/90 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-200/60 dark:border-emerald-800/40 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 hover:translate-x-0.5'
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300 font-extrabold border border-emerald-500/30 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-500/10 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                <span className={`transition-transform ${isActive ? 'scale-110' : 'opacity-80 group-hover:opacity-100 group-hover:scale-105'}`}>
+                <span className={`transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-xs' : 'opacity-80 group-hover:opacity-100 group-hover:scale-105'}`}>
                   <RealisticIcon name={item.iconName} size={20} />
                 </span>
                 <span>{item.label}</span>
