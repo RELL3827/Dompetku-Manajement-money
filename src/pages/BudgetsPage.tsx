@@ -13,7 +13,8 @@ import { Budget503020View } from '../components/budget/Budget503020View';
 import { EmptyState } from '../components/common/EmptyState';
 import { formatRupiah } from '../utils/currency';
 import { getCurrentYearMonth } from '../utils/date';
-import { Plus, PiggyBank, Sparkles, LayoutGrid } from 'lucide-react';
+import { Plus, LayoutGrid } from 'lucide-react';
+import { RealisticIcon } from '../components/common/RealisticIcon';
 import type { Budget, Budget503020Summary, NavTab } from '../types';
 
 interface BudgetsPageProps {
@@ -80,16 +81,16 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
           <button
             type="button"
             onClick={() => setIs503020ModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-200/60 dark:border-purple-800/40 active:scale-95 transition-all shadow-xs"
+            className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-200/60 dark:border-purple-800/40 shadow-xs"
           >
-            <Sparkles size={14} className="text-purple-600 dark:text-purple-400" />
+            <RealisticIcon name="Sparkles" size={15} />
             <span>Setup 50/30/20</span>
           </button>
 
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all"
+            className="btn-tactile btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20"
           >
             <Plus size={15} />
             <span>Atur Kategori</span>
@@ -102,20 +103,20 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
         <button
           type="button"
           onClick={() => setActiveTab('503020')}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`btn-tactile flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === '503020'
               ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-xs'
               : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
           }`}
         >
-          <Sparkles size={14} className="text-purple-500" />
+          <RealisticIcon name="Sparkles" size={14} />
           <span>Metode 50 / 30 / 20</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('categories')}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`btn-tactile flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'categories'
               ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-xs'
               : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
@@ -140,20 +141,20 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
         <div className="space-y-6">
           {/* Aggregate Budget Hero Card */}
           {budgetStatuses.length > 0 && (
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+            <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <PiggyBank size={16} className="text-emerald-500" />
+                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                  <RealisticIcon name="PiggyBank" size={18} />
                   Total Anggaran Gabungan Bulan Ini
                 </span>
-                <span className="font-bold text-slate-600 dark:text-slate-400">
+                <span className="font-bold text-slate-600 dark:text-slate-400 tabular-nums">
                   {Math.round(overallPercentage)}% Terpakai
                 </span>
               </div>
 
               <div>
                 <div className="flex items-baseline justify-between mb-1.5 text-xs">
-                  <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+                  <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
                     {formatRupiah(totalSpent)}
                     <span className="text-xs font-normal text-slate-400">
                       {' '}
@@ -162,7 +163,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
                   </span>
                   <span className="text-xs text-slate-500">
                     Sisa:{' '}
-                    <strong className="text-emerald-600 dark:text-emerald-400">
+                    <strong className="text-emerald-600 dark:text-emerald-400 tabular-nums">
                       {formatRupiah(totalRemaining)}
                     </strong>
                   </span>
@@ -181,7 +182,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ onNavigate }) => {
                   />
                 </div>
               </div>
-            </div>
+            </article>
           )}
 
           {/* Category Budgets Grid */}

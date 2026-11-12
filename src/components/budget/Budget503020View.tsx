@@ -1,11 +1,8 @@
 import React from 'react';
 import { formatRupiah } from '../../utils/currency';
 import { IconRenderer } from '../common/IconRenderer';
+import { RealisticIcon } from '../common/RealisticIcon';
 import {
-  ShieldCheck,
-  HeartHandshake,
-  PiggyBank,
-  Sparkles,
   SlidersHorizontal,
   ArrowRight,
 } from 'lucide-react';
@@ -50,7 +47,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Hero Card: 50/30/20 Overview */}
-      <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+      <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -61,7 +58,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Acuan Pemasukan Bulanan:{' '}
-              <strong className="text-slate-900 dark:text-slate-100">
+              <strong className="text-slate-900 dark:text-slate-100 tabular-nums">
                 {formatRupiah(incomeBase)}
               </strong>
             </p>
@@ -70,7 +67,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
           <button
             type="button"
             onClick={onOpenSetup}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors self-start sm:self-auto"
+            className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors self-start sm:self-auto"
           >
             <SlidersHorizontal size={14} />
             <span>Sesuaikan Acuan 50/30/20</span>
@@ -81,7 +78,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
         <div>
           <div className="flex items-center justify-between text-xs mb-1.5 text-slate-500">
             <span>Proporsi Realisasi Bulan Ini:</span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">
+            <span className="font-semibold text-slate-700 dark:text-slate-300 tabular-nums">
               Total Pengeluaran: {formatRupiah(totalSpentAll)}
             </span>
           </div>
@@ -135,7 +132,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
         {/* Financial Insight Banner */}
         <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3 text-xs leading-relaxed">
-          <Sparkles size={18} className="text-amber-500 shrink-0 mt-0.5" />
+          <RealisticIcon name="Sparkles" size={18} className="shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-slate-800 dark:text-slate-200">
               Evaluasi Finansial Bulan Ini:{' '}
@@ -151,17 +148,17 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
             </span>
           </div>
         </div>
-      </div>
+      </article>
 
       {/* 3 Pillars Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* 1. KEBUTUHAN (50%) */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
+        <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                  <ShieldCheck size={18} />
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
+                  <RealisticIcon name="ShieldCheck" size={22} />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
@@ -186,10 +183,10 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
             <div>
               <div className="flex items-baseline justify-between mb-1 text-xs">
-                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100">
+                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatRupiah(needsSpent)}
                 </span>
-                <span className="text-slate-400">Target: {formatRupiah(needsTarget)}</span>
+                <span className="text-slate-400 tabular-nums">Target: {formatRupiah(needsTarget)}</span>
               </div>
 
               <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
@@ -207,7 +204,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                 {needsRemaining > 0 ? (
-                  <>Sisa batas aman: <strong className="text-emerald-600 dark:text-emerald-400">{formatRupiah(needsRemaining)}</strong></>
+                  <>Sisa batas aman: <strong className="text-emerald-600 dark:text-emerald-400 tabular-nums">{formatRupiah(needsRemaining)}</strong></>
                 ) : (
                   <span className="text-rose-600 dark:text-rose-400 font-semibold">Melebihi alokasi kebutuhan</span>
                 )}
@@ -236,7 +233,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
                         {category.name}
                       </span>
                     </div>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 shrink-0">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 shrink-0 tabular-nums">
                       {formatRupiah(spent)}
                     </span>
                   </div>
@@ -244,15 +241,15 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </article>
 
         {/* 2. KEINGINAN (30%) */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
+        <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <HeartHandshake size={18} />
+                <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shadow-xs">
+                  <RealisticIcon name="Heart" size={22} />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
@@ -277,10 +274,10 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
             <div>
               <div className="flex items-baseline justify-between mb-1 text-xs">
-                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100">
+                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatRupiah(wantsSpent)}
                 </span>
-                <span className="text-slate-400">Target: {formatRupiah(wantsTarget)}</span>
+                <span className="text-slate-400 tabular-nums">Target: {formatRupiah(wantsTarget)}</span>
               </div>
 
               <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
@@ -298,7 +295,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                 {wantsRemaining > 0 ? (
-                  <>Sisa anggaran gaya hidup: <strong className="text-emerald-600 dark:text-emerald-400">{formatRupiah(wantsRemaining)}</strong></>
+                  <>Sisa anggaran gaya hidup: <strong className="text-emerald-600 dark:text-emerald-400 tabular-nums">{formatRupiah(wantsRemaining)}</strong></>
                 ) : (
                   <span className="text-rose-600 dark:text-rose-400 font-semibold">Melebihi alokasi keinginan</span>
                 )}
@@ -327,7 +324,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
                         {category.name}
                       </span>
                     </div>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 shrink-0">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 shrink-0 tabular-nums">
                       {formatRupiah(spent)}
                     </span>
                   </div>
@@ -335,15 +332,15 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </article>
 
         {/* 3. TABUNGAN & INVESTASI (20%) */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
+        <article className="card-elevated p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                  <PiggyBank size={18} />
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+                  <RealisticIcon name="PiggyBank" size={22} />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
@@ -368,10 +365,10 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
 
             <div>
               <div className="flex items-baseline justify-between mb-1 text-xs">
-                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100">
+                <span className="text-lg font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
                   {formatRupiah(savingsSpent)}
                 </span>
-                <span className="text-slate-400">Target: {formatRupiah(savingsTarget)}</span>
+                <span className="text-slate-400 tabular-nums">Target: {formatRupiah(savingsTarget)}</span>
               </div>
 
               <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
@@ -387,7 +384,7 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
                     Target 20% tabungan telah tercapai!
                   </span>
                 ) : (
-                  <>Kekurangan: <strong className="text-slate-800 dark:text-slate-200">{formatRupiah(savingsRemaining)}</strong></>
+                  <>Kekurangan: <strong className="text-slate-800 dark:text-slate-200 tabular-nums">{formatRupiah(savingsRemaining)}</strong></>
                 )}
               </p>
             </div>
@@ -407,13 +404,13 @@ export const Budget503020View: React.FC<Budget503020ViewProps> = ({
             <button
               type="button"
               onClick={onNavigateToSavings}
-              className="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors active:scale-98"
+              className="btn-tactile w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
             >
               <span>Buka Menu Tabungan</span>
               <ArrowRight size={14} />
             </button>
           )}
-        </div>
+        </article>
       </div>
     </div>
   );

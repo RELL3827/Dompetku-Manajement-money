@@ -62,15 +62,15 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
 
   return (
     <>
-      <div className="relative p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+      <article className="card-elevated p-5 relative flex flex-col justify-between space-y-4">
         {/* Top: Icon, Title, and Actions Menu */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0 pr-2">
             <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md"
+              className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md border border-black/5 dark:border-white/10"
               style={{ backgroundColor: goal.color }}
             >
-              <IconRenderer name={goal.icon} size={22} />
+              <IconRenderer name={goal.icon} size={24} />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -78,7 +78,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
                   {goal.name}
                 </h3>
                 {isCompleted && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 border border-emerald-200/60 dark:border-emerald-800/40">
                     <Trophy size={11} /> Tercapai!
                   </span>
                 )}
@@ -87,7 +87,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
                 <p className="text-xs text-slate-400 truncate mt-0.5">{goal.notes}</p>
               ) : associatedWallet ? (
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Disimpan di: <span className="font-medium">{associatedWallet.name}</span>
+                  Disimpan di: <span className="font-semibold text-slate-700 dark:text-slate-300">{associatedWallet.name}</span>
                 </p>
               ) : null}
             </div>
@@ -99,7 +99,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
               type="button"
               onClick={() => setShowMenu(!showMenu)}
               aria-label="Menu tabungan"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <MoreVertical size={16} />
             </button>
@@ -107,14 +107,14 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-20" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 z-30 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 top-full mt-1 w-36 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-700 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150">
                   <button
                     type="button"
                     onClick={() => {
                       setShowMenu(false);
                       onEdit(goal);
                     }}
-                    className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 cursor-pointer"
                   >
                     <Edit3 size={14} className="text-blue-500" />
                     <span>Ubah Target</span>
@@ -125,7 +125,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
                       setShowMenu(false);
                       setShowConfirmDelete(true);
                     }}
-                    className="w-full px-3 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 cursor-pointer"
                   >
                     <Trash2 size={14} />
                     <span>Hapus Target</span>
@@ -140,7 +140,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
         <div className="space-y-2">
           <div className="flex items-baseline justify-between text-xs">
             <div>
-              <span className="text-base font-extrabold text-slate-900 dark:text-slate-100">
+              <span className="text-base font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
                 {formatRupiah(goal.currentAmount)}
               </span>
               <span className="text-[11px] text-slate-400 font-normal">
@@ -149,7 +149,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
               </span>
             </div>
             <span
-              className={`text-xs font-bold ${
+              className={`text-xs font-extrabold ${
                 isCompleted
                   ? 'text-emerald-600 dark:text-emerald-400'
                   : 'text-slate-600 dark:text-slate-400'
@@ -162,7 +162,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
           {/* Progress Bar */}
           <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
+              className={`h-full rounded-full transition-all duration-500 shadow-sm ${
                 isCompleted ? 'bg-emerald-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400'
               }`}
               style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
@@ -173,7 +173,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
           <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
             {!isCompleted ? (
               <span>
-                Sisa: <strong className="text-slate-700 dark:text-slate-300">{formatRupiah(remaining)}</strong>
+                Sisa: <strong className="text-slate-800 dark:text-slate-200 tabular-nums">{formatRupiah(remaining)}</strong>
               </span>
             ) : (
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
@@ -194,7 +194,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
           </div>
 
           {recommendedMonthly && !isCompleted && (
-            <p className="text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-800/40 px-2 py-1 rounded-lg">
+            <p className="text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-800/40 px-2 py-1 rounded-xl border border-slate-100 dark:border-slate-800">
               💡 Nabung sekitar <strong>{formatRupiah(recommendedMonthly)}/bulan</strong> untuk tepat waktu.
             </p>
           )}
@@ -205,7 +205,7 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
           <button
             type="button"
             onClick={() => onDeposit(goal)}
-            className="py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95"
+            className="btn-tactile py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-emerald-200/60 dark:border-emerald-800/40"
           >
             <PlusCircle size={15} />
             <span>Nabung</span>
@@ -215,13 +215,13 @@ export const SavingGoalCard: React.FC<SavingGoalCardProps> = ({
             type="button"
             onClick={() => onWithdraw(goal)}
             disabled={goal.currentAmount <= 0}
-            className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="btn-tactile py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <MinusCircle size={15} />
             <span>Tarik Dana</span>
           </button>
         </div>
-      </div>
+      </article>
 
       <ConfirmDialog
         isOpen={showConfirmDelete}

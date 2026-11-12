@@ -12,9 +12,9 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onCl
         type="button"
         onClick={onClick}
         aria-label="Catat transaksi baru"
-        className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xl shadow-emerald-600/40 flex items-center justify-center transition-all active:scale-90 hover:scale-105"
+        className="btn-glow-emerald w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-600/40 ring-2 ring-white/30 dark:ring-slate-900/40 cursor-pointer"
       >
-        <Plus size={28} strokeWidth={2.5} />
+        <Plus size={28} strokeWidth={2.8} className="drop-shadow-xs" />
       </button>
     </div>
   );

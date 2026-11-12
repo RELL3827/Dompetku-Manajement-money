@@ -13,13 +13,10 @@ import { EmptyState } from '../components/common/EmptyState';
 import { formatRupiah } from '../utils/currency';
 import {
   Plus,
-  PiggyBank,
   Trophy,
   Sparkles,
-  Users,
-  UserCheck,
-  Coins,
 } from 'lucide-react';
+import { RealisticIcon } from '../components/common/RealisticIcon';
 import type { SavingGoal, SharedSaving, InstallmentSaving, Wallet } from '../types';
 
 export const SavingsPage: React.FC = () => {
@@ -196,17 +193,17 @@ export const SavingsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-24 md:pb-8 animate-in fade-in duration-200">
       {/* Category Type Switcher (Pribadi vs Tabungan Cicilan vs Nabung Bersama) */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 rounded-2xl w-fit flex-wrap">
+      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl w-fit flex-wrap shadow-2xs">
         <button
           type="button"
           onClick={() => setSavingsType('personal')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
             savingsType === 'personal'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
-          <PiggyBank size={15} />
+          <RealisticIcon name="PiggyBank" size={17} />
           <span>Tabungan Bebas</span>
           <span
             className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
@@ -222,13 +219,13 @@ export const SavingsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setSavingsType('installment')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
             savingsType === 'installment'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
-          <Coins size={15} />
+          <RealisticIcon name="Coins" size={17} />
           <span>Tabungan Cicilan</span>
           <span
             className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
@@ -244,13 +241,13 @@ export const SavingsPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setSavingsType('shared')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
             savingsType === 'shared'
-              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-emerald-500/20'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
-          <Users size={15} />
+          <RealisticIcon name="Users" size={17} />
           <span>Nabung Bersama</span>
           <span
             className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
@@ -270,7 +267,7 @@ export const SavingsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <PiggyBank className="text-emerald-500" size={22} />
+                <RealisticIcon name="PiggyBank" size={24} />
                 <span>Target Tabungan Bebas</span>
               </h1>
               <p className="text-xs text-slate-500">
@@ -281,50 +278,56 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenAdd}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all"
+              className="btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer"
             >
-              <Plus size={15} />
+              <Plus size={16} strokeWidth={2.6} />
               <span>Target Baru</span>
             </button>
           </div>
 
           {/* Aggregate KPI Summary Hero */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white shadow-xl shadow-emerald-700/15 relative overflow-hidden">
-            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+          <article
+            className="p-5 rounded-3xl text-white relative overflow-hidden border border-white/15"
+            style={{
+              background: 'linear-gradient(135deg var(--in-oklab), #059669 0%, #0f766e 60%, #0f172a 100%)',
+              boxShadow: 'var(--shadow-hero)',
+            }}
+          >
+            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between text-xs text-emerald-100">
                 <span className="font-semibold flex items-center gap-1.5">
                   <Sparkles size={14} /> Total Tabungan Terkumpul
                 </span>
-                <span className="text-[11px] bg-white/10 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-full backdrop-blur-xs font-semibold">
                   {completedCount} dari {savingsList.length} tercapai
                 </span>
               </div>
 
               <div>
-                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">
                   {formatRupiah(totalCurrentSavings)}
                 </p>
-                <p className="text-xs text-emerald-100/80 mt-0.5">
+                <p className="text-xs text-emerald-100/90 mt-0.5">
                   dari total target {formatRupiah(totalTargetSavings)} ({Math.round(overallPercentage)}%)
                 </p>
               </div>
 
               <div className="w-full h-2.5 rounded-full bg-white/20 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-white transition-all duration-500"
+                  className="h-full rounded-full bg-white transition-all duration-500 shadow-sm"
                   style={{ width: `${Math.min(100, overallPercentage)}%` }}
                 />
               </div>
             </div>
-          </div>
+          </article>
 
           {/* Filter Tabs */}
           <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-fit shadow-xs">
             <button
               type="button"
               onClick={() => setFilterTab('active')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 filterTab === 'active'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -336,7 +339,7 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterTab('completed')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 ${
                 filterTab === 'completed'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -349,7 +352,7 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterTab('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 filterTab === 'all'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -396,7 +399,7 @@ export const SavingsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <Coins className="text-emerald-500" size={22} />
+                <RealisticIcon name="Coins" size={24} />
                 <span>Tabungan Cicilan (Menabung Berkala)</span>
               </h1>
               <p className="text-xs text-slate-500">
@@ -407,51 +410,57 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenAddInstallment}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all"
+              className="btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer"
             >
-              <Plus size={15} />
+              <Plus size={16} strokeWidth={2.6} />
               <span>+ Buat Tabungan Cicilan</span>
             </button>
           </div>
 
           {/* Installment KPI Summary Hero */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white shadow-xl shadow-emerald-700/15 relative overflow-hidden space-y-4">
-            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+          <article
+            className="p-5 rounded-3xl text-white relative overflow-hidden border border-white/15 space-y-4"
+            style={{
+              background: 'linear-gradient(135deg var(--in-oklab), #059669 0%, #0d9488 55%, #0f172a 100%)',
+              boxShadow: 'var(--shadow-hero)',
+            }}
+          >
+            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
 
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between text-xs text-emerald-100">
                 <span className="font-semibold flex items-center gap-1.5">
                   <Sparkles size={14} /> Total Tabungan Cicilan Terkumpul
                 </span>
-                <span className="text-[11px] bg-white/10 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-full backdrop-blur-xs font-semibold">
                   {totalPaidInstallments} dari {totalAllInstallments} cicilan disetor
                 </span>
               </div>
 
               <div>
-                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">
                   {formatRupiah(totalInstallmentCollected)}
                 </p>
-                <p className="text-xs text-emerald-100/80 mt-0.5">
+                <p className="text-xs text-emerald-100/90 mt-0.5">
                   dari total target {formatRupiah(totalInstallmentTarget)} ({Math.round(installmentOverallPercentage)}%)
                 </p>
               </div>
 
               <div className="w-full h-2.5 rounded-full bg-white/20 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-white transition-all duration-500"
+                  className="h-full rounded-full bg-white transition-all duration-500 shadow-sm"
                   style={{ width: `${Math.min(100, installmentOverallPercentage)}%` }}
                 />
               </div>
             </div>
-          </div>
+          </article>
 
           {/* Filter Tabs */}
           <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-fit shadow-xs">
             <button
               type="button"
               onClick={() => setFilterTab('active')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 filterTab === 'active'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -526,7 +535,7 @@ export const SavingsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <Users className="text-emerald-500" size={22} />
+                <RealisticIcon name="Users" size={24} />
                 <span>Nabung Bersama / Patungan</span>
               </h1>
               <p className="text-xs text-slate-500">
@@ -537,50 +546,56 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenAddShared}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all"
+              className="btn-glow-emerald flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer"
             >
-              <Plus size={15} />
+              <Plus size={16} strokeWidth={2.6} />
               <span>+ Buat Nabung Bersama</span>
             </button>
           </div>
 
           {/* Shared KPI Summary Hero */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-teal-700 via-emerald-800 to-slate-950 text-white shadow-xl shadow-teal-700/15 relative overflow-hidden">
-            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+          <article
+            className="p-5 rounded-3xl text-white relative overflow-hidden border border-white/15"
+            style={{
+              background: 'linear-gradient(135deg var(--in-oklab), #0f766e 0%, #065f46 60%, #022c22 100%)',
+              boxShadow: 'var(--shadow-hero)',
+            }}
+          >
+            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between text-xs text-teal-100">
                 <span className="font-semibold flex items-center gap-1.5">
-                  <UserCheck size={14} /> Total Kas Bersama Terkumpul
+                  <RealisticIcon name="ShieldCheck" size={14} /> Total Kas Bersama Terkumpul
                 </span>
-                <span className="text-[11px] bg-white/10 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-full backdrop-blur-xs font-semibold">
                   {totalPaidMembersCount} dari {totalMembersCount} iuran anggota lunas
                 </span>
               </div>
 
               <div>
-                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">
                   {formatRupiah(totalSharedCollected)}
                 </p>
-                <p className="text-xs text-teal-100/80 mt-0.5">
+                <p className="text-xs text-teal-100/90 mt-0.5">
                   dari total target patungan {formatRupiah(totalSharedTarget)} ({Math.round(sharedOverallPercentage)}%)
                 </p>
               </div>
 
               <div className="w-full h-2.5 rounded-full bg-white/20 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-emerald-400 transition-all duration-500"
+                  className="h-full rounded-full bg-emerald-400 transition-all duration-500 shadow-sm"
                   style={{ width: `${Math.min(100, sharedOverallPercentage)}%` }}
                 />
               </div>
             </div>
-          </div>
+          </article>
 
           {/* Filter Tabs */}
           <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-fit shadow-xs">
             <button
               type="button"
               onClick={() => setFilterTab('active')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 filterTab === 'active'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -592,7 +607,7 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterTab('completed')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 ${
                 filterTab === 'completed'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -605,7 +620,7 @@ export const SavingsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterTab('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 filterTab === 'all'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'

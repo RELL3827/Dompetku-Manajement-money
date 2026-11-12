@@ -1,11 +1,13 @@
 import React from 'react';
 import * as Icons from 'lucide-react';
+import { RealisticIcon } from './RealisticIcon';
 
 interface IconRendererProps {
   name: string;
   size?: number;
   className?: string;
   color?: string;
+  realistic?: boolean;
 }
 
 export const IconRenderer: React.FC<IconRendererProps> = ({
@@ -13,7 +15,12 @@ export const IconRenderer: React.FC<IconRendererProps> = ({
   size = 20,
   className = '',
   color,
+  realistic = true,
 }) => {
+  if (realistic) {
+    return <RealisticIcon name={name} size={size} className={className} color={color} />;
+  }
+
   // @ts-ignore dynamic index into Lucide icons
   const LucideIcon = (Icons as Record<string, any>)[name] || Icons.HelpCircle;
 

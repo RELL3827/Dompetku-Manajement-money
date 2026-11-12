@@ -36,20 +36,20 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
 
   return (
     <>
-      <div
-        className={`relative p-4 rounded-2xl border transition-all ${
+      <article
+        className={`card-elevated relative p-5 transition-all ${
           wallet.isArchived
-            ? 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-60'
-            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md'
+            ? 'opacity-60 bg-slate-50/60 dark:bg-slate-900/40'
+            : ''
         }`}
       >
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md"
+              className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md border border-black/5 dark:border-white/10"
               style={{ backgroundColor: wallet.color }}
             >
-              <IconRenderer name={wallet.icon} size={22} />
+              <IconRenderer name={wallet.icon} size={24} />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
               type="button"
               onClick={() => setShowMenu(!showMenu)}
               aria-label="Menu dompet"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <MoreVertical size={16} />
             </button>
@@ -90,14 +90,14 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-20" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 z-30">
+                <div className="absolute right-0 top-full mt-1 w-36 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-700 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150">
                   <button
                     type="button"
                     onClick={() => {
                       setShowMenu(false);
                       onEdit(wallet);
                     }}
-                    className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 cursor-pointer"
                   >
                     <Edit3 size={14} className="text-blue-500" />
                     <span>Ubah Dompet</span>
@@ -105,7 +105,7 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
                   <button
                     type="button"
                     onClick={handleToggleArchive}
-                    className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 cursor-pointer"
                   >
                     {wallet.isArchived ? (
                       <>
@@ -126,7 +126,7 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
                       setDeleteErrorMessage('');
                       setShowConfirmDelete(true);
                     }}
-                    className="w-full px-3 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 cursor-pointer"
                   >
                     <Trash2 size={14} />
                     <span>Hapus</span>
@@ -139,21 +139,21 @@ export const WalletCard: React.FC<WalletCardProps> = ({ walletInfo, onEdit, onUp
 
         {/* Balance Display */}
         <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-          <span className="text-[11px] font-medium text-slate-400">Saldo Saat Ini</span>
+          <span className="text-[11px] font-semibold text-slate-400">Saldo Saat Ini</span>
           <p
-            className={`text-lg font-bold tracking-tight ${
+            className={`text-xl font-extrabold tracking-tight tabular-nums mt-0.5 ${
               balance >= 0 ? 'text-slate-900 dark:text-slate-100' : 'text-rose-600 dark:text-rose-400'
             }`}
           >
             {formatRupiah(balance)}
           </p>
 
-          <div className="flex items-center justify-between mt-2 pt-2 text-[11px] text-slate-500 border-t border-dashed border-slate-100 dark:border-slate-800/60">
+          <div className="flex items-center justify-between mt-2.5 pt-2 text-[11px] text-slate-500 border-t border-dashed border-slate-100 dark:border-slate-800/60 tabular-nums">
             <span>Masuk: +{formatRupiah(totalIncome)}</span>
             <span>Keluar: -{formatRupiah(totalExpense)}</span>
           </div>
         </div>
-      </div>
+      </article>
 
       <ConfirmDialog
         isOpen={showConfirmDelete}

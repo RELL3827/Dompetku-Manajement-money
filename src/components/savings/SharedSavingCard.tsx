@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import {
-  Users,
-  CheckCircle2,
-  Circle,
   MoreVertical,
   Edit2,
   Trash2,
   Share2,
   Calendar,
-  UserCheck,
   CreditCard,
+  UserCheck,
 } from 'lucide-react';
+import { RealisticIcon } from '../common/RealisticIcon';
 import type { SharedSaving, SharedSavingMember, Wallet } from '../../types';
 import { formatRupiah } from '../../utils/currency';
 import {
@@ -103,12 +101,12 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
   };
 
   return (
-    <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 hover:shadow-md transition-all relative">
+    <article className="card-elevated p-5 space-y-4 relative">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
-            <Users size={20} />
+          <div className="w-12 h-12 rounded-2xl bg-teal-50/80 dark:bg-teal-950/40 border border-teal-200/60 dark:border-teal-900/40 flex items-center justify-center shadow-xs shrink-0">
+            <RealisticIcon name="Users" size={28} />
           </div>
 
           <div>
@@ -117,7 +115,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
                 {saving.title}
               </h3>
               {(saving.isCompleted || isAllPaid) && (
-                <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300">
+                <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
                   Tercapai 🎉
                 </span>
               )}
@@ -151,20 +149,20 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
           <button
             type="button"
             onClick={() => setIsMenuOpen((v) => !v)}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <MoreVertical size={16} />
           </button>
 
           {isMenuOpen && (
             <div
-              className="absolute right-0 top-8 w-44 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-xl py-1 z-20 text-xs animate-in fade-in zoom-in-95 duration-100"
+              className="absolute right-0 top-8 w-44 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200/80 dark:border-slate-700 shadow-xl py-1 z-20 text-xs animate-in fade-in zoom-in-95 duration-100"
               onClick={() => setIsMenuOpen(false)}
             >
               <button
                 type="button"
                 onClick={() => onEdit(saving)}
-                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Edit2 size={13} />
                 <span>Ubah Tabungan</span>
@@ -172,7 +170,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleShareWhatsApp}
-                className="w-full px-3 py-2 text-left text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Share2 size={13} />
                 <span>Kirim ke WhatsApp</span>
@@ -180,7 +178,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleCopyText}
-                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <span>{copied ? 'Tersalin!' : 'Salin Teks Rincian'}</span>
               </button>
@@ -188,7 +186,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleDelete}
-                className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Trash2 size={13} />
                 <span>Hapus Tabungan</span>
@@ -205,7 +203,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
               Terkumpul
             </span>
-            <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+            <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
               {formatRupiah(saving.currentAmount)}
             </span>
             <span className="text-xs text-slate-400 font-normal">
@@ -226,7 +224,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
         {/* Progress Bar */}
         <div className="w-full h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 shadow-sm"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -242,40 +240,35 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+            className="btn-tactile text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
           >
             <Share2 size={11} />
             <span>Kirim WA</span>
           </button>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {saving.members.map((member) => {
             const isMemberPaid = member.isPaid || member.currentAmount >= member.targetAmount;
 
             return (
-              <div
+              <label
                 key={member.id}
-                className={`p-2.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                className={`p-2.5 rounded-2xl border transition-all flex items-center justify-between gap-3 min-h-[48px] cursor-pointer select-none ${
                   isMemberPaid
-                    ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200/80 dark:border-emerald-900/50'
+                    ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300/80 dark:border-emerald-800/60 shadow-2xs'
                     : 'bg-slate-50/60 dark:bg-slate-800/30 border-slate-200/80 dark:border-slate-800'
                 }`}
               >
-                {/* Checkbox & Member info */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleMember(member.id)}
-                    className="p-0.5 text-slate-400 hover:text-emerald-600 transition-colors cursor-pointer shrink-0"
-                    title={isMemberPaid ? 'Tandai belum bayar' : 'Tandai sudah bayar (Lunas)'}
-                  >
-                    {isMemberPaid ? (
-                      <CheckCircle2 size={20} className="text-emerald-600 fill-emerald-100 dark:fill-emerald-950" />
-                    ) : (
-                      <Circle size={20} className="text-slate-300 dark:text-slate-600 hover:text-emerald-500" />
-                    )}
-                  </button>
+                {/* Custom Accessible Checkbox & Member info */}
+                <div className="flex items-center gap-3 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={isMemberPaid}
+                    onChange={() => handleToggleMember(member.id)}
+                    aria-label={`Tandai pembayaran ${member.name}`}
+                    className="checkbox-tactile shrink-0"
+                  />
 
                   <div className="min-w-0">
                     <p
@@ -289,7 +282,7 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
                     </p>
 
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5">
-                      <span>Target: {formatRupiah(member.targetAmount)}</span>
+                      <span className="tabular-nums">Target: {formatRupiah(member.targetAmount)}</span>
                       {member.notes && (
                         <>
                           <span>•</span>
@@ -322,14 +315,18 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setSelectedMemberForPayment(member)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedMemberForPayment(member);
+                    }}
+                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
                     title="Ubah nominal disetor / catatan"
                   >
                     <Edit2 size={12} />
                   </button>
                 </div>
-              </div>
+              </label>
             );
           })}
         </div>
@@ -343,6 +340,6 @@ export const SharedSavingCard: React.FC<SharedSavingCardProps> = ({
         savingTitle={saving.title}
         onSavePayment={handleSaveMemberPayment}
       />
-    </div>
+    </article>
   );
 };

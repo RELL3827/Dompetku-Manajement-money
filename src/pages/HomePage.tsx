@@ -18,20 +18,12 @@ import { PwaInstallBanner } from '../components/common/PwaInstallBanner';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import {
-  Wallet,
-  TrendingDown,
-  TrendingUp,
-  ArrowLeftRight,
   ArrowUpRight,
   ShieldAlert,
   AlertTriangle,
   ChevronRight,
-  PiggyBank,
-  Heart,
-  FileText,
-  Calculator,
-  Calendar,
 } from 'lucide-react';
+import { RealisticIcon } from '../components/common/RealisticIcon';
 import { DonationModal } from '../components/common/DonationModal';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
 
@@ -144,63 +136,73 @@ export const HomePage: React.FC<HomePageProps> = ({
       )}
 
       {/* Main Total Balance Hero Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white p-6 shadow-xl shadow-emerald-700/15">
-        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-44 h-44 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+      <article
+        className="relative overflow-hidden rounded-3xl text-white p-6 border border-white/15"
+        style={{
+          background: 'linear-gradient(135deg var(--in-oklab), #059669 0%, #0f766e 55%, #0f172a 100%)',
+          boxShadow: 'var(--shadow-hero)',
+        }}
+      >
+        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-10 w-40 h-40 rounded-full bg-teal-300/10 blur-2xl pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center justify-between text-xs text-emerald-100 mb-1">
-            <span className="font-medium flex items-center gap-1.5">
-              <Wallet size={15} /> Total Saldo Gabungan
+            <span className="font-semibold flex items-center gap-2">
+              <span className="p-1 rounded-lg bg-white/15 backdrop-blur-xs">
+                <RealisticIcon name="Wallet" size={18} />
+              </span>
+              Total Saldo Gabungan
             </span>
             <button
               type="button"
               onClick={() => onNavigate('wallets')}
-              className="text-[11px] underline opacity-90 hover:opacity-100 flex items-center"
+              className="btn-tactile text-[11px] font-semibold bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-full flex items-center gap-0.5 backdrop-blur-xs border border-white/15"
             >
               <span>{walletBalances.length} Dompet</span>
               <ChevronRight size={12} />
             </button>
           </div>
 
-          <p className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">
+          <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums mt-2 drop-shadow-xs">
             {formatRupiah(totalBalance)}
           </p>
 
           {/* Month Cashflow Pills */}
-          <div className="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-white/10 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-emerald-500/30 text-emerald-200">
-                <TrendingUp size={14} />
+          <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-white/15 text-xs">
+            <div className="flex items-center gap-2.5 bg-white/5 px-3 py-2 rounded-2xl border border-white/10 backdrop-blur-xs">
+              <div className="p-1 rounded-xl bg-white/10 shrink-0">
+                <RealisticIcon name="TrendingUp" size={20} />
               </div>
               <div>
-                <p className="text-[10px] text-emerald-200 uppercase font-medium">Masuk Bulan Ini</p>
-                <p className="text-xs font-bold text-white">+{formatRupiah(monthSummary.totalIncome)}</p>
+                <p className="text-[10px] text-emerald-200 uppercase font-semibold tracking-wider">Masuk Bulan Ini</p>
+                <p className="text-xs font-extrabold text-white tabular-nums">+{formatRupiah(monthSummary.totalIncome)}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-rose-500/30 text-rose-200">
-                <TrendingDown size={14} />
+            <div className="flex items-center gap-2.5 bg-white/5 px-3 py-2 rounded-2xl border border-white/10 backdrop-blur-xs">
+              <div className="p-1 rounded-xl bg-white/10 shrink-0">
+                <RealisticIcon name="TrendingDown" size={20} />
               </div>
               <div>
-                <p className="text-[10px] text-rose-200 uppercase font-medium">Keluar Bulan Ini</p>
-                <p className="text-xs font-bold text-white">-{formatRupiah(monthSummary.totalExpense)}</p>
+                <p className="text-[10px] text-rose-200 uppercase font-semibold tracking-wider">Keluar Bulan Ini</p>
+                <p className="text-xs font-extrabold text-white tabular-nums">-{formatRupiah(monthSummary.totalExpense)}</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </article>
 
       {/* Quick Action Buttons */}
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-3">
         <button
           type="button"
           onClick={() => onOpenTransactionModal('expense')}
-          className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-rose-300 dark:hover:border-rose-900/60 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 group"
+          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-rose-300/80 dark:hover:border-rose-800/70 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <TrendingDown size={20} />
+          <div className="w-12 h-12 rounded-2xl bg-rose-50/90 dark:bg-rose-950/50 border border-rose-200/60 dark:border-rose-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+            <RealisticIcon name="TrendingDown" size={28} />
           </div>
-          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
             Pengeluaran
           </span>
         </button>
@@ -208,12 +210,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onOpenTransactionModal('income')}
-          className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-900/60 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 group"
+          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-emerald-300/80 dark:hover:border-emerald-800/70 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <TrendingUp size={20} />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+            <RealisticIcon name="TrendingUp" size={28} />
           </div>
-          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
             Pemasukan
           </span>
         </button>
@@ -221,22 +223,22 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onOpenTransactionModal('transfer')}
-          className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-blue-300 dark:hover:border-blue-900/60 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 group"
+          className="btn-tactile card-elevated p-4 flex flex-col items-center justify-center gap-2.5 hover:border-blue-300/80 dark:hover:border-blue-800/70 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <ArrowLeftRight size={20} />
+          <div className="w-12 h-12 rounded-2xl bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-900/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+            <RealisticIcon name="ArrowLeftRight" size={28} />
           </div>
-          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
             Transfer
           </span>
         </button>
       </div>
 
       {/* Savings Summary Banner / Shortcut */}
-      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-            <PiggyBank size={22} />
+      <article className="card-elevated p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-pink-50/80 dark:bg-pink-950/40 border border-pink-200/60 dark:border-pink-900/40 flex items-center justify-center shrink-0 shadow-xs">
+            <RealisticIcon name="PiggyBank" size={28} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -244,12 +246,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Target Tabungan
               </h3>
               {combinedSavingsCount > 0 && (
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md">
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-100/80 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-800/40">
                   {Math.round(savingsPercentage)}%
                 </span>
               )}
             </div>
-            <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 mt-0.5">
+            <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 tabular-nums mt-0.5">
               {formatRupiah(totalCombinedSavingsCollected)}
               <span className="text-[10px] font-normal text-slate-400">
                 {' '}
@@ -264,18 +266,18 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('savings')}
-          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 transition-colors flex items-center gap-1 shrink-0"
+          className="btn-tactile px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200/70 dark:border-emerald-800/50 flex items-center gap-1 shrink-0"
         >
           <span>Buka Tabungan</span>
           <ChevronRight size={14} />
         </button>
-      </div>
+      </article>
 
       {/* Calendar & Agenda Banner (Gajian, Liburan, Tagihan) */}
-      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-            <Calendar size={22} />
+      <article className="card-elevated p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 flex items-center justify-center shrink-0 shadow-xs">
+            <RealisticIcon name="Calendar" size={28} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -283,7 +285,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Kalender Keuangan
               </h3>
               {upcomingEvent && (
-                <span className="text-[10px] text-amber-700 dark:text-amber-300 font-bold bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-md">
+                <span className="text-[10px] text-amber-700 dark:text-amber-300 font-bold bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-md border border-amber-200/60 dark:border-amber-800/40">
                   {upcomingEvent.type === 'gajian'
                     ? '💰 Gajian'
                     : upcomingEvent.type === 'liburan'
@@ -308,22 +310,22 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('calendar')}
-          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 transition-colors flex items-center gap-1 shrink-0"
+          className="btn-tactile px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60 border border-amber-200/70 dark:border-amber-800/50 flex items-center gap-1 shrink-0"
         >
           <span>Buka Kalender</span>
           <ChevronRight size={14} />
         </button>
-      </div>
+      </article>
 
       {/* Quick Tools Grid: Notes & Calculator */}
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={() => onNavigate('notes')}
-          className="p-3.5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-emerald-200 dark:hover:border-emerald-800/60 transition-all text-left flex items-center gap-3 cursor-pointer group"
+          className="btn-tactile card-elevated p-3.5 text-left flex items-center gap-3 cursor-pointer group hover:border-emerald-300/70 dark:hover:border-emerald-700/60"
         >
-          <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
-            <FileText size={18} />
+          <div className="p-2 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-800/40 group-hover:scale-110 transition-transform shadow-xs">
+            <RealisticIcon name="FileText" size={24} />
           </div>
           <div className="min-w-0">
             <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
@@ -336,10 +338,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('calculator')}
-          className="p-3.5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs hover:border-emerald-200 dark:hover:border-emerald-800/60 transition-all text-left flex items-center gap-3 cursor-pointer group"
+          className="btn-tactile card-elevated p-3.5 text-left flex items-center gap-3 cursor-pointer group hover:border-blue-300/70 dark:hover:border-blue-700/60"
         >
-          <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
-            <Calculator size={18} />
+          <div className="p-2 rounded-2xl bg-blue-50/80 dark:bg-blue-950/50 border border-blue-200/50 dark:border-blue-800/40 group-hover:scale-110 transition-transform shadow-xs">
+            <RealisticIcon name="Calculator" size={24} />
           </div>
           <div className="min-w-0">
             <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
@@ -409,26 +411,31 @@ export const HomePage: React.FC<HomePageProps> = ({
             onAction={() => onOpenTransactionModal('expense')}
           />
         ) : (
-          <div className="space-y-2">
-            {recentTransactions.map((tx: Transaction) => (
-              <TransactionItem
+          <div className="space-y-2.5">
+            {recentTransactions.map((tx: Transaction, idx: number) => (
+              <div
                 key={tx.id}
-                transaction={tx}
-                category={catMap.get(tx.categoryId)}
-                sourceWallet={walletMap.get(tx.walletId)}
-                destWallet={tx.toWalletId ? walletMap.get(tx.toWalletId) : undefined}
-                onEdit={onEditTransaction}
-              />
+                className="stagger-item"
+                style={{ '--sibling-index': idx + 1 } as React.CSSProperties}
+              >
+                <TransactionItem
+                  transaction={tx}
+                  category={catMap.get(tx.categoryId)}
+                  sourceWallet={walletMap.get(tx.walletId)}
+                  destWallet={tx.toWalletId ? walletMap.get(tx.toWalletId) : undefined}
+                  onEdit={onEditTransaction}
+                />
+              </div>
             ))}
           </div>
         )}
       </div>
 
       {/* Support / Donation Banner */}
-      <div className="p-4 rounded-3xl bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-amber-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+      <article className="card-elevated p-4 bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-amber-500/10 border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-rose-500 text-white shrink-0 shadow-sm">
-            <Heart size={18} className="fill-current animate-pulse" />
+          <div className="p-2.5 rounded-2xl bg-rose-500/15 border border-rose-400/30 shrink-0 shadow-sm">
+            <RealisticIcon name="Heart" size={24} />
           </div>
           <div>
             <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
@@ -442,12 +449,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => setIsDonationModalOpen(true)}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 active:scale-95 text-white text-xs font-bold shrink-0 transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+          className="btn-tactile px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <Heart size={13} className="fill-current" />
+          <RealisticIcon name="Heart" size={14} />
           <span>Donasi QRIS</span>
         </button>
-      </div>
+      </article>
 
       {/* PWA Guide Modal */}
       <PwaInstallModal

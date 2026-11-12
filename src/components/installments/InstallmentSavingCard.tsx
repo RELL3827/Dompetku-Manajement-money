@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Calendar,
   CheckCircle2,
-  Circle,
   MoreVertical,
   Edit2,
   Trash2,
@@ -10,9 +9,9 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  Coins,
   Undo2,
 } from 'lucide-react';
+import { RealisticIcon } from '../common/RealisticIcon';
 import type { InstallmentSaving, Wallet } from '../../types';
 import { formatRupiah } from '../../utils/currency';
 import { deleteInstallmentSaving, toggleInstallmentSavingDeposit } from '../../db/services';
@@ -113,12 +112,12 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
   };
 
   return (
-    <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 hover:shadow-md transition-all relative">
+    <article className="card-elevated p-5 space-y-4 relative">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
-            <Coins size={20} />
+          <div className="w-12 h-12 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 flex items-center justify-center shadow-xs shrink-0">
+            <RealisticIcon name="Coins" size={28} />
           </div>
 
           <div>
@@ -127,18 +126,18 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
                 {saving.title}
               </h3>
               {saving.isCompleted && (
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
                   Tercapai 🎉
                 </span>
               )}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-400">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">
                 {formatRupiah(saving.installmentAmount)} / {saving.frequency === 'weekly' ? 'minggu' : saving.frequency === 'daily' ? 'hari' : 'bulan'}
               </span>
               <span>•</span>
-              <span>{saving.totalInstallments}x Cicilan</span>
+              <span className="font-semibold">{saving.totalInstallments}x Cicilan</span>
               <span>•</span>
               <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded-md text-slate-600 dark:text-slate-300 font-medium">
                 {saving.category}
@@ -160,20 +159,20 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
           <button
             type="button"
             onClick={() => setIsMenuOpen((v) => !v)}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <MoreVertical size={16} />
           </button>
 
           {isMenuOpen && (
             <div
-              className="absolute right-0 top-8 w-44 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-xl py-1 z-20 text-xs animate-in fade-in zoom-in-95 duration-100"
+              className="absolute right-0 top-8 w-44 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200/80 dark:border-slate-700 shadow-xl py-1 z-20 text-xs animate-in fade-in zoom-in-95 duration-100"
               onClick={() => setIsMenuOpen(false)}
             >
               <button
                 type="button"
                 onClick={() => onEdit(saving)}
-                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Edit2 size={13} />
                 <span>Ubah Tabungan</span>
@@ -181,7 +180,7 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleShareWhatsApp}
-                className="w-full px-3 py-2 text-left text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Share2 size={13} />
                 <span>Bagikan ke WhatsApp</span>
@@ -189,7 +188,7 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleCopy}
-                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <span>{copied ? 'Tersalin!' : 'Salin Teks Ringkasan'}</span>
               </button>
@@ -197,7 +196,7 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
               <button
                 type="button"
                 onClick={handleDelete}
-                className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium"
+                className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-medium cursor-pointer"
               >
                 <Trash2 size={13} />
                 <span>Hapus Tabungan</span>
@@ -208,7 +207,7 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
       </div>
 
       {/* Quick Action & Schedule Banner */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
           {saving.dueDay ? (
             <span className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
@@ -229,9 +228,9 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
           <button
             type="button"
             onClick={handleOpenDepositNext}
-            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5"
+            className="btn-glow-emerald px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <CheckCircle2 size={13} />
+            <CheckCircle2 size={14} />
             <span>Setor Cicilan ke-{nextIndex}</span>
           </button>
         )}
@@ -244,7 +243,7 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
               Terkumpul
             </span>
-            <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100">
+            <span className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tabular-nums">
               {formatRupiah(saving.currentAmount)}
             </span>
             <span className="text-xs text-slate-400 font-normal">
@@ -265,51 +264,46 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
         {/* Progress Bar */}
         <div className="w-full h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 shadow-sm"
             style={{ width: `${percentage}%` }}
           />
         </div>
       </div>
 
-      {/* Expandable Checklist Breakdown */}
+      {/* Expandable Checklist Breakdown (per animate-to-intrinsic-sizes) */}
       <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
         <button
           type="button"
           onClick={() => setIsExpanded((v) => !v)}
-          className="w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 py-1"
+          className="btn-tactile w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 py-1.5 px-1 rounded-xl cursor-pointer"
         >
           <span className="flex items-center gap-1.5">
             <CheckCircle2 size={14} className="text-emerald-500" />
             <span>Ceklist Setoran Cicilan ({saving.paidInstallments}/{saving.totalInstallments})</span>
           </span>
-          {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 
-        {isExpanded && (
-          <div className="mt-3 space-y-1.5 max-h-60 overflow-y-auto pr-1 animate-in fade-in duration-150">
+        <div className={`accordion-intrinsic ${isExpanded ? 'is-open' : ''}`}>
+          <div className="mt-3 space-y-2 max-h-64 overflow-y-auto pr-1">
             {saving.deposits.map((dep) => {
               return (
-                <div
+                <label
                   key={dep.id || dep.installmentIndex}
-                  className={`p-2.5 rounded-2xl border flex items-center justify-between text-xs transition-all ${
+                  className={`p-2.5 rounded-2xl border flex items-center justify-between text-xs transition-all min-h-[48px] cursor-pointer select-none ${
                     dep.isPaid
-                      ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200/80 dark:border-emerald-900/50 text-slate-900 dark:text-slate-100'
-                      : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 text-slate-500'
+                      ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300/80 dark:border-emerald-800/60 text-slate-900 dark:text-slate-100 shadow-2xs'
+                      : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-800 text-slate-500'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickToggle(dep.installmentIndex, dep.isPaid)}
-                      className="cursor-pointer shrink-0"
-                      title={dep.isPaid ? 'Klik untuk membatalkan setoran' : 'Klik untuk menyetor'}
-                    >
-                      {dep.isPaid ? (
-                        <CheckCircle2 size={18} className="text-emerald-600 fill-emerald-100 dark:fill-emerald-950" />
-                      ) : (
-                        <Circle size={18} className="text-slate-300 dark:text-slate-600 hover:text-emerald-500" />
-                      )}
-                    </button>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={dep.isPaid}
+                      onChange={() => handleQuickToggle(dep.installmentIndex, dep.isPaid)}
+                      aria-label={`Cicilan ke-${dep.installmentIndex}`}
+                      className="checkbox-tactile shrink-0"
+                    />
 
                     <div>
                       <span className="font-bold">Cicilan ke-{dep.installmentIndex}</span>
@@ -322,15 +316,19 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs">
+                    <span className="font-extrabold text-xs tabular-nums">
                       {formatRupiah(dep.amount)}
                     </span>
 
                     {dep.isPaid ? (
                       <button
                         type="button"
-                        onClick={() => handleQuickToggle(dep.installmentIndex, true)}
-                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleQuickToggle(dep.installmentIndex, true);
+                        }}
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                         title="Batal setor"
                       >
                         <Undo2 size={13} />
@@ -338,18 +336,22 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
                     ) : (
                       <button
                         type="button"
-                        onClick={() => handleOpenDepositSpecific(dep.installmentIndex)}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-all"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleOpenDepositSpecific(dep.installmentIndex);
+                        }}
+                        className="btn-glow-emerald px-2.5 py-1 rounded-lg text-white font-bold text-[10px] cursor-pointer"
                       >
                         Setor
                       </button>
                     )}
                   </div>
-                </div>
+                </label>
               );
             })}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Deposit Modal */}
@@ -360,6 +362,6 @@ export const InstallmentSavingCard: React.FC<InstallmentSavingCardProps> = ({
         installmentIndex={targetIndex}
         onSuccess={() => onRefresh?.()}
       />
-    </div>
+    </article>
   );
 };
