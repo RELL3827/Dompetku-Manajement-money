@@ -3,12 +3,14 @@ import { Modal } from '../common/Modal';
 import { CurrencyInput } from '../common/CurrencyInput';
 import { IconRenderer } from '../common/IconRenderer';
 import { CategoryFormModal } from './CategoryFormModal';
-import { saveTransaction } from '../../db/services';
+import { ConfirmDialog } from '../common/ConfirmDialog';
+import { saveTransaction, deleteTransaction } from '../../db/services';
+import { formatRupiah } from '../../utils/currency';
 import { toLocalISODate } from '../../utils/date';
 import { db } from '../../db/database';
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { Transaction, TransactionType } from '../../types';
-import { Plus, ArrowLeftRight, TrendingDown, TrendingUp } from 'lucide-react';
+import { Plus, ArrowLeftRight, TrendingDown, TrendingUp, Trash2 } from 'lucide-react';
 
 interface TransactionFormModalProps {
   isOpen: boolean;
@@ -38,6 +40,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
   const [notes, setNotes] = useState<string>(transactionToEdit?.notes || defaultNotes);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   // Live queries for wallets and categories
@@ -82,6 +85,19 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
       setCategoryId(availableCategories[0].id);
     }
   }, [type, availableCategories, categoryId]);
+
+  const handleConfirmDelete = async () => {
+    if (!transactionToEdit) return;
+    try {
+      await deleteTransaction(transactionToEdit.id);
+      setShowConfirmDelete(false);
+      onSaved();
+      onClose();
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+      setError('Gagal menghapus transaksi.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,24 +339,49 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all active:scale-95"
-            >
-              {loading ? 'Menyimpan...' : transactionToEdit ? 'Perbarui Transaksi' : 'Simpan Transaksi'}
-            </button>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+            {transactionToEdit ? (
+              <button
+                type="button"
+                onClick={() => setShowConfirmDelete(true)}
+                className="ios-btn px-3.5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Trash2 size={15} />
+                <span>Hapus Transaksi</span>
+              </button>
+            ) : (
+              <div />
+            )}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="ios-btn px-4 py-2.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="ios-btn ios-btn-primary px-5 sm:px-6 py-2.5 text-xs font-semibold text-white rounded-xl shadow-md disabled:opacity-50 transition-all cursor-pointer"
+              >
+                {loading ? 'Menyimpan...' : transactionToEdit ? 'Perbarui Transaksi' : 'Simpan Transaksi'}
+              </button>
+            </div>
           </div>
         </form>
       </Modal>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Transaksi"
+        message={`Apakah Anda yakin ingin menghapus transaksi ini sebesar ${formatRupiah(amount)}? Data yang dihapus tidak dapat dipulihkan.`}
+        confirmLabel="Ya, Hapus Transaksi"
+      />
 
       {/* Embedded Sub-Modal to quickly create Category without leaving flow */}
       <CategoryFormModal

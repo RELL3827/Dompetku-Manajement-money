@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.7.1';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.7.2';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '13 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Penyempurnaan Riwayat Transaksi & Aksi Hapus',
+    description: 'Tombol aksi hapus dan ubah kini hadir langsung tanpa dropdown rumit di baris transaksi dan di dalam modal edit, dengan optimasi tata letak responsif untuk Android, iOS, dan Laptop.',
+    icon: '⚡',
+  },
   {
     title: 'Perbaikan Sistem Hapus Data (ConfirmDialog)',
     description: 'Mengganti dialog bawaan browser dengan modal konfirmasi interaktif yang stabil di mode PWA / mobile, lengkap dengan indikator proses dan proteksi integritas data.',

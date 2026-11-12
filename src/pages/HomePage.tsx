@@ -6,6 +6,7 @@ import {
   getFinancialSummary,
   getAllBudgetStatuses,
   getRecentTransactions,
+  deleteTransaction,
   type WalletBalanceInfo,
   type BudgetStatusInfo,
 } from '../db/services';
@@ -13,6 +14,7 @@ import { formatRupiah } from '../utils/currency';
 import { getCurrentYearMonth, getPeriodDateRange } from '../utils/date';
 import { shouldShowBackupReminder } from '../utils/exportImport';
 import { TransactionItem } from '../components/transaction/TransactionItem';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { EmptyState } from '../components/common/EmptyState';
 import { PwaInstallBanner } from '../components/common/PwaInstallBanner';
 import { PwaInstallModal } from '../components/common/PwaInstallModal';
@@ -42,6 +44,17 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [budgetAlerts, setBudgetAlerts] = useState<BudgetStatusInfo[]>([]);
   const [backupReminder, setBackupReminder] = useState<string | null>(null);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const [txToDelete, setTxToDelete] = useState<Transaction | null>(null);
+
+  const handleConfirmDeleteTx = async () => {
+    if (!txToDelete) return;
+    try {
+      await deleteTransaction(txToDelete.id);
+      setTxToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+    }
+  };
 
   // PWA installation state
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
@@ -424,6 +437,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   sourceWallet={walletMap.get(tx.walletId)}
                   destWallet={tx.toWalletId ? walletMap.get(tx.toWalletId) : undefined}
                   onEdit={onEditTransaction}
+                  onDelete={(t) => setTxToDelete(t)}
                 />
               </div>
             ))}
@@ -469,6 +483,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       <DonationModal
         isOpen={isDonationModalOpen}
         onClose={() => setIsDonationModalOpen(false)}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={txToDelete !== null}
+        onClose={() => setTxToDelete(null)}
+        onConfirm={handleConfirmDeleteTx}
+        title="Hapus Transaksi"
+        message={
+          txToDelete
+            ? `Apakah Anda yakin ingin menghapus transaksi sebesar ${formatRupiah(txToDelete.amount)}? Data yang dihapus tidak dapat dipulihkan.`
+            : ''
+        }
+        confirmLabel="Ya, Hapus Transaksi"
       />
     </div>
   );

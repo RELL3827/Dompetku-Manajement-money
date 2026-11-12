@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { getFilteredTransactions } from '../db/services';
@@ -10,6 +10,8 @@ import {
   Filter,
   X,
   SlidersHorizontal,
+  Receipt,
+  RotateCcw,
 } from 'lucide-react';
 import type {
   Transaction,
@@ -52,38 +54,34 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
 
   // Construct query filters
-  useEffect(() => {
-    async function fetchFiltered() {
-      let startDate: string | undefined;
-      let endDate: string | undefined;
+  const fetchFiltered = useCallback(async () => {
+    let startDate: string | undefined;
+    let endDate: string | undefined;
 
-      if (periodFilter === 'custom') {
-        startDate = customStartDate || undefined;
-        endDate = customEndDate || undefined;
-      } else if (periodFilter !== 'all') {
-        const range = getPeriodDateRange(periodFilter);
-        startDate = range.startDate;
-        endDate = range.endDate;
-      }
-
-      const filters: TransactionFilters = {
-        searchQuery: debouncedSearch,
-        type: typeFilter,
-        walletId: walletFilter,
-        categoryId: categoryFilter,
-        period: periodFilter,
-        startDate,
-        endDate,
-        minAmount,
-        maxAmount,
-        sort: sortOrder,
-      };
-
-      const results = await getFilteredTransactions(filters);
-      setFilteredTransactions(results);
+    if (periodFilter === 'custom') {
+      startDate = customStartDate || undefined;
+      endDate = customEndDate || undefined;
+    } else if (periodFilter !== 'all') {
+      const range = getPeriodDateRange(periodFilter);
+      startDate = range.startDate;
+      endDate = range.endDate;
     }
 
-    fetchFiltered();
+    const filters: TransactionFilters = {
+      searchQuery: debouncedSearch,
+      type: typeFilter,
+      walletId: walletFilter,
+      categoryId: categoryFilter,
+      period: periodFilter,
+      startDate,
+      endDate,
+      minAmount,
+      maxAmount,
+      sort: sortOrder,
+    };
+
+    const results = await getFilteredTransactions(filters);
+    setFilteredTransactions(results);
   }, [
     debouncedSearch,
     typeFilter,
@@ -95,8 +93,11 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
     minAmount,
     maxAmount,
     sortOrder,
-    allTxTrigger,
   ]);
+
+  useEffect(() => {
+    fetchFiltered();
+  }, [fetchFiltered, allTxTrigger]);
 
   // Active filter count
   const activeFilterCount = useMemo(() => {
@@ -124,29 +125,34 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-24 md:pb-8 animate-in fade-in duration-200">
-      {/* Header bar */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-            Riwayat Transaksi
-          </h1>
-          <p className="text-xs text-slate-500">
-            Ditemukan {filteredTransactions.length} transaksi
-          </p>
+    <div className="space-y-4 pb-32 sm:pb-12 animate-in fade-in duration-200">
+      {/* Header Bar: iOS 27 Glassmorphic & Responsive for Android, iOS & Laptop */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-sm shrink-0">
+            <Receipt size={20} />
+          </div>
+          <div>
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <span>Riwayat Transaksi</span>
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Total <strong className="text-emerald-600 dark:text-emerald-400">{filteredTransactions.length}</strong> transaksi tercatat
+            </p>
+          </div>
         </div>
 
         <button
           type="button"
           onClick={() => setShowFilterDrawer(!showFilterDrawer)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+          className={`ios-btn flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-semibold border transition-all cursor-pointer self-start sm:self-auto ${
             activeFilterCount > 0
               ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800'
-              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+              : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-800 shadow-xs hover:bg-slate-50'
           }`}
         >
           <SlidersHorizontal size={14} />
-          <span>Filter</span>
+          <span>Filter Lanjutan</span>
           {activeFilterCount > 0 && (
             <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-bold">
               {activeFilterCount}
@@ -155,7 +161,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
         </button>
       </div>
 
-      {/* Search Input Bar */}
+      {/* Search Input Bar - text-base prevents auto-zoom on iOS Safari */}
       <div className="relative flex items-center">
         <Search size={16} className="absolute left-3.5 text-slate-400" />
         <input
@@ -163,14 +169,14 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Cari transaksi berdasarkan catatan atau keterangan..."
-          className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-emerald-500 shadow-xs"
+          className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/40 shadow-xs transition-all"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => setSearchQuery('')}
             aria-label="Hapus kata kunci pencarian"
-            className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
           >
             <X size={14} />
           </button>
@@ -184,10 +190,10 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
             key={t}
             type="button"
             onClick={() => setTypeFilter(t)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`ios-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               typeFilter === t
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30 font-bold'
+                : 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-slate-600 dark:text-slate-400 border border-slate-200/70 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80'
             }`}
           >
             {t === 'all'
@@ -203,7 +209,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
 
       {/* Expanded Filter Panel */}
       {showFilterDrawer && (
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 animate-in slide-in-from-top-3 duration-200">
+        <div className="ios-glass-card p-4 sm:p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3.5 animate-in slide-in-from-top-3 duration-200">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
               <Filter size={14} /> Filter Lengkap
@@ -212,14 +218,15 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="text-[11px] font-semibold text-rose-500 hover:underline"
+                className="ios-btn text-[11px] font-semibold text-rose-500 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                Reset Semua
+                <RotateCcw size={12} />
+                <span>Reset Filter</span>
               </button>
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {/* Dompet Filter */}
             <div>
               <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
@@ -228,7 +235,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
               <select
                 value={walletFilter}
                 onChange={(e) => setWalletFilter(e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
               >
                 <option value="all">Semua Dompet</option>
                 {wallets.map((w: Wallet) => (
@@ -247,7 +254,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
               >
                 <option value="all">Semua Kategori</option>
                 {categories.map((c: Category) => (
@@ -266,7 +273,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
               <select
                 value={periodFilter}
                 onChange={(e) => setPeriodFilter(e.target.value as PeriodFilter)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
               >
                 <option value="all">Semua Waktu</option>
                 <option value="this_week">Minggu Ini</option>
@@ -285,7 +292,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
               >
                 <option value="date_desc">Tanggal Terbaru</option>
                 <option value="date_asc">Tanggal Terlama</option>
@@ -297,14 +304,14 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
 
           {/* Custom Date Range if selected */}
           {periodFilter === 'custom' && (
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
               <div>
                 <label className="block text-[11px] text-slate-500 mb-1">Mulai Tanggal</label>
                 <input
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs"
                 />
               </div>
               <div>
@@ -313,7 +320,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base sm:text-xs"
                 />
               </div>
             </div>
@@ -328,6 +335,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
         wallets={wallets}
         onEdit={onEditTransaction}
         onAddNew={onOpenAddModal}
+        onDeleted={fetchFiltered}
       />
     </div>
   );
