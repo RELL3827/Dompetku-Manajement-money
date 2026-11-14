@@ -6,6 +6,7 @@ import {
   MessageSquare,
   Info,
   Plus,
+  Coffee,
 } from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
@@ -150,10 +151,10 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           <button
             type="button"
             onClick={() => setIsDonationModalOpen(true)}
-            className="btn-tactile w-full mt-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 hover:from-rose-500/20 hover:to-pink-500/20 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+            className="ios-btn w-full mt-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/15 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <RealisticIcon name="Heart" size={14} />
-            <span>Donasi Seikhlasnya</span>
+            <Coffee size={14} />
+            <span>Traktir Kopi</span>
           </button>
         </div>
       </div>

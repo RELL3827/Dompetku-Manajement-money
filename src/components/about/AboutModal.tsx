@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import {
   ShieldCheck,
-  Heart,
   RefreshCw,
   MessageSquare,
   Lock,
   EyeOff,
+  Coffee,
 } from 'lucide-react';
 import { APP_VERSION, APP_RELEASE_DATE } from '../../utils/version';
 import { usePwaUpdate } from '../../context/PwaUpdateContext';
@@ -282,10 +282,10 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                 onClose();
                 onOpenDonation?.();
               }}
-              className="py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all"
+              className="ios-btn py-2.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/60 text-amber-700 dark:text-amber-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
-              <Heart size={14} className="text-rose-500 fill-rose-500" />
-              <span>Donasi Pengembang</span>
+              <Coffee size={14} className="text-amber-600 dark:text-amber-400" />
+              <span>Traktir Kopi</span>
             </button>
           </div>
         </div>

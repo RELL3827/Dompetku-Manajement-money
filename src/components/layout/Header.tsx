@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, Lock, HardDrive, Download, Rocket } from 'lucide-react';
+import { Wifi, WifiOff, Lock, HardDrive, Download, Rocket, Coffee } from 'lucide-react';
 import { RealisticIcon } from '../common/RealisticIcon';
 import { isStoragePersisted, requestPersistentStorage } from '../../utils/pwa';
 import { useAuthLock } from '../../hooks/useAuthLock';
@@ -154,15 +154,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
             </button>
           )}
 
-          {/* Donation Heart Button */}
+          {/* Traktir Kopi Button */}
           <button
             type="button"
             onClick={() => setIsDonationModalOpen(true)}
-            title="Dukung Pengembang (Donasi Seikhlasnya)"
-            className="ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/40 border border-rose-200/80 dark:border-rose-900/60 rounded-xl cursor-pointer"
+            title="Traktir Pengembang Kopi ☕"
+            className="ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/40 border border-amber-200/80 dark:border-amber-900/60 rounded-xl cursor-pointer"
           >
-            <RealisticIcon name="Heart" size={15} />
-            <span className="hidden sm:inline">Donasi</span>
+            <Coffee size={15} />
+            <span className="hidden sm:inline">Traktir Kopi</span>
           </button>
 
           {/* Quick Lock Button if PIN is set */}

@@ -3,10 +3,10 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.8.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.8.1';
 
 export const APP_RELEASE_DATE: string =
-  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '14 November 2026';
+  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '15 November 2026';
 
 export const APP_BUILD_TIMESTAMP: number =
   typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : Date.now();
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Apresiasi Pengembang: Traktir Kopi',
+    description: 'Penyegaran istilah dukungan pengembang menjadi "Traktir Kopi" dengan nuansa ramah, visual hangat, serta kemudahan scan QRIS RellAppstore.',
+    icon: '☕',
+  },
   {
     title: 'Liquid Glass UI/UX & Dynamic Micro-Interactions',
     description: 'Transformasi visual ultra-kaca dengan latar ambient liquid orbs yang berpendar, efek refraksi specular rim, animasi squish pegas taktil pada tombol, dan shimmer sweep.',

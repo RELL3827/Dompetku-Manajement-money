@@ -24,6 +24,7 @@ import {
   ShieldAlert,
   AlertTriangle,
   ChevronRight,
+  Coffee,
 } from 'lucide-react';
 import { RealisticIcon } from '../components/common/RealisticIcon';
 import { DonationModal } from '../components/common/DonationModal';
@@ -445,28 +446,28 @@ export const HomePage: React.FC<HomePageProps> = ({
         )}
       </div>
 
-      {/* Support / Donation Banner */}
-      <article className="card-elevated p-4 bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-amber-500/10 border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Support / Traktir Kopi Banner */}
+      <article className="card-elevated p-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 border-amber-500/25 dark:border-amber-500/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-rose-500/15 border border-rose-400/30 shrink-0 shadow-sm">
-            <RealisticIcon name="Heart" size={24} />
+          <div className="p-2.5 rounded-2xl bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-amber-400 shrink-0 shadow-sm">
+            <Coffee size={24} />
           </div>
           <div>
             <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
               <span>Suka dengan DompetKu?</span>
             </h3>
             <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
-              Aplikasi ini 100% gratis & tanpa iklan. Dukung Farel Rizky P lewat donasi seikhlasnya.
+              Aplikasi ini 100% gratis & tanpa iklan. Dukung Farel Rizky P dengan traktir secangkir kopi.
             </p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setIsDonationModalOpen(true)}
-          className="btn-tactile px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+          className="ios-btn px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold shrink-0 flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-amber-600/20"
         >
-          <RealisticIcon name="Heart" size={14} />
-          <span>Donasi QRIS</span>
+          <Coffee size={15} />
+          <span>Traktir Kopi</span>
         </button>
       </article>
 
