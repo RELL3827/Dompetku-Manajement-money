@@ -12,7 +12,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onCl
         type="button"
         onClick={onClick}
         aria-label="Catat transaksi baru"
-        className="ios-btn ios-btn-primary w-14 h-14 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-600/40 ring-2 ring-white/40 dark:ring-emerald-400/30 cursor-pointer"
+        className="ios-btn ios-btn-primary fab-liquid w-14 h-14 rounded-full flex items-center justify-center shadow-2xl ring-2 ring-white/50 dark:ring-emerald-400/40 cursor-pointer backdrop-blur-md"
       >
         <Plus size={28} strokeWidth={2.8} className="drop-shadow-xs" />
       </button>

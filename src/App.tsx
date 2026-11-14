@@ -77,7 +77,14 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row transition-colors selection:bg-emerald-500/20 selection:text-emerald-500">
+    <div className="relative min-h-screen bg-slate-50/90 dark:bg-slate-950/90 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row transition-colors selection:bg-emerald-500/20 selection:text-emerald-500">
+      {/* Background Liquid Glass Ambient Refraction Orbs */}
+      <div className="liquid-orb-canvas" aria-hidden="true">
+        <div className="liquid-orb liquid-orb-1" />
+        <div className="liquid-orb liquid-orb-2" />
+        <div className="liquid-orb liquid-orb-3" />
+      </div>
+
       {/* PIN Lock Screen Overlay if locked */}
       <PinLockScreen />
 
@@ -96,7 +103,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10">
         {/* Top Header */}
         <Header
           onOpenSettings={() => setCurrentTab('settings')}

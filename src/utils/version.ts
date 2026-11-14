@@ -3,10 +3,10 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.7.2';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.8.0';
 
 export const APP_RELEASE_DATE: string =
-  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '13 November 2026';
+  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '14 November 2026';
 
 export const APP_BUILD_TIMESTAMP: number =
   typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : Date.now();
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Liquid Glass UI/UX & Dynamic Micro-Interactions',
+    description: 'Transformasi visual ultra-kaca dengan latar ambient liquid orbs yang berpendar, efek refraksi specular rim, animasi squish pegas taktil pada tombol, dan shimmer sweep.',
+    icon: '🔮',
+  },
   {
     title: 'Penyempurnaan Riwayat Transaksi & Aksi Hapus',
     description: 'Tombol aksi hapus dan ubah kini hadir langsung tanpa dropdown rumit di baris transaksi dan di dalam modal edit, dengan optimasi tata letak responsif untuk Android, iOS, dan Laptop.',

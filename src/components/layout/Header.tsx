@@ -67,8 +67,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
               <h1 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                 DompetKu
               </h1>
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300 border border-emerald-500/25">
-                iOS 27 Edition
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300 border border-emerald-500/25 backdrop-blur-md shadow-xs">
+                Liquid Glass Edition
               </span>
             </div>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">

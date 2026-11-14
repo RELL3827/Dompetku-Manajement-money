@@ -54,7 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={onClose}
     >
       <div
-        className={`modal-dialog-box w-full ${maxWidthClass} bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-700/70 max-h-[92vh] flex flex-col overflow-hidden`}
+        className={`modal-dialog-box w-full ${maxWidthClass} bg-white/90 dark:bg-slate-900/90 backdrop-blur-3xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-white/60 dark:border-white/10 max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-black/5 dark:ring-white/5`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -64,7 +64,7 @@ export const Modal: React.FC<ModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Tutup modal"
-            className="btn-tactile p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-100 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-slate-800/80 dark:hover:bg-slate-700"
+            className="ios-btn p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-100 rounded-xl bg-slate-100/70 hover:bg-slate-200/80 dark:bg-slate-800/70 dark:hover:bg-slate-700/80 transition-all cursor-pointer"
           >
             <X size={18} />
           </button>

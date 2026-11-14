@@ -54,10 +54,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
               }`}
             >
               <div
-                className={`p-1 rounded-2xl transition-all duration-300 ${
+                className={`p-1.5 rounded-2xl transition-all duration-300 transform ${
                   isActive
-                    ? 'bg-emerald-500/15 dark:bg-emerald-400/20 scale-110 shadow-xs ring-1 ring-emerald-500/30'
-                    : 'hover:bg-slate-500/5'
+                    ? 'bg-gradient-to-tr from-emerald-500/20 via-teal-400/25 to-emerald-500/30 scale-115 shadow-xs ring-1 ring-emerald-500/40 backdrop-blur-md'
+                    : 'hover:bg-slate-500/10 hover:scale-105'
                 }`}
               >
                 <RealisticIcon name={tab.iconName} size={21} />

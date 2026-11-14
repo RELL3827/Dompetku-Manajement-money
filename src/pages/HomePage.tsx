@@ -169,7 +169,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('wallets')}
-              className="btn-tactile text-[11px] font-semibold bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-full flex items-center gap-0.5 backdrop-blur-xs border border-white/15"
+              className="ios-btn text-[11px] font-semibold bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full flex items-center gap-0.5 backdrop-blur-md border border-white/20 transition-all cursor-pointer"
             >
               <span>{walletBalances.length} Dompet</span>
               <ChevronRight size={12} />
