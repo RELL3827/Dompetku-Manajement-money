@@ -29,6 +29,8 @@ import { AboutModal } from './components/about/AboutModal';
 import { DonationModal } from './components/common/DonationModal';
 
 import { useTheme } from './hooks/useTheme';
+import { useSwipeNavigation } from './hooks/useSwipeNavigation';
+import { navigateWithTransition } from './utils/navigation';
 import type { NavTab, Transaction, TransactionType } from './types';
 
 export const App: React.FC = () => {
@@ -36,6 +38,10 @@ export const App: React.FC = () => {
   useTheme();
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
+
+  const handleNavigate = (tab: NavTab) => {
+    navigateWithTransition(tab, setCurrentTab, currentTab);
+  };
 
   // Transaction Modal State
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
@@ -51,6 +57,18 @@ export const App: React.FC = () => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+
+  // High-performance horizontal swipe gestures to switch between tabs on mobile
+  useSwipeNavigation({
+    currentTab,
+    onChangeTab: handleNavigate,
+    enabled:
+      !isTxModalOpen &&
+      !isCalculatorModalOpen &&
+      !isFeedbackModalOpen &&
+      !isAboutModalOpen &&
+      !isDonationModalOpen,
+  });
 
   // Check onboarding status
   const settingsRecord = useLiveQuery(() => db.settings.get('app_settings'));
@@ -96,7 +114,7 @@ export const App: React.FC = () => {
       {/* Desktop Sidebar Navigation */}
       <DesktopSidebar
         activeTab={currentTab}
-        onChangeTab={setCurrentTab}
+        onChangeTab={handleNavigate}
         onOpenAddModal={() => handleOpenAddTransaction('expense')}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenFeedback={() => setIsFeedbackModalOpen(true)}
@@ -106,7 +124,7 @@ export const App: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10">
         {/* Top Header */}
         <Header
-          onOpenSettings={() => setCurrentTab('settings')}
+          onOpenSettings={() => handleNavigate('settings')}
           onOpenCalculator={() => setIsCalculatorModalOpen(true)}
         />
 
@@ -114,7 +132,7 @@ export const App: React.FC = () => {
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 sm:py-6">
           {currentTab === 'home' && (
             <HomePage
-              onNavigate={setCurrentTab}
+              onNavigate={handleNavigate}
               onOpenTransactionModal={handleOpenAddTransaction}
               onEditTransaction={handleEditTransaction}
             />
@@ -133,7 +151,7 @@ export const App: React.FC = () => {
 
           {currentTab === 'savings' && <SavingsPage />}
 
-          {currentTab === 'budgets' && <BudgetsPage onNavigate={setCurrentTab} />}
+          {currentTab === 'budgets' && <BudgetsPage onNavigate={handleNavigate} />}
 
           {currentTab === 'notes' && (
             <NotesPage onOpenTransactionModal={handleOpenAddTransaction} />
@@ -142,7 +160,7 @@ export const App: React.FC = () => {
           {currentTab === 'calculator' && (
             <CalculatorPage
               onOpenTransactionModal={handleOpenAddTransaction}
-              onNavigate={setCurrentTab}
+              onNavigate={handleNavigate}
             />
           )}
 
@@ -157,7 +175,7 @@ export const App: React.FC = () => {
               onOpenAbout={() => setIsAboutModalOpen(true)}
               onOpenFeedback={() => setIsFeedbackModalOpen(true)}
               onOpenDonation={() => setIsDonationModalOpen(true)}
-              onNavigate={setCurrentTab}
+              onNavigate={handleNavigate}
             />
           )}
         </main>
@@ -166,7 +184,7 @@ export const App: React.FC = () => {
         <FloatingActionButton onClick={() => handleOpenAddTransaction('expense')} />
 
         {/* Mobile Bottom Navigation */}
-        <BottomNav activeTab={currentTab} onChangeTab={setCurrentTab} />
+        <BottomNav activeTab={currentTab} onChangeTab={handleNavigate} />
       </div>
 
       {/* Global Transaction Modal */}
@@ -187,7 +205,7 @@ export const App: React.FC = () => {
         isOpen={isCalculatorModalOpen}
         onClose={() => setIsCalculatorModalOpen(false)}
         onUseAmount={(amt, notes) => handleOpenAddTransaction('expense', amt, notes)}
-        onNavigateToBudgets={() => setCurrentTab('budgets')}
+        onNavigateToBudgets={() => handleNavigate('budgets')}
       />
 
       {/* Global Feedback Modal */}

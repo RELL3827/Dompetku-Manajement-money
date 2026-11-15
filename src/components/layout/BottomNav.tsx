@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import type { NavTab } from '../../types';
 import { RealisticIcon } from '../common/RealisticIcon';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface BottomNavProps {
   activeTab: NavTab;
@@ -46,7 +47,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
               key={tab.id}
               ref={isActive ? activeRef : null}
               type="button"
-              onClick={() => onChangeTab(tab.id)}
+              onClick={() => {
+                triggerHaptic('selection');
+                onChangeTab(tab.id);
+              }}
               className={`ios-btn flex flex-col items-center justify-center gap-0.5 min-w-[58px] flex-1 py-1 transition-all cursor-pointer shrink-0 rounded-2xl ${
                 isActive
                   ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
@@ -56,8 +60,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
               <div
                 className={`p-1.5 rounded-2xl transition-all duration-300 transform ${
                   isActive
-                    ? 'bg-gradient-to-tr from-emerald-500/20 via-teal-400/25 to-emerald-500/30 scale-115 shadow-xs ring-1 ring-emerald-500/40 backdrop-blur-md'
-                    : 'hover:bg-slate-500/10 hover:scale-105'
+                    ? 'bg-gradient-to-tr from-emerald-500/20 via-teal-400/25 to-emerald-500/30 scale-115 shadow-xs ring-1 ring-emerald-500/40 backdrop-blur-md animate-tab-pop'
+                    : 'hover:bg-slate-500/10 hover:scale-105 active:scale-95'
                 }`}
               >
                 <RealisticIcon name={tab.iconName} size={21} />

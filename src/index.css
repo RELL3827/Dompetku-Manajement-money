@@ -698,3 +698,143 @@ input:focus, textarea:focus, select:focus {
   transition: box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
+/* ==========================================================================
+   Liquid Touch Ripple & Micro-Interaction System (Zero-Lag GPU Compositor)
+   ========================================================================== */
+
+/* Universal touch optimization */
+button,
+a,
+[role="button"],
+.ios-btn,
+.liquid-btn,
+.btn-tactile,
+.btn-glow-emerald,
+.card-elevated,
+.liquid-card,
+.ios-glass-card {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-ripple-container {
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.liquid-touch-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(16, 185, 129, 0.28) 45%, transparent 75%);
+  pointer-events: none;
+  animation: liquid-touch-expand 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  will-change: transform, opacity;
+  z-index: 60;
+}
+
+.dark .liquid-touch-ripple {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(52, 211, 153, 0.22) 45%, transparent 75%);
+}
+
+@keyframes liquid-touch-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0) translateZ(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2) translateZ(0);
+    opacity: 0;
+  }
+}
+
+/* Tab Icon Spring Pop Micro-Interaction */
+@keyframes tab-pop {
+  0% { transform: scale(0.9) translateZ(0); }
+  50% { transform: scale(1.18) translateZ(0); }
+  100% { transform: scale(1.15) translateZ(0); }
+}
+
+.animate-tab-pop {
+  animation: tab-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ==========================================================================
+   Directional Navigation View Transitions (per modern-web-guidance)
+   ========================================================================== */
+
+::view-transition-group(root) {
+  animation-duration: 0.26s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Forward: Slide out old to left, slide in new from right */
+html:active-view-transition-type(forward)::view-transition-old(root) {
+  animation-name: slide-to-left;
+}
+
+html:active-view-transition-type(forward)::view-transition-new(root) {
+  animation-name: slide-from-right;
+}
+
+/* Backward: Slide out old to right, slide in new from left */
+html:active-view-transition-type(backward)::view-transition-old(root) {
+  animation-name: slide-to-right;
+}
+
+html:active-view-transition-type(backward)::view-transition-new(root) {
+  animation-name: slide-from-left;
+}
+
+@keyframes slide-to-left {
+  to {
+    transform: translateX(-8%) translateZ(0);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-right {
+  from {
+    transform: translateX(10%) translateZ(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-to-right {
+  to {
+    transform: translateX(8%) translateZ(0);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-left {
+  from {
+    transform: translateX(-10%) translateZ(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+  .liquid-touch-ripple {
+    display: none !important;
+  }
+  .animate-tab-pop {
+    animation: none !important;
+  }
+}
+
+

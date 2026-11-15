@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.8.1';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.9.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '15 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Touch Ripples, Micro-Interactions & Gestures',
+    description: 'Efek sentuhan riak air (liquid touch ripple) bertenaga GPU, navigasi gestur swipe layar antar tab yang mulus, tarikan gesture drag-down bottom-sheet pada modal, directional view transitions, dan respons tactile haptic yang ringan dan responsif.',
+    icon: '✨',
+  },
   {
     title: 'Apresiasi Pengembang: Traktir Kopi',
     description: 'Penyegaran istilah dukungan pengembang menjadi "Traktir Kopi" dengan nuansa ramah, visual hangat, serta kemudahan scan QRIS RellAppstore.',
