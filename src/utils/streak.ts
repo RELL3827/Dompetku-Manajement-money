@@ -238,21 +238,50 @@ export function getStreakTier(streak: number): StreakTierConfig {
 export const getStreakLevel = getStreakTier;
 
 /**
- * Record a visit check-in for today so activity persists even before transactions
+ * Check if the user has manually checked in (masuk) today
  */
-export function recordDailyVisitCheckin(): void {
+export function hasCheckedInToday(): boolean {
+  try {
+    const today = toLocalISODate(new Date());
+    const raw = localStorage.getItem(CHECKIN_DATES_KEY);
+    if (!raw) return false;
+    const dates: string[] = JSON.parse(raw);
+    return dates.includes(today);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Perform explicit manual daily check-in ("Tombol Masuk") to ignite the streak!
+ * Dispatches an event to instantly refresh all UI components without page reload.
+ */
+export function performDailyCheckin(): { success: boolean; alreadyCheckedIn: boolean } {
   try {
     const today = toLocalISODate(new Date());
     const raw = localStorage.getItem(CHECKIN_DATES_KEY);
     const set = new Set<string>(raw ? JSON.parse(raw) : []);
-    if (!set.has(today)) {
+    const alreadyCheckedIn = set.has(today);
+
+    if (!alreadyCheckedIn) {
       set.add(today);
       localStorage.setItem(CHECKIN_DATES_KEY, JSON.stringify(Array.from(set)));
     }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('dompetku_streak_updated'));
+    }
+
+    return { success: true, alreadyCheckedIn };
   } catch {
-    // Ignore storage issues
+    return { success: false, alreadyCheckedIn: false };
   }
 }
+
+/**
+ * Backward compatibility alias
+ */
+export const recordDailyVisitCheckin = performDailyCheckin;
 
 /**
  * Get all active dates from transactions and stored check-in dates

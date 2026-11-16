@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { StreakFlame } from './StreakFlame';
 import { ALL_STREAK_TIERS, type StreakInfo, type StreakTierConfig } from '../../utils/streak';
-import { Trophy, Calendar, ShieldCheck, Flame, PlusCircle, CheckCircle2, AlertTriangle, Lock, Sparkles } from 'lucide-react';
+import { Trophy, Calendar, ShieldCheck, Flame, PlusCircle, CheckCircle2, Lock, Sparkles } from 'lucide-react';
 import { formatIndonesianDate } from '../../utils/date';
 
 interface StreakModalProps {
@@ -10,6 +10,7 @@ interface StreakModalProps {
   onClose: () => void;
   streak: StreakInfo;
   onOpenAddTransaction: () => void;
+  onCheckIn?: () => void;
 }
 
 export const StreakModal: React.FC<StreakModalProps> = ({
@@ -17,6 +18,7 @@ export const StreakModal: React.FC<StreakModalProps> = ({
   onClose,
   streak,
   onOpenAddTransaction,
+  onCheckIn,
 }) => {
   // Allow user to preview how each flame tier looks when tapped!
   const [selectedPreviewTier, setSelectedPreviewTier] = useState<StreakTierConfig | null>(null);
@@ -88,22 +90,33 @@ export const StreakModal: React.FC<StreakModalProps> = ({
             </p>
           </div>
 
-          {/* Status Banner */}
+          {/* Status Banner with Tombol Masuk */}
           <div className="mt-4 w-full max-w-md">
             {streak.isRecordedToday ? (
               <div className="p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2">
                 <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
                 <span>Api menyala hari ini! Streak keuanganmu aman hingga besok.</span>
               </div>
-            ) : isAtRisk ? (
-              <div className="p-3 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center justify-center gap-2 animate-pulse">
-                <AlertTriangle size={16} className="text-amber-600 shrink-0" />
-                <span>Api hampir padam! Catat minimal 1 transaksi hari ini sebelum 23:59 WIB.</span>
-              </div>
             ) : (
-              <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold flex items-center justify-center gap-2">
-                <Flame size={16} className="text-orange-500 shrink-0" />
-                <span>Mulai streak pertamamu dengan mencatat transaksi hari ini!</span>
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-500/20 border border-amber-500/40 text-amber-800 dark:text-amber-200 text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-xs">
+                <div className="flex items-center gap-2 text-left">
+                  <Flame size={18} className="text-orange-500 fill-orange-500 animate-bounce shrink-0" />
+                  <span>
+                    {isAtRisk
+                      ? 'Api hampir padam! Tekan tombol masuk untuk menyalakan.'
+                      : 'Nyalakan apimu sekarang dengan menekan tombol masuk!'}
+                  </span>
+                </div>
+                {onCheckIn && (
+                  <button
+                    type="button"
+                    onClick={() => onCheckIn()}
+                    className="ios-btn w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer shrink-0 animate-pulse"
+                  >
+                    <Flame size={14} className="fill-white" />
+                    <span>Masuk Sekarang</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -276,24 +289,42 @@ export const StreakModal: React.FC<StreakModalProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-          {!streak.isRecordedToday && (
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onOpenAddTransaction();
-              }}
-              className="ios-btn w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
-            >
-              <PlusCircle size={15} />
-              <span>🔥 Catat Transaksi Hari Ini</span>
-            </button>
+          {!streak.isRecordedToday ? (
+            <>
+              {onCheckIn && (
+                <button
+                  type="button"
+                  onClick={() => onCheckIn()}
+                  className="ios-btn w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer animate-pulse"
+                >
+                  <Flame size={16} className="fill-white animate-bounce" />
+                  <span>🔥 Masuk & Nyalakan Api Hari Ini!</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenAddTransaction();
+                }}
+                className="ios-btn w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <PlusCircle size={15} />
+                <span>+ Transaksi</span>
+              </button>
+            </>
+          ) : (
+            <div className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2">
+              <CheckCircle2 size={16} className="text-emerald-500" />
+              <span>Sudah Masuk Hari Ini — Api Menyala Aman 🔥</span>
+            </div>
           )}
 
           <button
             type="button"
             onClick={onClose}
-            className="ios-btn w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-colors cursor-pointer text-center"
+            className="ios-btn w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-colors cursor-pointer text-center"
           >
             Tutup
           </button>

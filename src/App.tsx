@@ -244,6 +244,7 @@ export const App: React.FC = () => {
         onClose={() => setIsStreakModalOpen(false)}
         streak={streak}
         onOpenAddTransaction={() => handleOpenAddTransaction('expense')}
+        onCheckIn={streak.checkInToday}
       />
 
       {/* Global PWA Update Notification Modal & Toast Banner */}

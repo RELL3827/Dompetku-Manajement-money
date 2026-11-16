@@ -1,18 +1,20 @@
 import React from 'react';
 import { StreakFlame } from './StreakFlame';
 import type { StreakInfo } from '../../utils/streak';
-import { Flame, ChevronRight, PlusCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Flame, ChevronRight, PlusCircle, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 
 interface StreakCardProps {
   streak: StreakInfo;
   onOpenStreakModal: () => void;
   onOpenAddTransaction: () => void;
+  onCheckIn?: () => void;
 }
 
 export const StreakCard: React.FC<StreakCardProps> = ({
   streak,
   onOpenStreakModal,
   onOpenAddTransaction,
+  onCheckIn,
 }) => {
   const isAtRisk = !streak.isRecordedToday && streak.currentStreak > 0;
 
@@ -63,10 +65,10 @@ export const StreakCard: React.FC<StreakCardProps> = ({
                 ) : isAtRisk ? (
                   <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                     <Clock size={12} className="animate-spin" />
-                    <span>Hampir padam! Butuh 1 catatan hari ini</span>
+                    <span>Hampir padam! Tekan tombol masuk di bawah</span>
                   </span>
                 ) : (
-                  <span>Nyalakan apimu dengan mencatat transaksi hari ini!</span>
+                  <span>Tekan tombol masuk untuk mulai nyalakan apimu!</span>
                 )}
               </p>
             </div>
@@ -115,20 +117,56 @@ export const StreakCard: React.FC<StreakCardProps> = ({
           ))}
         </div>
 
-        {/* Action Button if not yet recorded today */}
-        {!streak.isRecordedToday && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenAddTransaction();
-            }}
-            className="ios-btn w-full mt-1 py-2 px-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-          >
-            <PlusCircle size={14} />
-            <span>Catat Transaksi untuk Jaga Streak Api 🔥</span>
-          </button>
-        )}
+        {/* Action Buttons: Tombol Masuk / Status Api */}
+        <div className="pt-1">
+          {!streak.isRecordedToday ? (
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              {/* Primary Tombol Masuk to light the streak */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCheckIn?.();
+                }}
+                className="ios-btn w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer animate-pulse"
+              >
+                <Flame size={16} className="fill-white animate-bounce" />
+                <span>🔥 Masuk & Nyalakan Api Hari Ini!</span>
+              </button>
+
+              {/* Secondary button: Catat Transaksi */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenAddTransaction();
+                }}
+                className="ios-btn w-full sm:w-auto py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <PlusCircle size={14} />
+                <span>Catat Transaksi</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>Sudah Masuk Hari Ini — Api Menyala Aman 🔥</span>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenAddTransaction();
+                }}
+                className="ios-btn text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 ml-2"
+              >
+                <Sparkles size={12} />
+                <span>+ Transaksi</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </article>
   );

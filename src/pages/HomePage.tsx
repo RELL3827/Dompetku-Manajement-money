@@ -259,6 +259,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           streak={streak}
           onOpenStreakModal={onOpenStreakModal}
           onOpenAddTransaction={() => onOpenTransactionModal('expense')}
+          onCheckIn={streak.checkInToday}
         />
       )}
 
