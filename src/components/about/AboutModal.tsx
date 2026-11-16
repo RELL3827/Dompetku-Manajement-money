@@ -7,6 +7,7 @@ import {
   Lock,
   EyeOff,
   Coffee,
+  Globe,
 } from 'lucide-react';
 import { APP_VERSION, APP_RELEASE_DATE } from '../../utils/version';
 import { usePwaUpdate } from '../../context/PwaUpdateContext';
@@ -261,6 +262,17 @@ export const AboutModal: React.FC<AboutModalProps> = ({
               </button>
             )}
           </div>
+
+          {/* Website Link */}
+          <a
+            href="./website.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs"
+          >
+            <Globe size={15} className="text-emerald-600 dark:text-emerald-400" />
+            <span>Kunjungi Website Resmi DompetKu</span>
+          </a>
 
           {/* Quick Actions (Feedback & Donasi) */}
           <div className="grid grid-cols-2 gap-2">

@@ -10,7 +10,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "server:dev": "npm --prefix server run dev",
-    "admin:dev": "npm --prefix admin run dev"
+    "admin:dev": "npm --prefix admin run dev",
+    "website:dev": "npx serve website"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

@@ -1,0 +1,13 @@
+{
+  "name": "dompetku-website",
+  "version": "1.0.0",
+  "description": "Website resmi dan landing page aplikasi DompetKu — 100% Offline & Privat",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": ["dompetku", "finance", "qris", "landing-page", "pwa"],
+  "author": "Farel Rizky P",
+  "license": "MIT"
+}
