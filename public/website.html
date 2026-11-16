@@ -1,1316 +1,2946 @@
 <!doctype html>
 <html lang="id" data-theme="glass">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#080C14">
-<title>DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat</title>
-<meta name="description" content="Kelola keuangan pribadi dengan DompetKu: 100% offline, privat dan terenkripsi lokal, tanpa iklan, tanpa server, streak api TikTok, dan aturan anggaran 50/30/20. Tersedia untuk Android, iOS &amp; PC.">
-<link rel="canonical" href="https://dompetku.my.id/">
-<link rel="icon" href="./icon.png" sizes="192x192" type="image/png">
-<link rel="apple-touch-icon" href="./icon.png">
-<meta property="og:site_name" content="DompetKu">
-<meta property="og:locale" content="id_ID">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://dompetku.my.id/">
-<meta property="og:title" content="DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat">
-<meta property="og:description" content="Aplikasi pencatat keuangan modern, 100% offline di perangkat Anda. Tanpa login, tanpa langganan, dengan streak api ala TikTok dan formula anggaran 50/30/20.">
-<meta property="og:image" content="./icon.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat">
-<meta name="twitter:description" content="Kelola keuangan tanpa khawatir data bocor: 100% offline, privat, tanpa iklan, streak api TikTok, dan anggaran 50/30/20.">
-<meta name="twitter:image" content="./icon.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DompetKu","url":"https://dompetku.my.id/"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"DompetKu","description":"Aplikasi pencatat keuangan pribadi 100% offline, privat dan terenkripsi lokal. Dilengkapi streak api TikTok dan manajemen anggaran 50/30/20.","operatingSystem":"Android, iOS, Windows, macOS, Linux","applicationCategory":"FinanceApplication","softwareVersion":"2.13.0","url":"https://dompetku.my.id/","downloadUrl":"https://dompetku.my.id/#unduh","image":"./icon.png","inLanguage":"id","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"},"author":{"@type":"Person","name":"Farel Rizky P"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Apakah DompetKu gratis dan tanpa iklan?","acceptedAnswer":{"@type":"Answer","text":"Ya, 100% gratis selamanya tanpa iklan dan tanpa biaya langganan. Donasi traktir kopi melalui QRIS sepenuhnya sukarela untuk mendukung pengembang."}},{"@type":"Question","name":"Di mana data keuangan saya disimpan?","acceptedAnswer":{"@type":"Answer","text":"Semua transaksi, rekening dompet, dan catatan keuangan Anda disimpan secara lokal di memori perangkat (IndexedDB) menggunakan enkripsi browser. Tidak ada data yang dikirim ke server luar."}},{"@type":"Question","name":"Bagaimana cara memasang DompetKu di HP (Android/iOS)?","acceptedAnswer":{"@type":"Answer","text":"Cukup buka DompetKu di browser Anda lalu pilih 'Instal App' atau 'Tambahkan ke Layar Utama' (Add to Home Screen). Di Android Anda juga dapat mengunduh file APK mandiri."}},{"@type":"Question","name":"Bagaimana cara memindahkan data saat ganti HP?","acceptedAnswer":{"@type":"Answer","text":"Masuk ke menu Setelan di aplikasi, pilih Ekspor Backup (JSON), lalu simpan filenya. Di HP baru, buka DompetKu dan pilih Impor Backup."}},{"@type":"Question","name":"Bagaimana cara menyalakan streak api setiap hari?","acceptedAnswer":{"@type":"Answer","text":"Cukup lakukan check-in harian dengan menekan tombol 'Masuk & Nyalakan Api' atau catat minimal satu transaksi setiap hari untuk menaikkan level api TikTok Anda."}}]}</script>
-<style>
-:root{
-  --serif:ui-serif,"Newsreader",Georgia,"Times New Roman",serif;
-  --sans:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --ease:cubic-bezier(.2,.8,.2,1);
-}
-/* ---------- Liquid Glass (Default) ---------- */
-[data-theme="glass"]{
-  --bg:#070B12; --ink:#F8FAFC; --muted:#94A3B8; --faint:#64748B;
-  --accent:#10B981; --accent2:#34D399; --accent3:#F59E0B; --onaccent:#022C22;
-  --card:rgba(255,255,255,.065); --card2:rgba(255,255,255,.10); --line:rgba(255,255,255,.14);
-  --r:28px; --rs:18px; --shadow:0 30px 70px rgba(0,0,0,.45); --blur:blur(18px);
-  --heading:var(--sans); --hw:800; --hls:-1.5px; --grain:0;
-}
-/* ---------- Editorial (Paper) ---------- */
-[data-theme="paper"]{
-  --bg:#F7F2EC; --ink:#1B1917; --muted:#57534E; --faint:#78716C;
-  --accent:#047857; --accent2:#D97706; --accent3:#B45309; --onaccent:#FFFFFF;
-  --card:#FBF8F4; --card2:#EFE9DF; --line:rgba(27,25,23,.15);
-  --r:16px; --rs:12px; --shadow:0 1px 0 rgba(27,25,23,.06); --blur:none;
-  --heading:var(--serif); --hw:600; --hls:-1px; --grain:1;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{
-  min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .5s var(--ease),color .5s var(--ease);
-  padding:max(18px,env(safe-area-inset-top)) 16px max(34px,env(safe-area-inset-bottom));
-}
-/* ambient glow + pointer light (glass only) */
-.glow{position:fixed;inset:-20vmax;z-index:-2;pointer-events:none;transition:opacity .6s}
-[data-theme="glass"] .glow{opacity:1;
-  background:
-   radial-gradient(60vmax 50vmax at 12% 6%,rgba(16,185,129,.35),transparent 70%),
-   radial-gradient(50vmax 50vmax at 96% 38%,rgba(52,211,153,.20),transparent 70%),
-   radial-gradient(60vmax 60vmax at 6% 104%,rgba(245,158,11,.18),transparent 72%);
-  animation:drift 24s ease-in-out infinite alternate}
-[data-theme="paper"] .glow{opacity:0}
-@keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(2.5vmax,-2vmax,0)}}
-.pointer{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s;
-  background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),rgba(16,185,129,.15),transparent 60%)}
-[data-theme="glass"] .pointer.on{opacity:1}
-.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .15  0 0 0 .22 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
-[data-theme="paper"] .grain{opacity:.55}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#080C14">
+  <title>DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat</title>
+  <meta name="description"
+    content="Kelola keuangan pribadi dengan DompetKu: 100% offline, privat dan terenkripsi lokal, tanpa iklan, tanpa server, streak api TikTok, dan aturan anggaran 50/30/20. Tersedia untuk Android, iOS &amp; PC.">
+  <link rel="canonical" href="https://dompetku.my.id/">
+  <link rel="icon" href="./icon.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="./icon.png">
+  <meta property="og:site_name" content="DompetKu">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dompetku.my.id/">
+  <meta property="og:title" content="DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat">
+  <meta property="og:description"
+    content="Aplikasi pencatat keuangan modern, 100% offline di perangkat Anda. Tanpa login, tanpa langganan, dengan streak api ala TikTok dan formula anggaran 50/30/20.">
+  <meta property="og:image" content="./icon.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DompetKu — Aplikasi Keuangan Pribadi 100% Offline &amp; Privat">
+  <meta name="twitter:description"
+    content="Kelola keuangan tanpa khawatir data bocor: 100% offline, privat, tanpa iklan, streak api TikTok, dan anggaran 50/30/20.">
+  <meta name="twitter:image" content="./icon.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DompetKu","url":"https://dompetku.my.id/"}</script>
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"DompetKu","description":"Aplikasi pencatat keuangan pribadi 100% offline, privat dan terenkripsi lokal. Dilengkapi streak api TikTok dan manajemen anggaran 50/30/20.","operatingSystem":"Android, iOS, Windows, macOS, Linux","applicationCategory":"FinanceApplication","softwareVersion":"2.13.0","url":"https://dompetku.my.id/","downloadUrl":"https://dompetku.my.id/#unduh","image":"./icon.png","inLanguage":"id","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"},"author":{"@type":"Person","name":"Farel Rizky P"}}</script>
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Apakah DompetKu gratis dan tanpa iklan?","acceptedAnswer":{"@type":"Answer","text":"Ya, 100% gratis selamanya tanpa iklan dan tanpa biaya langganan. Donasi traktir kopi melalui QRIS sepenuhnya sukarela untuk mendukung pengembang."}},{"@type":"Question","name":"Di mana data keuangan saya disimpan?","acceptedAnswer":{"@type":"Answer","text":"Semua transaksi, rekening dompet, dan catatan keuangan Anda disimpan secara lokal di memori perangkat (IndexedDB) menggunakan enkripsi browser. Tidak ada data yang dikirim ke server luar."}},{"@type":"Question","name":"Bagaimana cara memasang DompetKu di HP (Android/iOS)?","acceptedAnswer":{"@type":"Answer","text":"Cukup buka DompetKu di browser Anda lalu pilih 'Instal App' atau 'Tambahkan ke Layar Utama' (Add to Home Screen). Di Android Anda juga dapat mengunduh file APK mandiri."}},{"@type":"Question","name":"Bagaimana cara memindahkan data saat ganti HP?","acceptedAnswer":{"@type":"Answer","text":"Masuk ke menu Setelan di aplikasi, pilih Ekspor Backup (JSON), lalu simpan filenya. Di HP baru, buka DompetKu dan pilih Impor Backup."}},{"@type":"Question","name":"Bagaimana cara menyalakan streak api setiap hari?","acceptedAnswer":{"@type":"Answer","text":"Cukup lakukan check-in harian dengan menekan tombol 'Masuk & Nyalakan Api' atau catat minimal satu transaksi setiap hari untuk menaikkan level api TikTok Anda."}}]}</script>
+  <style>
+    :root {
+      --serif: ui-serif, "Newsreader", Georgia, "Times New Roman", serif;
+      --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
 
-.wrap{max-width:480px;margin:0 auto}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 18px}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
-.brand svg{width:42px;height:auto;flex:none}
-.brand b{font-size:21px;font-weight:800;letter-spacing:-.5px}
-/* style switch */
-.sw{display:inline-flex;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:3px;position:relative}
-.sw button{appearance:none;border:0;background:none;cursor:pointer;font:inherit;font-weight:700;font-size:12.5px;color:var(--muted);
-  padding:8px 14px;border-radius:999px;position:relative;z-index:1;transition:color .25s;white-space:nowrap}
-.sw button[aria-pressed="true"]{color:var(--onaccent)}
-.sw i{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:transform .35s var(--ease)}
-[data-theme="paper"] .sw i{transform:translateX(0)}
-[data-theme="glass"] .sw i{transform:translateX(100%)}
+    /* ---------- Liquid Glass (Default) ---------- */
+    [data-theme="glass"] {
+      --bg: #070B12;
+      --ink: #F8FAFC;
+      --muted: #94A3B8;
+      --faint: #64748B;
+      --accent: #10B981;
+      --accent2: #34D399;
+      --accent3: #F59E0B;
+      --onaccent: #022C22;
+      --card: rgba(255, 255, 255, .065);
+      --card2: rgba(255, 255, 255, .10);
+      --line: rgba(255, 255, 255, .14);
+      --r: 28px;
+      --rs: 18px;
+      --shadow: 0 30px 70px rgba(0, 0, 0, .45);
+      --blur: blur(18px);
+      --heading: var(--sans);
+      --hw: 800;
+      --hls: -1.5px;
+      --grain: 0;
+    }
 
-/* hero */
-.hero{display:flex;flex-direction:column;align-items:flex-start;padding:6px 2px 4px}
-.mark{width:128px;height:auto;margin:2px 0 16px;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.mark .b{opacity:0;transform:translateY(34px);animation:up .9s var(--ease) forwards;transform-box:fill-box}
-.mark .b:nth-child(2){animation-delay:.1s}.mark .b:nth-child(3){animation-delay:.2s}.mark .b:nth-child(4){animation-delay:.3s}.mark .b:nth-child(5){animation-delay:.4s}
-.mark .w{transform-box:fill-box;animation:wav 3.2s ease-in-out infinite alternate}
-@keyframes up{to{opacity:1;transform:none}}
-@keyframes wav{from{transform:translateY(-4px) scale(0.98)}to{transform:translateY(4px) scale(1.02)}}
-h1{font-family:var(--heading);font-size:clamp(38px,11vw,56px);font-weight:var(--hw);letter-spacing:var(--hls);line-height:1.03}
-h1 em{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--accent);letter-spacing:-1px}
-.line{display:block;overflow:hidden;padding-bottom:.26em;margin-bottom:-.26em}
-.line>span{display:inline-block;transform:translateY(112%);animation:up .9s var(--ease) forwards}
-.line:nth-child(2)>span{animation-delay:.12s}
-.lead{color:var(--muted);font-size:16.5px;margin:16px 0 14px;max-width:34em;line-height:1.6}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.badge{font-size:12.5px;font-weight:700;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px}
+    /* ---------- Editorial (Paper) ---------- */
+    [data-theme="paper"] {
+      --bg: #F7F2EC;
+      --ink: #1B1917;
+      --muted: #57534E;
+      --faint: #78716C;
+      --accent: #047857;
+      --accent2: #D97706;
+      --accent3: #B45309;
+      --onaccent: #FFFFFF;
+      --card: #FBF8F4;
+      --card2: #EFE9DF;
+      --line: rgba(27, 25, 23, .15);
+      --r: 16px;
+      --rs: 12px;
+      --shadow: 0 1px 0 rgba(27, 25, 23, .06);
+      --blur: none;
+      --heading: var(--serif);
+      --hw: 600;
+      --hls: -1px;
+      --grain: 1;
+    }
 
-/* cards */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
-  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);transition:background .5s var(--ease),border-color .5s}
-.qrcard{padding:18px;position:relative;transform-style:preserve-3d;will-change:transform;transition:transform .25s var(--ease)}
-.dlcard::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;pointer-events:none;
-  background:conic-gradient(from var(--ang,0deg),transparent 0 60%,var(--accent) 80%,var(--accent2) 90%,transparent);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
-  animation:spin 6s linear infinite;opacity:.95}
-@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-@keyframes spin{to{--ang:360deg}}
-.qrbox{background:#fff;border-radius:calc(var(--r) - 8px);padding:14px 14px 12px;position:relative}
-.qrtop{display:flex;align-items:center;justify-content:space-between;color:#111;font-weight:800;padding:2px 4px 10px;letter-spacing:.5px}
-.qrtop span:last-child{font-size:11.5px;letter-spacing:1.8px;color:#555;font-weight:700}
-.frame{position:relative}
-.frame img{display:block;width:100%;height:auto;border-radius:10px}
-.frame b{position:absolute;width:26px;height:26px;border:4px solid var(--accent);pointer-events:none}
-.frame b:nth-of-type(1){left:-8px;top:-8px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
-.frame b:nth-of-type(2){right:-8px;top:-8px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
-.frame b:nth-of-type(3){left:-8px;bottom:-8px;border-right:0;border-top:0;border-radius:0 0 0 10px}
-.frame b:nth-of-type(4){right:-8px;bottom:-8px;border-left:0;border-top:0;border-radius:0 0 10px 0}
-.merchant{margin-top:14px;text-align:center}
-.merchant small{display:block;color:var(--faint);font-size:11.5px;letter-spacing:2px;font-weight:700}
-.merchant strong{font-size:22px;letter-spacing:.5px;display:block;margin-top:2px}
-.merchant p.nmid{color:var(--accent);font-family:monospace;font-size:13px;font-weight:700;margin-top:2px}
-.hint{color:var(--muted);font-size:13px;text-align:center;margin-top:4px}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-.btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:15px;border-radius:999px;padding:14px 18px;text-align:center;
-  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s var(--ease),filter .2s;color:var(--ink);position:relative;overflow:hidden}
-[data-theme="paper"] .btn{border-radius:12px}
-.btn:hover{filter:brightness(1.08)}.btn:active{transform:scale(.96)}
-.btn.primary{color:var(--onaccent);background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.btn.ghost{background:var(--card2);border:1px solid var(--line)}
-.btn:focus-visible,.tier:focus-visible,.sw button:focus-visible,.x:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
-.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.btns .full{grid-column:1/-1}
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth
+    }
 
-.lab{font-size:12px;letter-spacing:3px;color:var(--faint);font-weight:800;margin:30px 2px 12px;text-transform:uppercase}
-.tiers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tier{appearance:none;cursor:pointer;font:inherit;text-align:left;color:var(--ink);padding:16px;border-radius:var(--rs);
-  background:var(--card);border:1px solid var(--line);transition:transform .2s var(--ease),border-color .2s,background .3s;display:block;position:relative;overflow:hidden}
-.tier:hover{transform:translateY(-3px);border-color:var(--accent)}
-.tier .n{font-size:13px;color:var(--muted);font-weight:600}
-.tier .a{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px}
-.tier[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:var(--onaccent)}
-.tier[aria-pressed="true"] .n{color:var(--onaccent);opacity:.85}
-.tip{min-height:24px;color:var(--muted);font-size:13.5px;margin:12px 2px 0}
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background .5s var(--ease), color .5s var(--ease);
+      padding: max(18px, env(safe-area-inset-top)) 16px max(34px, env(safe-area-inset-bottom));
+    }
 
-.why{display:grid;gap:10px}
-.why .it{display:flex;gap:14px;align-items:flex-start;padding:16px 16px;border-radius:var(--rs);background:var(--card);border:1px solid var(--line)}
-.why .ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--onaccent)}
-.why .ic svg{width:22px;height:22px}
-.why b{display:block;font-size:16px}.why span{color:var(--muted);font-size:14px;line-height:1.5}
+    /* ambient glow + pointer light (glass only) */
+    .glow {
+      position: fixed;
+      inset: -20vmax;
+      z-index: -2;
+      pointer-events: none;
+      transition: opacity .6s
+    }
 
-ol{list-style:none;counter-reset:s;display:grid;gap:10px}
-ol li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:14px 16px}
-ol li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--onaccent);background:linear-gradient(135deg,var(--accent),var(--accent2))}
-ol li span{font-size:15px;font-weight:700}ol li small{display:block;color:var(--muted);font-size:13.5px;margin-top:2px;font-weight:400}
+    [data-theme="glass"] .glow {
+      opacity: 1;
+      background:
+        radial-gradient(60vmax 50vmax at 12% 6%, rgba(16, 185, 129, .35), transparent 70%),
+        radial-gradient(50vmax 50vmax at 96% 38%, rgba(52, 211, 153, .20), transparent 70%),
+        radial-gradient(60vmax 60vmax at 6% 104%, rgba(245, 158, 11, .18), transparent 72%);
+      animation: drift 24s ease-in-out infinite alternate
+    }
 
-.contact{display:grid;gap:10px}
-.contact .btn{justify-content:space-between;padding:15px 20px}
-.contact .btn span:last-child{color:var(--muted);font-weight:600;font-size:14px}
-.note{color:var(--faint);font-size:13px;margin:26px 2px 0}
-footer{text-align:center;color:var(--faint);font-size:13px;margin-top:32px;padding-bottom:12px}footer b{color:var(--muted)}
+    [data-theme="paper"] .glow {
+      opacity: 0
+    }
 
-/* fullscreen QR lightbox */
-.lb{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.lb.open{display:flex;animation:fade .25s ease}
-@keyframes fade{from{opacity:0}}
-.lbbox{background:#fff;border-radius:26px;padding:20px;width:min(92vw,500px);text-align:center;color:#111;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:pop .4s var(--ease)}
-@keyframes pop{from{transform:scale(.9);opacity:0}}
-.lbbox img{display:block;width:100%;height:auto;border-radius:14px}
-.lbbox p{font-size:13.5px;color:#555;margin-top:10px}
-.lbbox strong{display:block;margin-top:6px;font-size:20px}
-.x{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:rgba(255,255,255,.2);color:#fff;font-size:22px;display:grid;place-items:center}
+    @keyframes drift {
+      from {
+        transform: translate3d(0, 0, 0)
+      }
 
-.toast{position:fixed;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translate(-50%,40px);opacity:0;background:#062319;color:#F8FAFC;
-  border:1px solid rgba(52,211,153,.3);padding:12px 22px;border-radius:999px;font-weight:700;font-size:14px;transition:all .3s var(--ease);pointer-events:none;z-index:99}
-.toast.show{opacity:1;transform:translate(-50%,0)}
+      to {
+        transform: translate3d(2.5vmax, -2vmax, 0)
+      }
+    }
 
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
-.reveal.in{opacity:1;transform:none}
-.no-io .reveal{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  .glow,.dlcard::before,.mark .w{animation:none}
-  .mark .b,.line>span{animation:none;opacity:1;transform:none}
-  .reveal{opacity:1;transform:none;transition:none}
-  .btn,.tier,.toast,.sw i,.qrcard{transition:none}
-}
+    .pointer {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .4s;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(16, 185, 129, .15), transparent 60%)
+    }
 
-/* aurora canvas, dock, fx */
-#aurora{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;opacity:0;transition:opacity .6s}
-[data-theme="glass"] #aurora{opacity:1}
-.has-canvas[data-theme="glass"] .glow{opacity:0;animation:none}
-body{padding-bottom:max(110px,calc(env(safe-area-inset-bottom) + 96px))}
-.prog{position:fixed;top:0;left:0;right:0;height:3px;z-index:40;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
-#fx{position:fixed;inset:0;width:100%;height:100%;z-index:80;pointer-events:none}
+    [data-theme="glass"] .pointer.on {
+      opacity: 1
+    }
 
-.dock{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;
-  padding:6px;border-radius:999px;background:rgba(12,18,28,.7);border:1px solid rgba(255,255,255,.16);
-  -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);box-shadow:0 18px 50px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none}
-[data-theme="paper"] .dock{border-radius:18px;background:rgba(251,248,244,.88);border-color:var(--line);box-shadow:0 8px 30px rgba(31,27,24,.14)}
-.dock .pillsel{position:absolute;top:6px;bottom:6px;left:6px;border-radius:999px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 38%,transparent),color-mix(in srgb,var(--accent2) 30%,transparent));
-  border:1px solid color-mix(in srgb,var(--accent2) 60%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.35);transition:transform .45s var(--ease),width .3s,scale .25s;will-change:transform}
-[data-theme="paper"] .dock .pillsel{border-radius:13px;background:color-mix(in srgb,var(--accent) 18%,transparent)}
-.dock.held .pillsel{scale:1.14;transition:transform .08s linear,scale .25s;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent2) 45%,transparent))}
-.dk{appearance:none;border:0;background:none;color:#94a3b8;font:inherit;font-weight:700;font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:9px 18px 8px;border-radius:999px;cursor:pointer;position:relative;z-index:1;transition:color .25s;min-width:76px}
-.dk svg{width:21px;height:21px}
-.dk[aria-current="true"]{color:#fff}
-[data-theme="paper"] .dk{color:#57534E}[data-theme="paper"] .dk[aria-current="true"]{color:#1B1917}
-.dk.snd{min-width:52px;padding:9px 12px 8px;margin-left:2px}
-.dk.snd[aria-pressed="false"] .on{display:none}.dk.snd[aria-pressed="true"] .off{display:none}
-.dk:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
-.sep{width:1px;height:26px;background:var(--line);margin:0 4px;flex:none}
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .15  0 0 0 .22 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")
+    }
 
-.beam{position:absolute;left:-6px;right:-6px;top:0;height:3px;border-radius:3px;pointer-events:none;opacity:0;
-  background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),var(--accent),transparent);box-shadow:0 0 18px 3px color-mix(in srgb,var(--accent) 70%,transparent)}
-.beam.go{animation:beam 1.5s var(--ease) 1 forwards}
-@keyframes beam{0%{opacity:0;top:0}10%{opacity:.95}90%{opacity:.95}100%{opacity:0;top:calc(100% - 3px)}}
+    [data-theme="paper"] .grain {
+      opacity: .55
+    }
 
-.ty{position:fixed;inset:0;z-index:75;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.ty.open{display:flex;animation:fade .3s ease}
-.tybox{width:min(92vw,410px);text-align:center;border-radius:var(--r);padding:30px 24px 24px;background:var(--bg);border:1px solid var(--line);animation:pop .55s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,.6)}
-.tybox svg{width:88px;height:auto;margin:0 auto 10px;display:block;overflow:visible}
-.tybox h3{font-family:var(--heading);font-weight:var(--hw);font-size:28px;letter-spacing:var(--hls);line-height:1.15}
-.tybox h3 em{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--accent)}
-.tybox p{color:var(--muted);margin:10px 0 18px;font-size:14.5px}
-@media (prefers-reduced-motion:reduce){.beam.go,.dock .pillsel{animation:none;transition:none}}
-.toast{bottom:max(98px,calc(env(safe-area-inset-bottom) + 92px))}
+    .wrap {
+      max-width: 480px;
+      margin: 0 auto
+    }
 
-/* Desktop Layout (>= 1040px) */
-.wrap>*{grid-column:1}
-@media (min-width:1040px){
-  body{padding-left:40px;padding-right:40px}
-  .wrap{max-width:1140px;display:grid;grid-template-columns:minmax(0,1fr) 440px;column-gap:64px;align-items:start}
-  .wrap>.top{grid-column:1/-1;padding-bottom:30px}
-  .wrap>.side{grid-column:2;grid-row:2/span 80;align-self:start;position:sticky;top:32px}
-  .side>.qrcard{margin-top:0}
-  .wrap>.hero{padding-top:14px}
-  h1{font-size:74px}
-  .lead{font-size:18.5px}
-  .dock{bottom:22px}
-  .kbd{display:flex}
-}
-.kbd{display:none;flex-wrap:wrap;gap:8px;margin:14px 2px 0;color:var(--faint);font-size:12.5px;align-items:center}
-.kbd kbd{font:inherit;font-weight:800;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;padding:2px 8px}
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 2px 18px
+    }
 
-:root{--lv:0}
-.mark{transform:scale(calc(1 + var(--lv) * .07));transform-origin:50% 70%;transition:transform .08s linear}
-.mark.pulse{animation:sunpulse .8s var(--ease)}
-@keyframes sunpulse{40%{transform:scale(1.14) rotate(-3deg)}}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer
+    }
 
-.amt{padding:20px 20px 18px;position:relative;overflow:hidden}
-.amt .big{font-family:var(--heading);font-weight:var(--hw);font-size:clamp(44px,13vw,62px);letter-spacing:var(--hls);line-height:1;color:var(--ink)}
-.amt .big small{font-size:.42em;color:var(--faint);margin-right:6px;letter-spacing:0;font-weight:700}
-.amt .lbl{color:var(--accent);font-weight:800;font-size:14px;letter-spacing:2px;margin-top:6px;min-height:21px}
-.rng{-webkit-appearance:none;appearance:none;width:100%;height:46px;background:transparent;margin:14px 0 4px;--p:10%;touch-action:pan-y;cursor:pointer}
-.rng::-webkit-slider-runnable-track{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2) var(--p),var(--card2) var(--p))}
-.rng::-moz-range-track{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2) var(--p),var(--card2) var(--p))}
-.rng::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;margin-top:-14px;border:2px solid rgba(255,255,255,.9);
-  background:radial-gradient(circle at 35% 30%,#fff,rgba(255,255,255,.65));box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 6px color-mix(in srgb,var(--accent) 30%,transparent);transition:transform .15s var(--ease)}
-.rng:active::-webkit-slider-thumb{transform:scale(1.18)}
-.rng::-moz-range-thumb{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 6px color-mix(in srgb,var(--accent) 30%,transparent)}
-.rng:focus-visible{outline:3px solid var(--accent2);outline-offset:4px;border-radius:10px}
-.scale{display:flex;justify-content:space-between;color:var(--faint);font-size:12px;font-weight:700}
-.amt .row{display:flex;gap:10px;margin-top:14px}.amt .row .btn{flex:1}
+    .brand svg {
+      width: 42px;
+      height: auto;
+      flex: none
+    }
 
-.form{display:grid;gap:10px;margin-bottom:12px}
-.fld{width:100%;font:inherit;font-size:15.5px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:14px 16px;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical}
-.fld::placeholder{color:var(--faint)}
-.fld:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
-.preview{font-size:13.5px;color:var(--muted);background:var(--card2);border:1px dashed var(--line);border-radius:var(--rs);padding:12px 14px;white-space:pre-wrap;word-break:break-word}
-.preview b{color:var(--accent)}
+    .brand b {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.5px
+    }
 
-.ripple{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.4);transform:scale(0);animation:rip .6s ease-out forwards}
-@keyframes rip{to{transform:scale(1);opacity:0}}
+    /* style switch */
+    .sw {
+      display: inline-flex;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px;
+      position: relative
+    }
 
-/* Channel / Community Cards */
-.chan{display:grid;grid-template-columns:auto 1fr;gap:14px 16px;align-items:center;padding:16px;margin-top:14px}
-.chan .av{width:68px;height:68px;border-radius:20px;object-fit:cover;border:1px solid var(--line);display:block;background:var(--card2)}
-.chan .kick{display:block;color:var(--faint);font-size:11.5px;font-weight:800;letter-spacing:2.5px}
-.chan strong{display:block;font-size:19px;letter-spacing:-.3px;line-height:1.2;margin-top:1px}
-.chan .desc{display:block;color:var(--muted);font-size:13.5px;margin-top:3px}
-.chan .acts{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:10px}
-.btn.wa{color:#022c15;background:linear-gradient(90deg,#10B981,#34D399)}
-.btn.wa svg{width:20px;height:20px;flex:none}
-.chan .cp{padding:14px 18px}
-.chan .tt-av{background:#010101;display:flex;align-items:center;justify-content:center;color:#fff}
-.btn.tt{color:#fff;background:#010101}
-.btn.tt svg{width:20px;height:20px;flex:none}
+    .sw button {
+      appearance: none;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      font-size: 12.5px;
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 999px;
+      position: relative;
+      z-index: 1;
+      transition: color .25s;
+      white-space: nowrap
+    }
 
-/* Landing Platforms */
-.eyebrow{font-size:12px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin:0 0 10px;display:flex;align-items:center;gap:6px}
-.dlcard{padding:18px;position:relative;margin-top:4px}
-.dlhead{padding:2px 4px 14px}
-.dlhead .kick{display:block;font-size:11.5px;letter-spacing:2.5px;font-weight:800;text-transform:uppercase;color:var(--accent)}
-.dlhead h2{font-family:var(--heading);font-weight:var(--hw);font-size:24px;letter-spacing:-.5px;line-height:1.15;margin-top:4px}
-.plat{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--rs);text-decoration:none;color:var(--ink);background:var(--card2);border:1px solid var(--line);transition:transform .2s var(--ease),border-color .2s,background .3s}
-.plat+.plat{margin-top:10px}
-.plat:hover{transform:translateY(-2px);border-color:var(--accent)}
-.plat:active{transform:scale(.98)}
-.plat:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
-.plat .pic{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--onaccent)}
-.plat .pic svg{width:26px;height:26px}
-.plat .pt{flex:1;min-width:0}
-.plat .pt b{display:block;font-size:16.5px;font-weight:800;letter-spacing:-.2px}
-.plat .pt small{display:block;white-space:nowrap;color:var(--muted);font-size:13px;font-weight:600}
-.plat .go{flex:none;display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13.5px;padding:10px 14px;border-radius:999px;color:var(--onaccent);background:linear-gradient(90deg,var(--accent),var(--accent2))}
-[data-theme="paper"] .plat .go{border-radius:10px}
-.plat .go svg{width:16px;height:16px}
-.amt+.tiers{margin-top:10px}
-.side>.qrcard{margin-top:4px}
-.side>.dlcard{margin-top:14px}
-.dlnote{color:var(--faint);font-size:12.5px;margin:12px 4px 0}
-.dlnote a{color:var(--muted)}
-.sec{margin:52px 2px 16px}
-.sec .kick2{display:block;font-size:12px;letter-spacing:3px;color:var(--faint);font-weight:800;text-transform:uppercase;margin-bottom:6px}
-h2.st{font-family:var(--heading);font-weight:var(--hw);font-size:clamp(28px,8vw,38px);letter-spacing:calc(var(--hls) * .6);line-height:1.08}
-h2.st em{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--accent)}
-.sec p{color:var(--muted);font-size:15px;margin-top:8px;max-width:34em;line-height:1.6}
-.why h3{font-size:15.5px;font-weight:800;line-height:1.3}
-.why span{display:block;margin-top:2px}
-@media (min-width:560px){.feat{grid-template-columns:1fr 1fr}}
-.faq{display:grid;gap:10px}
-.faq details{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:0 16px;transition:background .3s}
-.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;font-weight:700;font-size:15px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";flex:none;font-size:22px;line-height:1;font-weight:500;color:var(--accent);transition:transform .25s var(--ease)}
-.faq details[open] summary::after{transform:rotate(45deg)}
-.faq summary:focus-visible{outline:3px solid var(--accent2);outline-offset:2px;border-radius:6px}
-.faq details p{color:var(--muted);font-size:14px;padding:0 0 15px;line-height:1.6}
-.flinks{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}
-.flinks a{color:var(--muted);font-weight:700;text-decoration:none}
-.flinks a:hover{color:var(--accent)}
-</style>
+    .sw button[aria-pressed="true"] {
+      color: var(--onaccent)
+    }
+
+    .sw i {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: transform .35s var(--ease)
+    }
+
+    [data-theme="paper"] .sw i {
+      transform: translateX(0)
+    }
+
+    [data-theme="glass"] .sw i {
+      transform: translateX(100%)
+    }
+
+    /* hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 6px 2px 4px
+    }
+
+    .mark {
+      width: 128px;
+      height: auto;
+      margin: 2px 0 16px;
+      overflow: visible;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    .mark .b {
+      opacity: 0;
+      transform: translateY(34px);
+      animation: up .9s var(--ease) forwards;
+      transform-box: fill-box
+    }
+
+    .mark .b:nth-child(2) {
+      animation-delay: .1s
+    }
+
+    .mark .b:nth-child(3) {
+      animation-delay: .2s
+    }
+
+    .mark .b:nth-child(4) {
+      animation-delay: .3s
+    }
+
+    .mark .b:nth-child(5) {
+      animation-delay: .4s
+    }
+
+    .mark .w {
+      transform-box: fill-box;
+      animation: wav 3.2s ease-in-out infinite alternate
+    }
+
+    @keyframes up {
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes wav {
+      from {
+        transform: translateY(-4px) scale(0.98)
+      }
+
+      to {
+        transform: translateY(4px) scale(1.02)
+      }
+    }
+
+    h1 {
+      font-family: var(--heading);
+      font-size: clamp(38px, 11vw, 56px);
+      font-weight: var(--hw);
+      letter-spacing: var(--hls);
+      line-height: 1.03
+    }
+
+    h1 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: -1px
+    }
+
+    .line {
+      display: block;
+      overflow: hidden;
+      padding-bottom: .26em;
+      margin-bottom: -.26em
+    }
+
+    .line>span {
+      display: inline-block;
+      transform: translateY(112%);
+      animation: up .9s var(--ease) forwards
+    }
+
+    .line:nth-child(2)>span {
+      animation-delay: .12s
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 16.5px;
+      margin: 16px 0 14px;
+      max-width: 34em;
+      line-height: 1.6
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px
+    }
+
+    .badge {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    /* cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: var(--blur);
+      backdrop-filter: var(--blur);
+      transition: background .5s var(--ease), border-color .5s
+    }
+
+    .qrcard {
+      padding: 18px;
+      position: relative;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform .25s var(--ease)
+    }
+
+    .dlcard::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1.5px;
+      pointer-events: none;
+      background: conic-gradient(from var(--ang, 0deg), transparent 0 60%, var(--accent) 80%, var(--accent2) 90%, transparent);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: spin 6s linear infinite;
+      opacity: .95
+    }
+
+    @property --ang {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false
+    }
+
+    @keyframes spin {
+      to {
+        --ang: 360deg
+      }
+    }
+
+    .qrbox {
+      background: #fff;
+      border-radius: calc(var(--r) - 8px);
+      padding: 14px 14px 12px;
+      position: relative
+    }
+
+    .qrtop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #111;
+      font-weight: 800;
+      padding: 2px 4px 10px;
+      letter-spacing: .5px
+    }
+
+    .qrtop span:last-child {
+      font-size: 11.5px;
+      letter-spacing: 1.8px;
+      color: #555;
+      font-weight: 700
+    }
+
+    .frame {
+      position: relative
+    }
+
+    .frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px
+    }
+
+    .frame b {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border: 4px solid var(--accent);
+      pointer-events: none
+    }
+
+    .frame b:nth-of-type(1) {
+      left: -8px;
+      top: -8px;
+      border-right: 0;
+      border-bottom: 0;
+      border-radius: 10px 0 0 0
+    }
+
+    .frame b:nth-of-type(2) {
+      right: -8px;
+      top: -8px;
+      border-left: 0;
+      border-bottom: 0;
+      border-radius: 0 10px 0 0
+    }
+
+    .frame b:nth-of-type(3) {
+      left: -8px;
+      bottom: -8px;
+      border-right: 0;
+      border-top: 0;
+      border-radius: 0 0 0 10px
+    }
+
+    .frame b:nth-of-type(4) {
+      right: -8px;
+      bottom: -8px;
+      border-left: 0;
+      border-top: 0;
+      border-radius: 0 0 10px 0
+    }
+
+    .merchant {
+      margin-top: 14px;
+      text-align: center
+    }
+
+    .merchant small {
+      display: block;
+      color: var(--faint);
+      font-size: 11.5px;
+      letter-spacing: 2px;
+      font-weight: 700
+    }
+
+    .merchant strong {
+      font-size: 22px;
+      letter-spacing: .5px;
+      display: block;
+      margin-top: 2px
+    }
+
+    .merchant p.nmid {
+      color: var(--accent);
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 2px
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 4px
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      font-size: 15px;
+      border-radius: 999px;
+      padding: 14px 18px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .15s var(--ease), filter .2s;
+      color: var(--ink);
+      position: relative;
+      overflow: hidden
+    }
+
+    [data-theme="paper"] .btn {
+      border-radius: 12px
+    }
+
+    .btn:hover {
+      filter: brightness(1.08)
+    }
+
+    .btn:active {
+      transform: scale(.96)
+    }
+
+    .btn.primary {
+      color: var(--onaccent);
+      background: linear-gradient(90deg, var(--accent), var(--accent2))
+    }
+
+    .btn.ghost {
+      background: var(--card2);
+      border: 1px solid var(--line)
+    }
+
+    .btn:focus-visible,
+    .tier:focus-visible,
+    .sw button:focus-visible,
+    .x:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 3px
+    }
+
+    .btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .btns .full {
+      grid-column: 1/-1
+    }
+
+    .lab {
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--faint);
+      font-weight: 800;
+      margin: 30px 2px 12px;
+      text-transform: uppercase
+    }
+
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .tier {
+      appearance: none;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      color: var(--ink);
+      padding: 16px;
+      border-radius: var(--rs);
+      background: var(--card);
+      border: 1px solid var(--line);
+      transition: transform .2s var(--ease), border-color .2s, background .3s;
+      display: block;
+      position: relative;
+      overflow: hidden
+    }
+
+    .tier:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent)
+    }
+
+    .tier .n {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600
+    }
+
+    .tier .a {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      margin-top: 2px
+    }
+
+    .tier[aria-pressed="true"] {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: transparent;
+      color: var(--onaccent)
+    }
+
+    .tier[aria-pressed="true"] .n {
+      color: var(--onaccent);
+      opacity: .85
+    }
+
+    .tip {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 13.5px;
+      margin: 12px 2px 0
+    }
+
+    .why {
+      display: grid;
+      gap: 10px
+    }
+
+    .why .it {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px 16px;
+      border-radius: var(--rs);
+      background: var(--card);
+      border: 1px solid var(--line)
+    }
+
+    .why .ic {
+      flex: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--onaccent)
+    }
+
+    .why .ic svg {
+      width: 22px;
+      height: 22px
+    }
+
+    .why b {
+      display: block;
+      font-size: 16px
+    }
+
+    .why span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5
+    }
+
+    ol {
+      list-style: none;
+      counter-reset: s;
+      display: grid;
+      gap: 10px
+    }
+
+    ol li {
+      counter-increment: s;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--rs);
+      padding: 14px 16px
+    }
+
+    ol li::before {
+      content: counter(s);
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: var(--onaccent);
+      background: linear-gradient(135deg, var(--accent), var(--accent2))
+    }
+
+    ol li span {
+      font-size: 15px;
+      font-weight: 700
+    }
+
+    ol li small {
+      display: block;
+      color: var(--muted);
+      font-size: 13.5px;
+      margin-top: 2px;
+      font-weight: 400
+    }
+
+    .contact {
+      display: grid;
+      gap: 10px
+    }
+
+    .contact .btn {
+      justify-content: space-between;
+      padding: 15px 20px
+    }
+
+    .contact .btn span:last-child {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px
+    }
+
+    .note {
+      color: var(--faint);
+      font-size: 13px;
+      margin: 26px 2px 0
+    }
+
+    footer {
+      text-align: center;
+      color: var(--faint);
+      font-size: 13px;
+      margin-top: 32px;
+      padding-bottom: 12px
+    }
+
+    footer b {
+      color: var(--muted)
+    }
+
+    /* fullscreen QR lightbox */
+    .lb {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, .82);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px)
+    }
+
+    .lb.open {
+      display: flex;
+      animation: fade .25s ease
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0
+      }
+    }
+
+    .lbbox {
+      background: #fff;
+      border-radius: 26px;
+      padding: 20px;
+      width: min(92vw, 500px);
+      text-align: center;
+      color: #111;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .6);
+      animation: pop .4s var(--ease)
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(.9);
+        opacity: 0
+      }
+    }
+
+    .lbbox img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 14px
+    }
+
+    .lbbox p {
+      font-size: 13.5px;
+      color: #555;
+      margin-top: 10px
+    }
+
+    .lbbox strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px
+    }
+
+    .x {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 0;
+      cursor: pointer;
+      background: rgba(255, 255, 255, .2);
+      color: #fff;
+      font-size: 22px;
+      display: grid;
+      place-items: center
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(26px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 40px);
+      opacity: 0;
+      background: #062319;
+      color: #F8FAFC;
+      border: 1px solid rgba(52, 211, 153, .3);
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all .3s var(--ease);
+      pointer-events: none;
+      z-index: 99
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0)
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .8s var(--ease), transform .8s var(--ease)
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none
+    }
+
+    .no-io .reveal {
+      opacity: 1;
+      transform: none
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .glow,
+      .dlcard::before,
+      .mark .w {
+        animation: none
+      }
+
+      .mark .b,
+      .line>span {
+        animation: none;
+        opacity: 1;
+        transform: none
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none
+      }
+
+      .btn,
+      .tier,
+      .toast,
+      .sw i,
+      .qrcard {
+        transition: none
+      }
+    }
+
+    /* aurora canvas, dock, fx */
+    #aurora {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .6s
+    }
+
+    [data-theme="glass"] #aurora {
+      opacity: 1
+    }
+
+    .has-canvas[data-theme="glass"] .glow {
+      opacity: 0;
+      animation: none
+    }
+
+    body {
+      padding-bottom: max(110px, calc(env(safe-area-inset-bottom) + 96px))
+    }
+
+    .prog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 40;
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3))
+    }
+
+    #fx {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 80;
+      pointer-events: none
+    }
+
+    .dock {
+      position: fixed;
+      left: 50%;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(12, 18, 28, .7);
+      border: 1px solid rgba(255, 255, 255, .16);
+      -webkit-backdrop-filter: blur(22px) saturate(1.6);
+      backdrop-filter: blur(22px) saturate(1.6);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none
+    }
+
+    [data-theme="paper"] .dock {
+      border-radius: 18px;
+      background: rgba(251, 248, 244, .88);
+      border-color: var(--line);
+      box-shadow: 0 8px 30px rgba(31, 27, 24, .14)
+    }
+
+    .dock .pillsel {
+      position: absolute;
+      top: 6px;
+      bottom: 6px;
+      left: 6px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 38%, transparent), color-mix(in srgb, var(--accent2) 30%, transparent));
+      border: 1px solid color-mix(in srgb, var(--accent2) 60%, transparent);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+      transition: transform .45s var(--ease), width .3s, scale .25s;
+      will-change: transform
+    }
+
+    [data-theme="paper"] .dock .pillsel {
+      border-radius: 13px;
+      background: color-mix(in srgb, var(--accent) 18%, transparent)
+    }
+
+    .dock.held .pillsel {
+      scale: 1.14;
+      transition: transform .08s linear, scale .25s;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent2) 45%, transparent))
+    }
+
+    .dk {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: #94a3b8;
+      font: inherit;
+      font-weight: 700;
+      font-size: 11.5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 9px 18px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      transition: color .25s;
+      min-width: 76px
+    }
+
+    .dk svg {
+      width: 21px;
+      height: 21px
+    }
+
+    .dk[aria-current="true"] {
+      color: #fff
+    }
+
+    [data-theme="paper"] .dk {
+      color: #57534E
+    }
+
+    [data-theme="paper"] .dk[aria-current="true"] {
+      color: #1B1917
+    }
+
+    .dk.snd {
+      min-width: 52px;
+      padding: 9px 12px 8px;
+      margin-left: 2px
+    }
+
+    .dk.snd[aria-pressed="false"] .on {
+      display: none
+    }
+
+    .dk.snd[aria-pressed="true"] .off {
+      display: none
+    }
+
+    .dk:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 2px
+    }
+
+    .sep {
+      width: 1px;
+      height: 26px;
+      background: var(--line);
+      margin: 0 4px;
+      flex: none
+    }
+
+    .beam {
+      position: absolute;
+      left: -6px;
+      right: -6px;
+      top: 0;
+      height: 3px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), var(--accent), transparent);
+      box-shadow: 0 0 18px 3px color-mix(in srgb, var(--accent) 70%, transparent)
+    }
+
+    .beam.go {
+      animation: beam 1.5s var(--ease) 1 forwards
+    }
+
+    @keyframes beam {
+      0% {
+        opacity: 0;
+        top: 0
+      }
+
+      10% {
+        opacity: .95
+      }
+
+      90% {
+        opacity: .95
+      }
+
+      100% {
+        opacity: 0;
+        top: calc(100% - 3px)
+      }
+    }
+
+    .ty {
+      position: fixed;
+      inset: 0;
+      z-index: 75;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .65);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px)
+    }
+
+    .ty.open {
+      display: flex;
+      animation: fade .3s ease
+    }
+
+    .tybox {
+      width: min(92vw, 410px);
+      text-align: center;
+      border-radius: var(--r);
+      padding: 30px 24px 24px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      animation: pop .55s var(--ease);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .6)
+    }
+
+    .tybox svg {
+      width: 88px;
+      height: auto;
+      margin: 0 auto 10px;
+      display: block;
+      overflow: visible
+    }
+
+    .tybox h3 {
+      font-family: var(--heading);
+      font-weight: var(--hw);
+      font-size: 28px;
+      letter-spacing: var(--hls);
+      line-height: 1.15
+    }
+
+    .tybox h3 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent)
+    }
+
+    .tybox p {
+      color: var(--muted);
+      margin: 10px 0 18px;
+      font-size: 14.5px
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .beam.go,
+      .dock .pillsel {
+        animation: none;
+        transition: none
+      }
+    }
+
+    .toast {
+      bottom: max(98px, calc(env(safe-area-inset-bottom) + 92px))
+    }
+
+    /* Desktop Layout (>= 1040px) */
+    .wrap>* {
+      grid-column: 1
+    }
+
+    @media (min-width:1040px) {
+      body {
+        padding-left: 40px;
+        padding-right: 40px
+      }
+
+      .wrap {
+        max-width: 1140px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 440px;
+        column-gap: 64px;
+        align-items: start
+      }
+
+      .wrap>.top {
+        grid-column: 1/-1;
+        padding-bottom: 30px
+      }
+
+      .wrap>.side {
+        grid-column: 2;
+        grid-row: 2/span 80;
+        align-self: start;
+        position: sticky;
+        top: 32px
+      }
+
+      .side>.qrcard {
+        margin-top: 0
+      }
+
+      .wrap>.hero {
+        padding-top: 14px
+      }
+
+      h1 {
+        font-size: 74px
+      }
+
+      .lead {
+        font-size: 18.5px
+      }
+
+      .dock {
+        bottom: 22px
+      }
+
+      .kbd {
+        display: flex
+      }
+    }
+
+    .kbd {
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 2px 0;
+      color: var(--faint);
+      font-size: 12.5px;
+      align-items: center
+    }
+
+    .kbd kbd {
+      font: inherit;
+      font-weight: 800;
+      color: var(--ink);
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 7px;
+      padding: 2px 8px
+    }
+
+    :root {
+      --lv: 0
+    }
+
+    .mark {
+      transform: scale(calc(1 + var(--lv) * .07));
+      transform-origin: 50% 70%;
+      transition: transform .08s linear
+    }
+
+    .mark.pulse {
+      animation: sunpulse .8s var(--ease)
+    }
+
+    @keyframes sunpulse {
+      40% {
+        transform: scale(1.14) rotate(-3deg)
+      }
+    }
+
+    .amt {
+      padding: 20px 20px 18px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .amt .big {
+      font-family: var(--heading);
+      font-weight: var(--hw);
+      font-size: clamp(44px, 13vw, 62px);
+      letter-spacing: var(--hls);
+      line-height: 1;
+      color: var(--ink)
+    }
+
+    .amt .big small {
+      font-size: .42em;
+      color: var(--faint);
+      margin-right: 6px;
+      letter-spacing: 0;
+      font-weight: 700
+    }
+
+    .amt .lbl {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-top: 6px;
+      min-height: 21px
+    }
+
+    .rng {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 46px;
+      background: transparent;
+      margin: 14px 0 4px;
+      --p: 10%;
+      touch-action: pan-y;
+      cursor: pointer
+    }
+
+    .rng::-webkit-slider-runnable-track {
+      height: 10px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2) var(--p), var(--card2) var(--p))
+    }
+
+    .rng::-moz-range-track {
+      height: 10px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2) var(--p), var(--card2) var(--p))
+    }
+
+    .rng::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      margin-top: -14px;
+      border: 2px solid rgba(255, 255, 255, .9);
+      background: radial-gradient(circle at 35% 30%, #fff, rgba(255, 255, 255, .65));
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4), 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent);
+      transition: transform .15s var(--ease)
+    }
+
+    .rng:active::-webkit-slider-thumb {
+      transform: scale(1.18)
+    }
+
+    .rng::-moz-range-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .9);
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4), 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent)
+    }
+
+    .rng:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 4px;
+      border-radius: 10px
+    }
+
+    .scale {
+      display: flex;
+      justify-content: space-between;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .amt .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .amt .row .btn {
+      flex: 1
+    }
+
+    .form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px
+    }
+
+    .fld {
+      width: 100%;
+      font: inherit;
+      font-size: 15.5px;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--rs);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      resize: vertical
+    }
+
+    .fld::placeholder {
+      color: var(--faint)
+    }
+
+    .fld:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent)
+    }
+
+    .preview {
+      font-size: 13.5px;
+      color: var(--muted);
+      background: var(--card2);
+      border: 1px dashed var(--line);
+      border-radius: var(--rs);
+      padding: 12px 14px;
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .preview b {
+      color: var(--accent)
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      background: rgba(255, 255, 255, .4);
+      transform: scale(0);
+      animation: rip .6s ease-out forwards
+    }
+
+    @keyframes rip {
+      to {
+        transform: scale(1);
+        opacity: 0
+      }
+    }
+
+    /* Channel / Community Cards */
+    .chan {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px 16px;
+      align-items: center;
+      padding: 16px;
+      margin-top: 14px
+    }
+
+    .chan .av {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      display: block;
+      background: var(--card2)
+    }
+
+    .chan .kick {
+      display: block;
+      color: var(--faint);
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 2.5px
+    }
+
+    .chan strong {
+      display: block;
+      font-size: 19px;
+      letter-spacing: -.3px;
+      line-height: 1.2;
+      margin-top: 1px
+    }
+
+    .chan .desc {
+      display: block;
+      color: var(--muted);
+      font-size: 13.5px;
+      margin-top: 3px
+    }
+
+    .chan .acts {
+      grid-column: 1/-1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px
+    }
+
+    .btn.wa {
+      color: #022c15;
+      background: linear-gradient(90deg, #10B981, #34D399)
+    }
+
+    .btn.wa svg {
+      width: 20px;
+      height: 20px;
+      flex: none
+    }
+
+    .chan .cp {
+      padding: 14px 18px
+    }
+
+    .chan .tt-av {
+      background: #010101;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff
+    }
+
+    .btn.tt {
+      color: #fff;
+      background: #010101
+    }
+
+    .btn.tt svg {
+      width: 20px;
+      height: 20px;
+      flex: none
+    }
+
+    /* Landing Platforms */
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .dlcard {
+      padding: 18px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .dlhead {
+      padding: 2px 4px 14px
+    }
+
+    .dlhead .kick {
+      display: block;
+      font-size: 11.5px;
+      letter-spacing: 2.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--accent)
+    }
+
+    .dlhead h2 {
+      font-family: var(--heading);
+      font-weight: var(--hw);
+      font-size: 24px;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+      margin-top: 4px
+    }
+
+    .plat {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      border-radius: var(--rs);
+      text-decoration: none;
+      color: var(--ink);
+      background: var(--card2);
+      border: 1px solid var(--line);
+      transition: transform .2s var(--ease), border-color .2s, background .3s
+    }
+
+    .plat+.plat {
+      margin-top: 10px
+    }
+
+    .plat:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent)
+    }
+
+    .plat:active {
+      transform: scale(.98)
+    }
+
+    .plat:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 3px
+    }
+
+    .plat .pic {
+      flex: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--onaccent)
+    }
+
+    .plat .pic svg {
+      width: 26px;
+      height: 26px
+    }
+
+    .plat .pt {
+      flex: 1;
+      min-width: 0
+    }
+
+    .plat .pt b {
+      display: block;
+      font-size: 16.5px;
+      font-weight: 800;
+      letter-spacing: -.2px
+    }
+
+    .plat .pt small {
+      display: block;
+      white-space: nowrap;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .plat .go {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 13.5px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--onaccent);
+      background: linear-gradient(90deg, var(--accent), var(--accent2))
+    }
+
+    [data-theme="paper"] .plat .go {
+      border-radius: 10px
+    }
+
+    .plat .go svg {
+      width: 16px;
+      height: 16px
+    }
+
+    .amt+.tiers {
+      margin-top: 10px
+    }
+
+    .side>.qrcard {
+      margin-top: 4px
+    }
+
+    .side>.dlcard {
+      margin-top: 14px
+    }
+
+    .dlnote {
+      color: var(--faint);
+      font-size: 12.5px;
+      margin: 12px 4px 0
+    }
+
+    .dlnote a {
+      color: var(--muted)
+    }
+
+    .sec {
+      margin: 52px 2px 16px
+    }
+
+    .sec .kick2 {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--faint);
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    h2.st {
+      font-family: var(--heading);
+      font-weight: var(--hw);
+      font-size: clamp(28px, 8vw, 38px);
+      letter-spacing: calc(var(--hls) * .6);
+      line-height: 1.08
+    }
+
+    h2.st em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent)
+    }
+
+    .sec p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 8px;
+      max-width: 34em;
+      line-height: 1.6
+    }
+
+    .why h3 {
+      font-size: 15.5px;
+      font-weight: 800;
+      line-height: 1.3
+    }
+
+    .why span {
+      display: block;
+      margin-top: 2px
+    }
+
+    @media (min-width:560px) {
+      .feat {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    .faq {
+      display: grid;
+      gap: 10px
+    }
+
+    .faq details {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--rs);
+      padding: 0 16px;
+      transition: background .3s
+    }
+
+    .faq summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 0;
+      font-weight: 700;
+      font-size: 15px
+    }
+
+    .faq summary::-webkit-details-marker {
+      display: none
+    }
+
+    .faq summary::after {
+      content: "+";
+      flex: none;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 500;
+      color: var(--accent);
+      transition: transform .25s var(--ease)
+    }
+
+    .faq details[open] summary::after {
+      transform: rotate(45deg)
+    }
+
+    .faq summary:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 2px;
+      border-radius: 6px
+    }
+
+    .faq details p {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 0 0 15px;
+      line-height: 1.6
+    }
+
+    .flinks {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      margin-bottom: 10px
+    }
+
+    .flinks a {
+      color: var(--muted);
+      font-weight: 700;
+      text-decoration: none
+    }
+
+    .flinks a:hover {
+      color: var(--accent)
+    }
+  </style>
 </head>
+
 <body>
-<div class="prog" id="prog" aria-hidden="true"></div>
-<canvas id="aurora" aria-hidden="true"></canvas>
-<canvas id="fx" aria-hidden="true"></canvas>
-<div class="glow" aria-hidden="true"></div>
-<div class="pointer" id="pointer" aria-hidden="true"></div>
-<div class="grain" aria-hidden="true"></div>
+  <div class="prog" id="prog" aria-hidden="true"></div>
+  <canvas id="aurora" aria-hidden="true"></canvas>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="pointer" id="pointer" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
-<main class="wrap">
+  <main class="wrap">
 
-  <!-- Top Navigation & Brand Header -->
-  <header class="top">
-    <div class="brand" id="brandlogo" title="DompetKu — Sentuh untuk melodi">
-      <!-- Animated Wallet & Shield SVG Logo -->
-      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <rect class="b" x="4" y="10" width="40" height="30" rx="9" fill="url(#brandGrad)" />
-        <rect class="b" x="4" y="10" width="40" height="30" rx="9" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
-        <path class="w" d="M4 19C10 21 22 23 44 19" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" />
-        <path class="b" d="M28 20H44V30H28C25.2386 30 23 27.7614 23 25C23 22.2386 25.2386 20 28 20Z" fill="#062E22" stroke="var(--accent2)" stroke-width="1.5" />
-        <circle class="b" cx="32" cy="25" r="2.5" fill="var(--accent3)" />
-        <path class="w" d="M14 6L21 2L28 6V12C28 16.5 21 20 21 20C21 20 14 16.5 14 12V6Z" fill="url(#shieldGrad)" />
-        <path d="M18.5 11L20 12.5L24 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        <defs>
-          <linearGradient id="brandGrad" x1="4" y1="10" x2="44" y2="40" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#059669" />
-            <stop offset="1" stop-color="#047857" />
-          </linearGradient>
-          <linearGradient id="shieldGrad" x1="14" y1="2" x2="28" y2="20" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#34D399" />
-            <stop offset="1" stop-color="#059669" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <b>DompetKu</b>
-    </div>
-
-    <!-- Theme Style Switcher -->
-    <div class="sw" role="group" aria-label="Gaya tampilan halaman">
-      <i></i>
-      <button type="button" data-t="paper" aria-pressed="false">Editorial</button>
-      <button type="button" data-t="glass" aria-pressed="true">Liquid Glass</button>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero" id="beranda">
-    <div class="mark" title="Ketuk logo untuk mendengar melodi keberuntungan">
-      <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
-        <circle class="w" cx="60" cy="60" r="54" fill="url(#heroOrb)" opacity="0.6" />
-        <rect class="b" x="18" y="32" width="84" height="60" rx="18" fill="url(#walletBody)" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
-        <path class="w" d="M18 48C34 52 70 54 102 48" stroke="rgba(255,255,255,0.2)" stroke-width="3" stroke-linecap="round" />
-        <path class="b" d="M68 50H102V72H68C61.9249 72 57 67.0751 57 61C57 54.9249 61.9249 50 68 50Z" fill="#042F24" stroke="var(--accent2)" stroke-width="2.5" />
-        <circle class="b" cx="78" cy="61" r="5" fill="var(--accent3)" />
-        <path class="w" d="M46 16L60 8L74 16V28C74 37 60 44 60 44C60 44 46 37 46 28V16Z" fill="url(#heroShield)" stroke="#fff" stroke-width="2" />
-        <path d="M54 26L58 30L67 21" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-        <defs>
-          <radialGradient id="heroOrb" cx="50%" cy="50%" r="50%">
-            <stop stop-color="#10B981" stop-opacity="0.5" />
-            <stop offset="100%" stop-color="#10B981" stop-opacity="0" />
-          </radialGradient>
-          <linearGradient id="walletBody" x1="18" y1="32" x2="102" y2="92" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#10B981" />
-            <stop offset="1" stop-color="#047857" />
-          </linearGradient>
-          <linearGradient id="heroShield" x1="46" y1="8" x2="74" y2="44" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#34D399" />
-            <stop offset="1" stop-color="#059669" />
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-
-    <p class="eyebrow"><span aria-hidden="true">🛡️</span> Aplikasi Keuangan 100% Offline &amp; Privat</p>
-    <h1>
-      <span class="line"><span>Kelola keuangan</span></span>
-      <span class="line"><span><em>bareng DompetKu.</em></span></span>
-    </h1>
-    <p class="lead">DompetKu adalah aplikasi pencatat keuangan modern, 100% offline, privat dan terenkripsi di perangkatmu. Pantau arus kas, terapkan formula anggaran 50/30/20, dan bakar streak api TikTok setiap hari tanpa iklan, tanpa server, dan tanpa langganan.</p>
-    <div class="badges">
-      <span class="badge">🔒 100% Offline &amp; Privat</span>
-      <span class="badge">🔥 Streak Api TikTok</span>
-      <span class="badge">📊 Anggaran 50/30/20</span>
-      <span class="badge">✨ Tanpa Iklan</span>
-      <span class="badge">🚀 Versi v2.13.0</span>
-    </div>
-  </section>
-
-  <!-- Side Column on Desktop / Stacked on Mobile -->
-  <div class="side">
-    <!-- Interactive QRIS Support Card -->
-    <section class="card qrcard reveal" id="qrcard" aria-label="QRIS Traktir Kopi" data-sec="scan">
-      <div class="dlhead">
-        <span class="kick">Dukung Pengembang · Sukarela</span>
-        <h2>Traktir Kopi lewat QRIS</h2>
+    <!-- Top Navigation & Brand Header -->
+    <header class="top">
+      <div class="brand" id="brandlogo" title="DompetKu — Sentuh untuk melodi">
+        <!-- Animated Wallet & Shield SVG Logo -->
+        <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect class="b" x="4" y="10" width="40" height="30" rx="9" fill="url(#brandGrad)" />
+          <rect class="b" x="4" y="10" width="40" height="30" rx="9" stroke="rgba(255,255,255,0.25)"
+            stroke-width="1.5" />
+          <path class="w" d="M4 19C10 21 22 23 44 19" stroke="rgba(255,255,255,0.2)" stroke-width="2"
+            stroke-linecap="round" />
+          <path class="b" d="M28 20H44V30H28C25.2386 30 23 27.7614 23 25C23 22.2386 25.2386 20 28 20Z" fill="#062E22"
+            stroke="var(--accent2)" stroke-width="1.5" />
+          <circle class="b" cx="32" cy="25" r="2.5" fill="var(--accent3)" />
+          <path class="w" d="M14 6L21 2L28 6V12C28 16.5 21 20 21 20C21 20 14 16.5 14 12V6Z" fill="url(#shieldGrad)" />
+          <path d="M18.5 11L20 12.5L24 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <defs>
+            <linearGradient id="brandGrad" x1="4" y1="10" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#059669" />
+              <stop offset="1" stop-color="#047857" />
+            </linearGradient>
+            <linearGradient id="shieldGrad" x1="14" y1="2" x2="28" y2="20" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#34D399" />
+              <stop offset="1" stop-color="#059669" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <b>DompetKu</b>
       </div>
-      <div class="qrbox">
-        <div class="qrtop"><span>QRIS</span><span>SCAN UNTUK BAYAR</span></div>
-        <div class="frame">
-          <i class="beam" id="beam"></i>
-          <img id="qr" src="./qris-donasi.jpg" alt="Kode QRIS Traktir Kopi RellAppstore - Farel Rizky P" width="960" height="960" loading="eager" fetchpriority="high">
-          <b></b><b></b><b></b><b></b>
+
+      <!-- Theme Style Switcher -->
+      <div class="sw" role="group" aria-label="Gaya tampilan halaman">
+        <i></i>
+        <button type="button" data-t="paper" aria-pressed="false">Editorial</button>
+        <button type="button" data-t="glass" aria-pressed="true">Liquid Glass</button>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="beranda">
+      <div class="mark" title="Ketuk logo untuk mendengar melodi keberuntungan">
+        <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+          <circle class="w" cx="60" cy="60" r="54" fill="url(#heroOrb)" opacity="0.6" />
+          <rect class="b" x="18" y="32" width="84" height="60" rx="18" fill="url(#walletBody)"
+            stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+          <path class="w" d="M18 48C34 52 70 54 102 48" stroke="rgba(255,255,255,0.2)" stroke-width="3"
+            stroke-linecap="round" />
+          <path class="b" d="M68 50H102V72H68C61.9249 72 57 67.0751 57 61C57 54.9249 61.9249 50 68 50Z" fill="#042F24"
+            stroke="var(--accent2)" stroke-width="2.5" />
+          <circle class="b" cx="78" cy="61" r="5" fill="var(--accent3)" />
+          <path class="w" d="M46 16L60 8L74 16V28C74 37 60 44 60 44C60 44 46 37 46 28V16Z" fill="url(#heroShield)"
+            stroke="#fff" stroke-width="2" />
+          <path d="M54 26L58 30L67 21" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <defs>
+            <radialGradient id="heroOrb" cx="50%" cy="50%" r="50%">
+              <stop stop-color="#10B981" stop-opacity="0.5" />
+              <stop offset="100%" stop-color="#10B981" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="walletBody" x1="18" y1="32" x2="102" y2="92" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#10B981" />
+              <stop offset="1" stop-color="#047857" />
+            </linearGradient>
+            <linearGradient id="heroShield" x1="46" y1="8" x2="74" y2="44" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#34D399" />
+              <stop offset="1" stop-color="#059669" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <p class="eyebrow"><span aria-hidden="true">🛡️</span> Aplikasi Keuangan 100% Offline &amp; Privat</p>
+      <h1>
+        <span class="line"><span>Kelola keuangan</span></span>
+        <span class="line"><span><em>bareng DompetKu.</em></span></span>
+      </h1>
+      <p class="lead">DompetKu adalah aplikasi pencatat keuangan modern, 100% offline, privat dan terenkripsi di
+        perangkatmu. Pantau arus kas, terapkan formula anggaran 50/30/20, dan bakar streak api TikTok setiap hari tanpa
+        iklan, tanpa server, dan tanpa langganan.</p>
+      <div class="badges">
+        <span class="badge">🔒 100% Offline &amp; Privat</span>
+        <span class="badge">🔥 Streak Api TikTok</span>
+        <span class="badge">📊 Anggaran 50/30/20</span>
+        <span class="badge">✨ Tanpa Iklan</span>
+        <span class="badge">🚀 Versi v2.13.0</span>
+      </div>
+    </section>
+
+    <!-- Side Column on Desktop / Stacked on Mobile -->
+    <div class="side">
+      <!-- Interactive QRIS Support Card -->
+      <section class="card qrcard reveal" id="qrcard" aria-label="QRIS Traktir Kopi" data-sec="scan">
+        <div class="dlhead">
+          <span class="kick">Dukung Pengembang · Sukarela</span>
+          <h2>Traktir Kopi lewat QRIS</h2>
+        </div>
+        <div class="qrbox">
+          <div class="qrtop"><span>QRIS</span><span>SCAN UNTUK BAYAR</span></div>
+          <div class="frame">
+            <i class="beam" id="beam"></i>
+            <img id="qr" src="./qris-donasi.jpg" alt="Kode QRIS Traktir Kopi RellAppstore - Farel Rizky P" width="960"
+              height="960" loading="eager" fetchpriority="high">
+            <b></b><b></b><b></b><b></b>
+          </div>
+        </div>
+        <div class="merchant">
+          <small>NAMA MERCHANT RESMI</small>
+          <strong>RellAppstore</strong>
+          <p class="nmid">NMID: ID1026588112551</p>
+          <p class="hint">Nama merchant di atas yang akan tampil di aplikasi m-banking atau e-wallet Anda.</p>
+        </div>
+        <div class="btns">
+          <button class="btn primary full" id="full" type="button">Tampilkan layar penuh</button>
+          <a class="btn ghost" id="dl" href="./qris-donasi.jpg" download="QRIS-DompetKu-Farel.jpg">Simpan QRIS</a>
+          <button class="btn ghost" id="share" type="button">Bagikan</button>
+        </div>
+      </section>
+
+      <!-- Download & Install App Card -->
+      <section class="card dlcard reveal" id="unduh" aria-labelledby="unduh-h">
+        <div class="dlhead">
+          <span class="kick">Akses &amp; Unduh Gratis</span>
+          <h2 id="unduh-h">Pasang DompetKu sekarang</h2>
+        </div>
+
+        <!-- Web App / PWA -->
+        <a class="plat" href="./index.html" target="_blank" rel="noopener">
+          <span class="pic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="2" width="14" height="20" rx="3" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg>
+          </span>
+          <span class="pt">
+            <b>Web App (PWA)</b>
+            <small>v2.13.0 · Buka &amp; Pasang Instan</small>
+          </span>
+          <span class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Buka
+          </span>
+        </a>
+
+        <!-- Android APK -->
+        <a class="plat dl-trigger" href="https://github.com/RELL3827/Dompetku-Manajement-money/releases" target="_blank"
+          rel="noopener" data-plat="Android APK">
+          <span class="pic">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true">
+              <path
+                d="M17.523 15.341a.95.95 0 0 1-.95-.95.95.95 0 0 1 .95-.95.95.95 0 0 1 .95.95.95.95 0 0 1-.95.95m-11.046 0a.95.95 0 0 1-.95-.95.95.95 0 0 1 .95-.95.95.95 0 0 1 .95.95.95.95 0 0 1-.95.95m11.41-6.023l1.894-3.28a.394.394 0 0 0-.144-.538.394.394 0 0 0-.538.144l-1.918 3.321A11.6 11.6 0 0 0 12 8.276c-1.661 0-3.232.367-4.638 1.018L5.444 5.644a.394.394 0 0 0-.538-.144.394.394 0 0 0-.144.538l1.893 3.28C3.614 10.74 1.84 13.313 1.84 16.29h20.32c0-2.977-1.774-5.55-4.273-6.972" />
+            </svg>
+          </span>
+          <span class="pt">
+            <b>Android APK</b>
+            <small>v2.13.0 · APK Mandiri</small>
+          </span>
+          <span class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+            </svg>
+            Unduh
+          </span>
+        </a>
+
+        <!-- Desktop / PC -->
+        <a class="plat" href="./index.html" target="_blank" rel="noopener">
+          <span class="pic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </span>
+          <span class="pt">
+            <b>Desktop / Browser</b>
+            <small>Windows, macOS, Linux, Chrome</small>
+          </span>
+          <span class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Gunakan
+          </span>
+        </a>
+
+        <p class="dlnote">Aplikasi dapat langsung dipasang ke layar utama HP Anda tanpa harus mengunduh file besar.
+          Panduan lengkap ada di <a href="#faq">pertanyaan umum</a>.</p>
+      </section>
+    </div>
+
+    <!-- Features Section -->
+    <header class="sec reveal" id="fitur">
+      <span class="kick2">Fitur Unggulan</span>
+      <h2 class="st">Dibuat untuk privasi &amp; <em>kedisiplinanmu.</em></h2>
+      <p>Semua yang kamu butuhkan untuk mengatur uang dengan rapi tanpa ribet akun dan login.</p>
+    </header>
+    <div class="why feat reveal">
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg></div>
+        <div>
+          <h3>100% Offline &amp; Privat</h3>
+          <span>Data tersimpan aman di perangkat Anda (IndexedDB lokal). Tidak ada sinkronisasi server, tidak ada
+            pelacakan, dan bebas risiko kebocoran data perbankan.</span>
         </div>
       </div>
-      <div class="merchant">
-        <small>NAMA MERCHANT RESMI</small>
-        <strong>RellAppstore</strong>
-        <p class="nmid">NMID: ID1026588112551</p>
-        <p class="hint">Nama merchant di atas yang akan tampil di aplikasi m-banking atau e-wallet Anda.</p>
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+          </svg></div>
+        <div>
+          <h3>Streak Api TikTok (8 Taraf)</h3>
+          <span>Bangun kebiasaan mencatat uang harian. Api bertransformasi visual mulai dari Api Oranye, Emas, Plasma
+            Biru, Zamrud, hingga Dewa Abadi 1000 Hari.</span>
+        </div>
       </div>
-      <div class="btns">
-        <button class="btn primary full" id="full" type="button">Tampilkan layar penuh</button>
-        <a class="btn ghost" id="dl" href="./qris-donasi.jpg" download="QRIS-DompetKu-Farel.jpg">Simpan QRIS</a>
-        <button class="btn ghost" id="share" type="button">Bagikan</button>
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 2a10 10 0 0 1 10 10h-10z" />
+            <path d="M12 12 5 20" />
+          </svg></div>
+        <div>
+          <h3>Formula Anggaran 50/30/20</h3>
+          <span>Kelola keuangan secara bijak dengan alokasi otomatis: 50% Kebutuhan Pokok, 30% Keinginan, dan 20%
+            Tabungan/Investasi masa depan.</span>
+        </div>
+      </div>
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg></div>
+        <div>
+          <h3>Kalender &amp; Multi-Dompet</h3>
+          <span>Visualisasikan arus kas di kalender harian serta pisahkan saldo Rekening Bank, E-Wallet (GoPay, OVO,
+            ShopeePay), dan Tunai secara teratur.</span>
+        </div>
+      </div>
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg></div>
+        <div>
+          <h3>Rapi di Android, iOS &amp; PC</h3>
+          <span>Antarmuka responsif Liquid Glass dan Editorial Paper dengan proteksi iOS Safe Area insets (Dynamic
+            Island, notch &amp; gesture bar).</span>
+        </div>
+      </div>
+      <div class="it">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg></div>
+        <div>
+          <h3>Backup &amp; Restore Bebas</h3>
+          <span>Ekspor data transaksi kapan saja ke format JSON terenkripsi atau Excel/CSV. Pindah HP baru tanpa
+            khawatir riwayat uang hilang.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Channel & Community Section -->
+    <header class="sec reveal" id="ikuti">
+      <span class="kick2">Komunitas &amp; Rilis</span>
+      <h2 class="st">Jangan ketinggalan <em>info update.</em></h2>
+      <p>Changelog versi baru dan pengumuman fitur diumumkan langsung di sini.</p>
+    </header>
+
+    <section class="card chan reveal" id="chan" aria-label="Saluran WhatsApp INFO FAREL DEV">
+      <div class="av tt-av" style="background:linear-gradient(135deg,#059669,#10b981)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round" width="34" height="34">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      </div>
+      <div>
+        <span class="kick">SALURAN RESMI</span>
+        <strong>INFO DOMPETKU &amp; FAREL DEV</strong>
+        <span class="desc">Info rilis versi baru, unduhan APK, dan tips pengelolaan keuangan ada di saluran ini.</span>
+      </div>
+      <div class="acts">
+        <a class="btn wa" id="wa" href="https://whatsapp.com/channel/0029Vb9GAu0LtOjHicPiYR3K" target="_blank"
+          rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z" />
+          </svg>
+          Gabung saluran
+        </a>
+        <button class="btn ghost cp" id="wacp" type="button" aria-label="Salin tautan saluran">Salin</button>
       </div>
     </section>
 
-    <!-- Download & Install App Card -->
-    <section class="card dlcard reveal" id="unduh" aria-labelledby="unduh-h">
-      <div class="dlhead">
-        <span class="kick">Akses &amp; Unduh Gratis</span>
-        <h2 id="unduh-h">Pasang DompetKu sekarang</h2>
+    <section class="card chan reveal" id="tt-chan" aria-label="TikTok @dappxml29">
+      <div class="av tt-av" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34">
+          <path
+            d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z" />
+        </svg>
       </div>
-
-      <!-- Web App / PWA -->
-      <a class="plat" href="./index.html" target="_blank" rel="noopener">
-        <span class="pic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-        </span>
-        <span class="pt">
-          <b>Web App (PWA)</b>
-          <small>v2.13.0 · Buka &amp; Pasang Instan</small>
-        </span>
-        <span class="go">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Buka
-        </span>
-      </a>
-
-      <!-- Android APK -->
-      <a class="plat dl-trigger" href="https://github.com/RELL3827/Dompetku-Manajement-money/releases" target="_blank" rel="noopener" data-plat="Android APK">
-        <span class="pic">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M17.523 15.341a.95.95 0 0 1-.95-.95.95.95 0 0 1 .95-.95.95.95 0 0 1 .95.95.95.95 0 0 1-.95.95m-11.046 0a.95.95 0 0 1-.95-.95.95.95 0 0 1 .95-.95.95.95 0 0 1 .95.95.95.95 0 0 1-.95.95m11.41-6.023l1.894-3.28a.394.394 0 0 0-.144-.538.394.394 0 0 0-.538.144l-1.918 3.321A11.6 11.6 0 0 0 12 8.276c-1.661 0-3.232.367-4.638 1.018L5.444 5.644a.394.394 0 0 0-.538-.144.394.394 0 0 0-.144.538l1.893 3.28C3.614 10.74 1.84 13.313 1.84 16.29h20.32c0-2.977-1.774-5.55-4.273-6.972"/></svg>
-        </span>
-        <span class="pt">
-          <b>Android APK</b>
-          <small>v2.13.0 · APK Mandiri</small>
-        </span>
-        <span class="go">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          Unduh
-        </span>
-      </a>
-
-      <!-- Desktop / PC -->
-      <a class="plat" href="./index.html" target="_blank" rel="noopener">
-        <span class="pic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </span>
-        <span class="pt">
-          <b>Desktop / Browser</b>
-          <small>Windows, macOS, Linux, Chrome</small>
-        </span>
-        <span class="go">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Gunakan
-        </span>
-      </a>
-
-      <p class="dlnote">Aplikasi dapat langsung dipasang ke layar utama HP Anda tanpa harus mengunduh file besar. Panduan lengkap ada di <a href="#faq">pertanyaan umum</a>.</p>
+      <div>
+        <span class="kick">TIKTOK PENGEMBANG</span>
+        <strong>@relluxe7</strong>
+        <span class="desc">Follow untuk melihat demonstrasi fitur baru, demo Liquid Glass, dan tips keuangan.</span>
+      </div>
+      <div class="acts">
+        <a class="btn tt" href="https://www.tiktok.com/@relluxe7" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z" />
+          </svg>
+          Follow sekarang
+        </a>
+      </div>
     </section>
-  </div>
 
-  <!-- Features Section -->
-  <header class="sec reveal" id="fitur">
-    <span class="kick2">Fitur Unggulan</span>
-    <h2 class="st">Dibuat untuk privasi &amp; <em>kedisiplinanmu.</em></h2>
-    <p>Semua yang kamu butuhkan untuk mengatur uang dengan rapi tanpa ribet akun dan login.</p>
-  </header>
-  <div class="why feat reveal">
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
-      <div>
-        <h3>100% Offline &amp; Privat</h3>
-        <span>Data tersimpan aman di perangkat Anda (IndexedDB lokal). Tidak ada sinkronisasi server, tidak ada pelacakan, dan bebas risiko kebocoran data perbankan.</span>
+    <!-- Interactive Support / Traktir Kopi Controls -->
+    <header class="sec reveal" id="dukung">
+      <span class="kick2">Dukung DompetKu</span>
+      <h2 class="st">Suka DompetKu? <em>Traktir kopi.</em></h2>
+      <p>Sepenuhnya sukarela. Donasi tidak membatasi fitur, semua fitur tetap 100% gratis untuk semua orang selamanya.
+      </p>
+    </header>
+
+    <h3 class="lab reveal">Atur nominal traktiran</h3>
+    <div class="card amt reveal" id="amt">
+      <div class="big"><small>Rp</small><span id="amtv">10.000</span></div>
+      <div class="lbl" id="amtl">KOPI + CAMILAN SORE 🥐</div>
+      <input class="rng" id="rng" type="range" min="1000" max="100000" step="1000" value="10000"
+        aria-label="Nominal donasi">
+      <div class="scale"><span>Rp1.000</span><span>Rp50.000</span><span>Rp100.000</span></div>
+      <div class="row">
+        <button class="btn primary" id="amtcopy" type="button">Salin nominal</button>
       </div>
     </div>
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
-      <div>
-        <h3>Streak Api TikTok (8 Taraf)</h3>
-        <span>Bangun kebiasaan mencatat uang harian. Api bertransformasi visual mulai dari Api Oranye, Emas, Plasma Biru, Zamrud, hingga Dewa Abadi 1000 Hari.</span>
+    <div class="tiers reveal" role="group" aria-label="Pilihan nominal cepat">
+      <button class="tier" type="button" data-v="5000">
+        <div class="n">Segelas kopi hangat</div>
+        <div class="a">Rp5.000</div>
+      </button>
+      <button class="tier" type="button" data-v="10000">
+        <div class="n">Kopi + camilan sore</div>
+        <div class="a">Rp10.000</div>
+      </button>
+      <button class="tier" type="button" data-v="20000">
+        <div class="n">Makan siang lezat</div>
+        <div class="a">Rp20.000</div>
+      </button>
+      <button class="tier" type="button" data-v="50000">
+        <div class="n">Sponsor bulan ini</div>
+        <div class="a">Rp50.000</div>
+      </button>
+    </div>
+    <p class="tip" id="tip" style="display:none" aria-live="polite">Kode QRIS ini fleksibel dan tidak mengunci nominal.
+      Anda bebas memasukkan jumlah berapapun secara sukarela saat pembayaran.</p>
+
+    <h3 class="lab reveal">Cara bayar</h3>
+    <ol class="reveal">
+      <li><span>Buka aplikasi m-banking atau e-wallet Anda<small>GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BRI, BSI,
+            dan seluruh penyedia QRIS nasional.</small></span></li>
+      <li><span>Pilih menu Scan / Pindai, arahkan ke kode QR di atas<small>Atau unggah gambar QRIS yang sudah Anda unduh
+            ke galeri ponsel.</small></span></li>
+      <li><span>Ketik nominal pembayaran dan selesaikan konfirmasi<small>Pastikan nama merchant resmi yang muncul adalah
+            <b>RellAppstore</b>.</small></span></li>
+    </ol>
+
+    <h3 class="lab reveal">Sudah bayar? Kabari pengembang</h3>
+    <div class="form reveal">
+      <input class="fld" id="fname" type="text" inputmode="text" autocomplete="nickname" maxlength="40"
+        placeholder="Nama Anda (boleh dikosongkan)" aria-label="Nama Anda">
+      <textarea class="fld" id="fmsg" rows="2" maxlength="200"
+        placeholder="Pesan atau catatan untuk pengembang (opsional)" aria-label="Pesan untuk pengembang"></textarea>
+      <div class="preview" id="prev" aria-live="polite"></div>
+    </div>
+    <div class="contact reveal">
+      <button class="btn primary" id="paid" type="button" style="justify-content:center">Saya sudah bayar, kabari
+        admin</button>
+      <a class="btn ghost" href="https://t.me/Ayelprtm" target="_blank"
+        rel="noopener"><span>Telegram</span><span>@ryuzinetshh</span></a>
+      <a class="btn ghost" href="https://github.com/RELL3827/Dompetku-Manajement-money" target="_blank"
+        rel="noopener"><span>GitHub Repository</span><span>@RELL3827</span></a>
+    </div>
+
+    <!-- FAQ Section -->
+    <header class="sec reveal" id="faq">
+      <span class="kick2">Pertanyaan Umum</span>
+      <h2 class="st">Ada yang ingin <em>ditanyakan?</em></h2>
+    </header>
+    <div class="faq reveal">
+      <details>
+        <summary>Apakah DompetKu benar-benar gratis dan tanpa iklan?</summary>
+        <p>Ya, 100% gratis selamanya tanpa iklan yang mengganggu dan tanpa biaya langganan bulanan. DompetKu dibangun
+          secara independen oleh Farel Rizky P sebagai solusi manajemen keuangan yang jujur dan bersih.</p>
+      </details>
+      <details>
+        <summary>Di mana data keuangan saya disimpan? Apakah aman?</summary>
+        <p>Sangat aman! Seluruh catatan keuangan dan saldo Anda disimpan 100% secara offline di perangkat Anda sendiri
+          melalui IndexedDB browser lokal. Tidak ada server cloud perantara, sehingga tidak ada yang dapat mengintip
+          atau membocorkan data finansial Anda.</p>
+      </details>
+      <details>
+        <summary>Bagaimana cara memasang DompetKu di HP (Android &amp; iPhone)?</summary>
+        <p>Di browser Safari (iOS), ketuk tombol Share lalu pilih <b>"Add to Home Screen"</b>. Di Chrome (Android),
+          ketuk menu titik tiga lalu pilih <b>"Install App"</b> atau unduh file APK mandiri di bagian Unduh.</p>
+      </details>
+      <details>
+        <summary>Bagaimana cara memindahkan data saat ganti perangkat?</summary>
+        <p>Masuk ke menu Setelan di dalam aplikasi DompetKu, pilih <b>Ekspor Backup (JSON)</b>, lalu kirimkan file
+          tersebut ke HP baru. Di HP baru, cukup pilih menu <b>Impor Backup</b> dan seluruh riwayat Anda akan pulih
+          seketika.</p>
+      </details>
+      <details>
+        <summary>Bagaimana cara menyalakan dan menjaga streak api harian?</summary>
+        <p>Cukup buka aplikasi DompetKu setiap hari dan tekan tombol "Masuk &amp; Nyalakan Api" atau catat transaksi
+          harian Anda. Pertahankan streak untuk menaikkan tingkatan api dari Oranye hingga level Dewa Abadi 1000 Hari!
+        </p>
+      </details>
+    </div>
+
+    <p class="note reveal">DompetKu adalah aplikasi keuangan pribadi offline. Dukungan donasi bersifat sukarela untuk
+      mendukung pemeliharaan kode dan penambahan fitur baru.</p>
+
+    <!-- Footer -->
+    <footer class="reveal">
+      <nav class="flinks" aria-label="Tautan navigasi footer">
+        <a href="#unduh">Unduh</a>
+        <a href="#fitur">Fitur</a>
+        <a href="#dukung">Dukung</a>
+        <a href="#faq">FAQ</a>
+        <a href="./index.html">Buka Aplikasi</a>
+      </nav>
+      © 2026 <b>DompetKu</b> · Dibuat dengan penuh dedikasi oleh <b>(Farel Rizky)</b>
+      <div class="kbd" aria-hidden="true" style="justify-content:center;margin-top:10px">
+        <span>Pintasan keyboard:</span>
+        <kbd>1</kbd>-<kbd>4</kbd> Nominal
+        <kbd>F</kbd> Layar Penuh QR
+        <kbd>M</kbd> Suara
+        <kbd>T</kbd> Ganti Tema
       </div>
+    </footer>
+  </main>
+
+  <!-- Floating Bottom Dock Navigation -->
+  <nav class="dock" id="dock" aria-label="Navigasi cepat halaman">
+    <i class="pillsel" id="pillsel"></i>
+    <button class="dk" type="button" data-go="unduh" aria-current="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+      </svg>
+      Unduh
+    </button>
+    <button class="dk" type="button" data-go="fitur">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" />
+        <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
+      </svg>
+      Fitur
+    </button>
+    <button class="dk" type="button" data-go="dukung">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.3 12C19 16.600 12 21 12 21z" />
+      </svg>
+      Dukung
+    </button>
+    <span class="sep" aria-hidden="true"></span>
+    <button class="dk snd" id="snd" type="button" aria-pressed="true" aria-label="Toggle Suara Melodi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M11 5 6 9H3v6h3l5 4V5z" />
+        <path class="on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+        <path class="off" d="m16 9 5 6M21 9l-5 6" />
+      </svg>
+      Suara
+    </button>
+  </nav>
+
+  <!-- Fullscreen QR Lightbox Modal -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Tampilan Layar Penuh QRIS">
+    <button class="x" id="lbx" type="button" aria-label="Tutup tampilan penuh">✕</button>
+    <div class="lbbox">
+      <img src="./qris-donasi.jpg" alt="QRIS Layar Penuh RellAppstore - Farel Rizky P">
+      <strong>RellAppstore</strong>
+      <p>NMID: ID1026588112551 · Pindai menggunakan e-wallet atau m-banking apa pun.</p>
     </div>
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10h-10z"/><path d="M12 12 5 20"/></svg></div>
-      <div>
-        <h3>Formula Anggaran 50/30/20</h3>
-        <span>Kelola keuangan secara bijak dengan alokasi otomatis: 50% Kebutuhan Pokok, 30% Keinginan, dan 20% Tabungan/Investasi masa depan.</span>
+  </div>
+
+  <!-- "Terima Kasih" Celebration Modal -->
+  <div class="ty" id="ty" role="dialog" aria-modal="true" aria-label="Terima kasih atas traktiran Anda">
+    <div class="tybox">
+      <div style="font-size:48px;line-height:1;margin-bottom:10px">☕✨</div>
+      <h3>Makasih banyak, <em>kamu luar biasa!</em></h3>
+      <p>Traktiran kopimu sangat berarti untuk menyemangati pembaruan DompetKu. Pesanmu sudah disiapkan di pesan
+        pengembang, tinggal kamu kirim.</p>
+      <button class="btn primary" id="tyx" type="button" style="width:100%">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Friendly Pre-download Gate Modal -->
+  <div class="ty" id="dlgate" role="dialog" aria-modal="true" aria-label="Sebelum unduh atau pasang">
+    <div class="tybox">
+      <h3 style="margin-bottom:6px">Hai, sebentar! <em>🫶</em></h3>
+      <p>Jangan lupa follow <b>@dappxml29</b> di TikTok dan gabung ke saluran <b>INFO DOMPETKU</b> biar kamu selalu
+        dapat info update fitur terbaru!</p>
+      <div style="display:grid;gap:10px;margin:18px 0 14px">
+        <a class="btn ghost" href="https://www.tiktok.com/@dappxml29" target="_blank" rel="noopener"
+          style="justify-content:flex-start;gap:10px">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true" style="flex:none">
+            <path
+              d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z" />
+          </svg>
+          Follow @relluxe7 di TikTok
+        </a>
+        <a class="btn ghost" href="https://whatsapp.com/channel/0029Vb9GAu0LtOjHicPiYR3K" target="_blank" rel="noopener"
+          style="justify-content:flex-start;gap:10px">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true" style="flex:none">
+            <path
+              d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z" />
+          </svg>
+          Gabung saluran WhatsApp
+        </a>
       </div>
-    </div>
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <div>
-        <h3>Kalender &amp; Multi-Dompet</h3>
-        <span>Visualisasikan arus kas di kalender harian serta pisahkan saldo Rekening Bank, E-Wallet (GoPay, OVO, ShopeePay), dan Tunai secara teratur.</span>
-      </div>
-    </div>
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-      <div>
-        <h3>Rapi di Android, iOS &amp; PC</h3>
-        <span>Antarmuka responsif Liquid Glass dan Editorial Paper dengan proteksi iOS Safe Area insets (Dynamic Island, notch &amp; gesture bar).</span>
-      </div>
-    </div>
-    <div class="it">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-      <div>
-        <h3>Backup &amp; Restore Bebas</h3>
-        <span>Ekspor data transaksi kapan saja ke format JSON terenkripsi atau Excel/CSV. Pindah HP baru tanpa khawatir riwayat uang hilang.</span>
-      </div>
+      <button class="btn primary" id="dlgatego" type="button" style="width:100%;justify-content:center">Lanjut Sekarang
+        →</button>
+      <button type="button" id="dlgatex"
+        style="appearance:none;border:0;background:none;color:var(--faint);font:inherit;font-size:13px;cursor:pointer;margin-top:12px;width:100%">Tutup</button>
     </div>
   </div>
 
-  <!-- Channel & Community Section -->
-  <header class="sec reveal" id="ikuti">
-    <span class="kick2">Komunitas &amp; Rilis</span>
-    <h2 class="st">Jangan ketinggalan <em>info update.</em></h2>
-    <p>Changelog versi baru dan pengumuman fitur diumumkan langsung di sini.</p>
-  </header>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <section class="card chan reveal" id="chan" aria-label="Saluran WhatsApp INFO FAREL DEV">
-    <div class="av tt-av" style="background:linear-gradient(135deg,#059669,#10b981)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    </div>
-    <div>
-      <span class="kick">SALURAN RESMI</span>
-      <strong>INFO DOMPETKU &amp; FAREL DEV</strong>
-      <span class="desc">Info rilis versi baru, unduhan APK, dan tips pengelolaan keuangan ada di saluran ini.</span>
-    </div>
-    <div class="acts">
-      <a class="btn wa" id="wa" href="https://whatsapp.com/channel/0029Vb9V9eCFi8xiFABvop0h" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
-        Gabung saluran
-      </a>
-      <button class="btn ghost cp" id="wacp" type="button" aria-label="Salin tautan saluran">Salin</button>
-    </div>
-  </section>
+  <script>
+    (function () {
+      /* Helper Selector */
+      function $(sel, el) { return (el || document).querySelector(sel); }
+      function $$(sel, el) { return (el || document).querySelectorAll(sel); }
 
-  <section class="card chan reveal" id="tt-chan" aria-label="TikTok @dappxml29">
-    <div class="av tt-av" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z"/></svg>
-    </div>
-    <div>
-      <span class="kick">TIKTOK PENGEMBANG</span>
-      <strong>@dappxml29</strong>
-      <span class="desc">Follow untuk melihat demonstrasi fitur baru, demo Liquid Glass, dan tips keuangan.</span>
-    </div>
-    <div class="acts">
-      <a class="btn tt" href="https://www.tiktok.com/@dappxml29" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z"/></svg>
-        Follow sekarang
-      </a>
-    </div>
-  </section>
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
 
-  <!-- Interactive Support / Traktir Kopi Controls -->
-  <header class="sec reveal" id="dukung">
-    <span class="kick2">Dukung DompetKu</span>
-    <h2 class="st">Suka DompetKu? <em>Traktir kopi.</em></h2>
-    <p>Sepenuhnya sukarela. Donasi tidak membatasi fitur, semua fitur tetap 100% gratis untuk semua orang selamanya.</p>
-  </header>
-
-  <h3 class="lab reveal">Atur nominal traktiran</h3>
-  <div class="card amt reveal" id="amt">
-    <div class="big"><small>Rp</small><span id="amtv">10.000</span></div>
-    <div class="lbl" id="amtl">KOPI + CAMILAN SORE 🥐</div>
-    <input class="rng" id="rng" type="range" min="1000" max="100000" step="1000" value="10000" aria-label="Nominal donasi">
-    <div class="scale"><span>Rp1.000</span><span>Rp50.000</span><span>Rp100.000</span></div>
-    <div class="row">
-      <button class="btn primary" id="amtcopy" type="button">Salin nominal</button>
-    </div>
-  </div>
-  <div class="tiers reveal" role="group" aria-label="Pilihan nominal cepat">
-    <button class="tier" type="button" data-v="5000"><div class="n">Segelas kopi hangat</div><div class="a">Rp5.000</div></button>
-    <button class="tier" type="button" data-v="10000"><div class="n">Kopi + camilan sore</div><div class="a">Rp10.000</div></button>
-    <button class="tier" type="button" data-v="20000"><div class="n">Makan siang lezat</div><div class="a">Rp20.000</div></button>
-    <button class="tier" type="button" data-v="50000"><div class="n">Sponsor bulan ini</div><div class="a">Rp50.000</div></button>
-  </div>
-  <p class="tip" id="tip" style="display:none" aria-live="polite">Kode QRIS ini fleksibel dan tidak mengunci nominal. Anda bebas memasukkan jumlah berapapun secara sukarela saat pembayaran.</p>
-
-  <h3 class="lab reveal">Cara bayar</h3>
-  <ol class="reveal">
-    <li><span>Buka aplikasi m-banking atau e-wallet Anda<small>GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BRI, BSI, dan seluruh penyedia QRIS nasional.</small></span></li>
-    <li><span>Pilih menu Scan / Pindai, arahkan ke kode QR di atas<small>Atau unggah gambar QRIS yang sudah Anda unduh ke galeri ponsel.</small></span></li>
-    <li><span>Ketik nominal pembayaran dan selesaikan konfirmasi<small>Pastikan nama merchant resmi yang muncul adalah <b>RellAppstore</b>.</small></span></li>
-  </ol>
-
-  <h3 class="lab reveal">Sudah bayar? Kabari pengembang</h3>
-  <div class="form reveal">
-    <input class="fld" id="fname" type="text" inputmode="text" autocomplete="nickname" maxlength="40" placeholder="Nama Anda (boleh dikosongkan)" aria-label="Nama Anda">
-    <textarea class="fld" id="fmsg" rows="2" maxlength="200" placeholder="Pesan atau catatan untuk pengembang (opsional)" aria-label="Pesan untuk pengembang"></textarea>
-    <div class="preview" id="prev" aria-live="polite"></div>
-  </div>
-  <div class="contact reveal">
-    <button class="btn primary" id="paid" type="button" style="justify-content:center">Saya sudah bayar, kabari admin</button>
-    <a class="btn ghost" href="https://t.me/ryuzinetshh" target="_blank" rel="noopener"><span>Telegram</span><span>@ryuzinetshh</span></a>
-    <a class="btn ghost" href="https://github.com/RELL3827/Dompetku-Manajement-money" target="_blank" rel="noopener"><span>GitHub Repository</span><span>@RELL3827</span></a>
-  </div>
-
-  <!-- FAQ Section -->
-  <header class="sec reveal" id="faq">
-    <span class="kick2">Pertanyaan Umum</span>
-    <h2 class="st">Ada yang ingin <em>ditanyakan?</em></h2>
-  </header>
-  <div class="faq reveal">
-    <details>
-      <summary>Apakah DompetKu benar-benar gratis dan tanpa iklan?</summary>
-      <p>Ya, 100% gratis selamanya tanpa iklan yang mengganggu dan tanpa biaya langganan bulanan. DompetKu dibangun secara independen oleh Farel Rizky P sebagai solusi manajemen keuangan yang jujur dan bersih.</p>
-    </details>
-    <details>
-      <summary>Di mana data keuangan saya disimpan? Apakah aman?</summary>
-      <p>Sangat aman! Seluruh catatan keuangan dan saldo Anda disimpan 100% secara offline di perangkat Anda sendiri melalui IndexedDB browser lokal. Tidak ada server cloud perantara, sehingga tidak ada yang dapat mengintip atau membocorkan data finansial Anda.</p>
-    </details>
-    <details>
-      <summary>Bagaimana cara memasang DompetKu di HP (Android &amp; iPhone)?</summary>
-      <p>Di browser Safari (iOS), ketuk tombol Share lalu pilih <b>"Add to Home Screen"</b>. Di Chrome (Android), ketuk menu titik tiga lalu pilih <b>"Install App"</b> atau unduh file APK mandiri di bagian Unduh.</p>
-    </details>
-    <details>
-      <summary>Bagaimana cara memindahkan data saat ganti perangkat?</summary>
-      <p>Masuk ke menu Setelan di dalam aplikasi DompetKu, pilih <b>Ekspor Backup (JSON)</b>, lalu kirimkan file tersebut ke HP baru. Di HP baru, cukup pilih menu <b>Impor Backup</b> dan seluruh riwayat Anda akan pulih seketika.</p>
-    </details>
-    <details>
-      <summary>Bagaimana cara menyalakan dan menjaga streak api harian?</summary>
-      <p>Cukup buka aplikasi DompetKu setiap hari dan tekan tombol "Masuk &amp; Nyalakan Api" atau catat transaksi harian Anda. Pertahankan streak untuk menaikkan tingkatan api dari Oranye hingga level Dewa Abadi 1000 Hari!</p>
-    </details>
-  </div>
-
-  <p class="note reveal">DompetKu adalah aplikasi keuangan pribadi offline. Dukungan donasi bersifat sukarela untuk mendukung pemeliharaan kode dan penambahan fitur baru.</p>
-
-  <!-- Footer -->
-  <footer class="reveal">
-    <nav class="flinks" aria-label="Tautan navigasi footer">
-      <a href="#unduh">Unduh</a>
-      <a href="#fitur">Fitur</a>
-      <a href="#dukung">Dukung</a>
-      <a href="#faq">FAQ</a>
-      <a href="./index.html">Buka Aplikasi</a>
-    </nav>
-    © 2026 <b>DompetKu</b> · Dibuat dengan penuh dedikasi oleh <b>Farel Rizky P (DAPZ.DEV)</b>
-    <div class="kbd" aria-hidden="true" style="justify-content:center;margin-top:10px">
-      <span>Pintasan keyboard:</span>
-      <kbd>1</kbd>-<kbd>4</kbd> Nominal
-      <kbd>F</kbd> Layar Penuh QR
-      <kbd>M</kbd> Suara
-      <kbd>T</kbd> Ganti Tema
-    </div>
-  </footer>
-</main>
-
-<!-- Floating Bottom Dock Navigation -->
-<nav class="dock" id="dock" aria-label="Navigasi cepat halaman">
-  <i class="pillsel" id="pillsel"></i>
-  <button class="dk" type="button" data-go="unduh" aria-current="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-    Unduh
-  </button>
-  <button class="dk" type="button" data-go="fitur">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
-    Fitur
-  </button>
-  <button class="dk" type="button" data-go="dukung">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.3 12C19 16.600 12 21 12 21z"/></svg>
-    Dukung
-  </button>
-  <span class="sep" aria-hidden="true"></span>
-  <button class="dk snd" id="snd" type="button" aria-pressed="true" aria-label="Toggle Suara Melodi">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M11 5 6 9H3v6h3l5 4V5z"/>
-      <path class="on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
-      <path class="off" d="m16 9 5 6M21 9l-5 6"/>
-    </svg>
-    Suara
-  </button>
-</nav>
-
-<!-- Fullscreen QR Lightbox Modal -->
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Tampilan Layar Penuh QRIS">
-  <button class="x" id="lbx" type="button" aria-label="Tutup tampilan penuh">✕</button>
-  <div class="lbbox">
-    <img src="./qris-donasi.jpg" alt="QRIS Layar Penuh RellAppstore - Farel Rizky P">
-    <strong>RellAppstore</strong>
-    <p>NMID: ID1026588112551 · Pindai menggunakan e-wallet atau m-banking apa pun.</p>
-  </div>
-</div>
-
-<!-- "Terima Kasih" Celebration Modal -->
-<div class="ty" id="ty" role="dialog" aria-modal="true" aria-label="Terima kasih atas traktiran Anda">
-  <div class="tybox">
-    <div style="font-size:48px;line-height:1;margin-bottom:10px">☕✨</div>
-    <h3>Makasih banyak, <em>kamu luar biasa!</em></h3>
-    <p>Traktiran kopimu sangat berarti untuk menyemangati pembaruan DompetKu. Pesanmu sudah disiapkan di pesan pengembang, tinggal kamu kirim.</p>
-    <button class="btn primary" id="tyx" type="button" style="width:100%">Tutup</button>
-  </div>
-</div>
-
-<!-- Friendly Pre-download Gate Modal -->
-<div class="ty" id="dlgate" role="dialog" aria-modal="true" aria-label="Sebelum unduh atau pasang">
-  <div class="tybox">
-    <h3 style="margin-bottom:6px">Hai, sebentar! <em>🫶</em></h3>
-    <p>Jangan lupa follow <b>@dappxml29</b> di TikTok dan gabung ke saluran <b>INFO DOMPETKU</b> biar kamu selalu dapat info update fitur terbaru!</p>
-    <div style="display:grid;gap:10px;margin:18px 0 14px">
-      <a class="btn ghost" href="https://www.tiktok.com/@dappxml29" target="_blank" rel="noopener" style="justify-content:flex-start;gap:10px">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true" style="flex:none"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.54V6.78a4.85 4.85 0 0 1-1.06-.09z"/></svg>
-        Follow @dappxml29 di TikTok
-      </a>
-      <a class="btn ghost" href="https://whatsapp.com/channel/0029Vb9V9eCFi8xiFABvop0h" target="_blank" rel="noopener" style="justify-content:flex-start;gap:10px">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true" style="flex:none"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
-        Gabung saluran WhatsApp
-      </a>
-    </div>
-    <button class="btn primary" id="dlgatego" type="button" style="width:100%;justify-content:center">Lanjut Sekarang →</button>
-    <button type="button" id="dlgatex" style="appearance:none;border:0;background:none;color:var(--faint);font:inherit;font-size:13px;cursor:pointer;margin-top:12px;width:100%">Tutup</button>
-  </div>
-</div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-(function(){
-  /* Helper Selector */
-  function $(sel, el){ return (el || document).querySelector(sel); }
-  function $$(sel, el){ return (el || document).querySelectorAll(sel); }
-
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
-
-  /* ---- Audio Synthesis via Web Audio API ---- */
-  var actx = null, soundEnabled = true;
-  function getAudioCtx(){
-    if(!actx && (window.AudioContext || window.webkitAudioContext)){
-      actx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if(actx && actx.state === 'suspended') actx.resume();
-    return actx;
-  }
-
-  window.__note = function(freq, delay, dur, vol){
-    if(!soundEnabled || reduce) return;
-    try {
-      var ctx = getAudioCtx();
-      if(!ctx) return;
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = 'sine';
-      var startTime = ctx.currentTime + (delay || 0);
-      osc.frequency.setValueAtTime(freq, startTime);
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime((vol || 0.12), startTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + (dur || 0.16));
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + (dur || 0.16) + 0.05);
-    } catch(e){}
-  };
-
-  /* Sound Toggle in Dock */
-  var sndBtn = $('#snd');
-  if(sndBtn){
-    sndBtn.addEventListener('click', function(){
-      soundEnabled = !soundEnabled;
-      sndBtn.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
-      say(soundEnabled ? 'Suara efek aktif' : 'Suara efek dinonaktifkan');
-      if(soundEnabled){
-        [523.25, 659.25, 783.99].forEach(function(f, i){ window.__note(f, i * 0.08, 0.12); });
+      /* ---- Audio Synthesis via Web Audio API ---- */
+      var actx = null, soundEnabled = true;
+      function getAudioCtx() {
+        if (!actx && (window.AudioContext || window.webkitAudioContext)) {
+          actx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (actx && actx.state === 'suspended') actx.resume();
+        return actx;
       }
-    });
-  }
 
-  /* ---- Toast Notification ---- */
-  var toastEl = $('#toast');
-  function say(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(window.__tt);
-    window.__tt = setTimeout(function(){ toastEl.classList.remove('show'); }, 2300);
-  }
+      window.__note = function (freq, delay, dur, vol) {
+        if (!soundEnabled || reduce) return;
+        try {
+          var ctx = getAudioCtx();
+          if (!ctx) return;
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'sine';
+          var startTime = ctx.currentTime + (delay || 0);
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0, startTime);
+          gain.gain.linearRampToValueAtTime((vol || 0.12), startTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + (dur || 0.16));
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + (dur || 0.16) + 0.05);
+        } catch (e) { }
+      };
 
-  /* ---- Confetti & Particle Burst FX Canvas ---- */
-  var fx = $('#fx'), fctx = fx ? fx.getContext('2d') : null;
-  var parts = [];
-  function resizeFx(){
-    if(!fx) return;
-    fx.width = window.innerWidth;
-    fx.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeFx);
-  resizeFx();
+      /* Sound Toggle in Dock */
+      var sndBtn = $('#snd');
+      if (sndBtn) {
+        sndBtn.addEventListener('click', function () {
+          soundEnabled = !soundEnabled;
+          sndBtn.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+          say(soundEnabled ? 'Suara efek aktif' : 'Suara efek dinonaktifkan');
+          if (soundEnabled) {
+            [523.25, 659.25, 783.99].forEach(function (f, i) { window.__note(f, i * 0.08, 0.12); });
+          }
+        });
+      }
 
-  window.__burst = function(x, y, count){
-    if(reduce || !fctx) return;
-    count = count || 30;
-    var colors = ['#10B981', '#34D399', '#F59E0B', '#FBBF24', '#F8FAFC', '#38BDF8'];
-    for(var i = 0; i < count; i++){
-      var angle = Math.random() * Math.PI * 2;
-      var speed = 2 + Math.random() * 7;
-      parts.push({
-        x: x, y: y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 2.5,
-        size: 3 + Math.random() * 5,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        life: 1,
-        decay: 0.015 + Math.random() * 0.02,
-        rot: Math.random() * 360,
-        vrot: (Math.random() - 0.5) * 12
+      /* ---- Toast Notification ---- */
+      var toastEl = $('#toast');
+      function say(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(window.__tt);
+        window.__tt = setTimeout(function () { toastEl.classList.remove('show'); }, 2300);
+      }
+
+      /* ---- Confetti & Particle Burst FX Canvas ---- */
+      var fx = $('#fx'), fctx = fx ? fx.getContext('2d') : null;
+      var parts = [];
+      function resizeFx() {
+        if (!fx) return;
+        fx.width = window.innerWidth;
+        fx.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeFx);
+      resizeFx();
+
+      window.__burst = function (x, y, count) {
+        if (reduce || !fctx) return;
+        count = count || 30;
+        var colors = ['#10B981', '#34D399', '#F59E0B', '#FBBF24', '#F8FAFC', '#38BDF8'];
+        for (var i = 0; i < count; i++) {
+          var angle = Math.random() * Math.PI * 2;
+          var speed = 2 + Math.random() * 7;
+          parts.push({
+            x: x, y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 2.5,
+            size: 3 + Math.random() * 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 1,
+            decay: 0.015 + Math.random() * 0.02,
+            rot: Math.random() * 360,
+            vrot: (Math.random() - 0.5) * 12
+          });
+        }
+        if (!window.__fxRunning) {
+          window.__fxRunning = true;
+          requestAnimationFrame(fxLoop);
+        }
+      };
+
+      function fxLoop() {
+        if (!fctx) return;
+        fctx.clearRect(0, 0, fx.width, fx.height);
+        for (var i = parts.length - 1; i >= 0; i--) {
+          var p = parts[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.22; // gravity
+          p.rot += p.vrot;
+          p.life -= p.decay;
+          if (p.life <= 0) {
+            parts.splice(i, 1);
+            continue;
+          }
+          fctx.save();
+          fctx.translate(p.x, p.y);
+          fctx.rotate(p.rot * Math.PI / 180);
+          fctx.globalAlpha = p.life;
+          fctx.fillStyle = p.color;
+          fctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+          fctx.restore();
+        }
+        if (parts.length > 0) {
+          requestAnimationFrame(fxLoop);
+        } else {
+          window.__fxRunning = false;
+        }
+      }
+
+      /* ---- Fluid Aurora Wave Canvas Background ---- */
+      var aur = $('#aurora'), actx2 = aur ? aur.getContext('2d') : null;
+      var aurTime = 0;
+      function resizeAur() {
+        if (!aur) return;
+        aur.width = Math.min(window.innerWidth, 1200);
+        aur.height = Math.min(window.innerHeight, 900);
+      }
+      window.addEventListener('resize', resizeAur);
+      resizeAur();
+
+      function aurLoop() {
+        if (!actx2 || reduce) {
+          return;
+        }
+        aurTime += 0.006;
+        var w = aur.width, h = aur.height;
+        actx2.clearRect(0, 0, w, h);
+
+        var grad = actx2.createRadialGradient(
+          w * 0.2 + Math.sin(aurTime) * 80,
+          h * 0.15 + Math.cos(aurTime * 0.8) * 60,
+          20,
+          w * 0.3, h * 0.3, Math.max(w, h) * 0.75
+        );
+        grad.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+        grad.addColorStop(0.4, 'rgba(52, 211, 153, 0.12)');
+        grad.addColorStop(0.8, 'rgba(245, 158, 11, 0.07)');
+        grad.addColorStop(1, 'transparent');
+
+        actx2.fillStyle = grad;
+        actx2.fillRect(0, 0, w, h);
+
+        var grad2 = actx2.createRadialGradient(
+          w * 0.85 + Math.cos(aurTime * 0.7) * 90,
+          h * 0.55 + Math.sin(aurTime * 0.9) * 70,
+          30,
+          w * 0.8, h * 0.5, Math.max(w, h) * 0.65
+        );
+        grad2.addColorStop(0, 'rgba(5, 150, 105, 0.22)');
+        grad2.addColorStop(0.5, 'rgba(245, 158, 11, 0.10)');
+        grad2.addColorStop(1, 'transparent');
+
+        actx2.fillStyle = grad2;
+        actx2.fillRect(0, 0, w, h);
+
+        requestAnimationFrame(aurLoop);
+      }
+      if (actx2 && !reduce) {
+        document.body.classList.add('has-canvas');
+        requestAnimationFrame(aurLoop);
+      }
+
+      /* ---- Mouse Pointer Glow & Parallax ---- */
+      var ptr = $('#pointer');
+      if (fine && !reduce && ptr) {
+        document.addEventListener('pointermove', function (e) {
+          ptr.classList.add('on');
+          document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+          document.documentElement.style.setProperty('--my', e.clientY + 'px');
+        }, { passive: true });
+      }
+
+      /* ---- Reading Progress Bar ---- */
+      var prog = $('#prog');
+      window.addEventListener('scroll', function () {
+        var s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+        if (prog && h > 0) {
+          prog.style.transform = 'scaleX(' + Math.min(1, s / h) + ')';
+        }
+      }, { passive: true });
+
+      /* ---- Intersection Observer for Reveal Elements ---- */
+      if ('IntersectionObserver' in window && !reduce) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) {
+              en.target.classList.add('in');
+            }
+          });
+        }, { threshold: 0.12 });
+        $$('.reveal').forEach(function (el) { io.observe(el); });
+      } else {
+        document.body.classList.add('no-io');
+      }
+
+      /* ---- Display Style Theme Switcher (Editorial vs Liquid Glass) ---- */
+      var swButtons = $$('.sw button');
+      swButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var targetTheme = btn.getAttribute('data-t');
+          document.documentElement.setAttribute('data-theme', targetTheme);
+          swButtons.forEach(function (b) {
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          [440, 880].forEach(function (f, i) { window.__note(f, i * 0.08, 0.14); });
+          var r = btn.getBoundingClientRect();
+          window.__burst(r.left + r.width / 2, r.top + r.height / 2, 25);
+        });
       });
-    }
-    if(!window.__fxRunning){
-      window.__fxRunning = true;
-      requestAnimationFrame(fxLoop);
-    }
-  };
 
-  function fxLoop(){
-    if(!fctx) return;
-    fctx.clearRect(0, 0, fx.width, fx.height);
-    for(var i = parts.length - 1; i >= 0; i--){
-      var p = parts[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.22; // gravity
-      p.rot += p.vrot;
-      p.life -= p.decay;
-      if(p.life <= 0){
-        parts.splice(i, 1);
-        continue;
+      /* ---- Brand Logo Melodic Tap ---- */
+      function playBrandMelody(el) {
+        var r = el.getBoundingClientRect();
+        el.classList.remove('pulse');
+        void el.offsetWidth;
+        el.classList.add('pulse');
+        [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(function (f, i) {
+          window.__note(f, i * 0.09, 0.14);
+        });
+        window.__burst(r.left + r.width / 2, r.top + r.height / 2, 35);
       }
-      fctx.save();
-      fctx.translate(p.x, p.y);
-      fctx.rotate(p.rot * Math.PI / 180);
-      fctx.globalAlpha = p.life;
-      fctx.fillStyle = p.color;
-      fctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
-      fctx.restore();
-    }
-    if(parts.length > 0){
-      requestAnimationFrame(fxLoop);
-    } else {
-      window.__fxRunning = false;
-    }
-  }
+      var mark = $('.mark'), brandlogo = $('#brandlogo');
+      if (mark) mark.addEventListener('click', function () { playBrandMelody(mark); });
+      if (brandlogo) brandlogo.addEventListener('click', function () { playBrandMelody(brandlogo); });
 
-  /* ---- Fluid Aurora Wave Canvas Background ---- */
-  var aur = $('#aurora'), actx2 = aur ? aur.getContext('2d') : null;
-  var aurTime = 0;
-  function resizeAur(){
-    if(!aur) return;
-    aur.width = Math.min(window.innerWidth, 1200);
-    aur.height = Math.min(window.innerHeight, 900);
-  }
-  window.addEventListener('resize', resizeAur);
-  resizeAur();
+      /* ---- Interactive QRIS Amount Slider & Tier Presets ---- */
+      var rng = $('#rng'), amtv = $('#amtv'), amtl = $('#amtl');
+      var tiers = $$('.tier');
+      var tierLabels = {
+        1000: 'DUKUNGAN TULUS 💚',
+        5000: 'SEGELAS KOPI HANGAT ☕',
+        10000: 'KOPI + CAMILAN SORE 🥐',
+        20000: 'MAKAN SIANG LEZAT 🍜',
+        50000: 'SPONSOR BULAN INI 🚀',
+        100000: 'SULTAN & DONATUR UTAMA 👑'
+      };
 
-  function aurLoop(){
-    if(!actx2 || reduce){
-      return;
-    }
-    aurTime += 0.006;
-    var w = aur.width, h = aur.height;
-    actx2.clearRect(0, 0, w, h);
+      function formatRp(n) {
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      }
 
-    var grad = actx2.createRadialGradient(
-      w * 0.2 + Math.sin(aurTime) * 80,
-      h * 0.15 + Math.cos(aurTime * 0.8) * 60,
-      20,
-      w * 0.3, h * 0.3, Math.max(w, h) * 0.75
-    );
-    grad.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
-    grad.addColorStop(0.4, 'rgba(52, 211, 153, 0.12)');
-    grad.addColorStop(0.8, 'rgba(245, 158, 11, 0.07)');
-    grad.addColorStop(1, 'transparent');
+      function getTierLabel(val) {
+        if (tierLabels[val]) return tierLabels[val];
+        if (val < 5000) return 'DUKUNGAN TULUS 💚';
+        if (val < 10000) return 'SECANGKIR KOPI ☕';
+        if (val < 20000) return 'KOPI + KUDAPAN 🥐';
+        if (val < 50000) return 'MAKAN SIANG SPESIAL 🍜';
+        if (val < 100000) return 'SPONSOR DOMPETKU 🚀';
+        return 'SULTAN & DONATUR UTAMA 👑';
+      }
 
-    actx2.fillStyle = grad;
-    actx2.fillRect(0, 0, w, h);
+      function syncAmount(val, playSound) {
+        val = Math.max(1000, Math.min(100000, Math.round(val / 1000) * 1000));
+        rng.value = val;
+        amtv.textContent = formatRp(val);
+        amtl.textContent = getTierLabel(val);
+        var pct = ((val - 1000) / (100000 - 1000)) * 100;
+        rng.style.setProperty('--p', pct.toFixed(1) + '%');
 
-    var grad2 = actx2.createRadialGradient(
-      w * 0.85 + Math.cos(aurTime * 0.7) * 90,
-      h * 0.55 + Math.sin(aurTime * 0.9) * 70,
-      30,
-      w * 0.8, h * 0.5, Math.max(w, h) * 0.65
-    );
-    grad2.addColorStop(0, 'rgba(5, 150, 105, 0.22)');
-    grad2.addColorStop(0.5, 'rgba(245, 158, 11, 0.10)');
-    grad2.addColorStop(1, 'transparent');
+        tiers.forEach(function (t) {
+          t.setAttribute('aria-pressed', +t.getAttribute('data-v') === val ? 'true' : 'false');
+        });
 
-    actx2.fillStyle = grad2;
-    actx2.fillRect(0, 0, w, h);
+        if (playSound) {
+          window.__note(440 + (val / 100000) * 440, 0, 0.08, 0.1);
+        }
+        updateMessagePreview();
+      }
 
-    requestAnimationFrame(aurLoop);
-  }
-  if(actx2 && !reduce){
-    document.body.classList.add('has-canvas');
-    requestAnimationFrame(aurLoop);
-  }
+      if (rng) {
+        rng.addEventListener('input', function () {
+          syncAmount(+rng.value, true);
+        });
+      }
 
-  /* ---- Mouse Pointer Glow & Parallax ---- */
-  var ptr = $('#pointer');
-  if(fine && !reduce && ptr){
-    document.addEventListener('pointermove', function(e){
-      ptr.classList.add('on');
-      document.documentElement.style.setProperty('--mx', e.clientX + 'px');
-      document.documentElement.style.setProperty('--my', e.clientY + 'px');
-    }, {passive: true});
-  }
+      tiers.forEach(function (t) {
+        t.addEventListener('click', function () {
+          var v = +t.getAttribute('data-v');
+          syncAmount(v, true);
+          var r = t.getBoundingClientRect();
+          window.__burst(r.left + r.width / 2, r.top + r.height / 2, 20);
+        });
+      });
 
-  /* ---- Reading Progress Bar ---- */
-  var prog = $('#prog');
-  window.addEventListener('scroll', function(){
-    var s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
-    if(prog && h > 0){
-      prog.style.transform = 'scaleX(' + Math.min(1, s / h) + ')';
-    }
-  }, {passive: true});
+      /* Copy Amount Button */
+      var amtCopyBtn = $('#amtcopy');
+      if (amtCopyBtn) {
+        amtCopyBtn.addEventListener('click', function () {
+          var val = +rng.value;
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(val.toString()).then(function () {
+              say('Nominal Rp' + formatRp(val) + ' disalin!');
+            }, function () {
+              say('Nominal Rp' + formatRp(val));
+            });
+          } else {
+            say('Nominal Rp' + formatRp(val));
+          }
+          var r = amtCopyBtn.getBoundingClientRect();
+          window.__burst(r.left + r.width / 2, r.top + r.height / 2, 30);
+          [523.25, 659.25, 783.99].forEach(function (f, i) { window.__note(f, i * 0.08, 0.12); });
+        });
+      }
 
-  /* ---- Intersection Observer for Reveal Elements ---- */
-  if('IntersectionObserver' in window && !reduce){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if(en.isIntersecting){
-          en.target.classList.add('in');
+      /* Fullscreen QR Lightbox */
+      var lb = $('#lb'), fullBtn = $('#full'), lbx = $('#lbx');
+      function openLb() {
+        if (lb) lb.classList.add('open');
+        var beam = $('#beam');
+        if (beam) {
+          beam.classList.remove('go');
+          void beam.offsetWidth;
+          beam.classList.add('go');
+        }
+        [523.25, 783.99].forEach(function (f, i) { window.__note(f, i * 0.1, 0.15); });
+      }
+      function closeLb() {
+        if (lb) lb.classList.remove('open');
+      }
+      if (fullBtn) fullBtn.addEventListener('click', openLb);
+      if (lbx) lbx.addEventListener('click', closeLb);
+      if (lb) {
+        lb.addEventListener('click', function (e) {
+          if (e.target === lb) closeLb();
+        });
+      }
+
+      /* Share QRIS Button */
+      var shareBtn = $('#share');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', function () {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Traktir Kopi DompetKu',
+              text: 'Dukung pengembang DompetKu lewat QRIS RellAppstore (Farel Rizky P) agar aplikasi tetap gratis 100% dan bebas iklan!',
+              url: window.location.href
+            }).catch(function () { });
+          } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(function () {
+              say('Tautan halaman disalin ke papan klip');
+            });
+          }
+        });
+      }
+
+      /* ---- Message to Admin / Developer Form ---- */
+      var fname = $('#fname'), fmsg = $('#fmsg'), prevEl = $('#prev');
+      function buildMessage() {
+        var name = (fname && fname.value.trim()) || 'Pengguna DompetKu';
+        var userMsg = (fmsg && fmsg.value.trim()) || '';
+        var amount = formatRp(+rng.value);
+        return 'Halo Farel (Admin DompetKu), saya ' + name + ' baru saja traktir kopi sebesar Rp' + amount + ' untuk mendukung DompetKu.\n' +
+          (userMsg ? '\nPesan: ' + userMsg + '\n' : '') +
+          '\nTerima kasih atas aplikasi DompetKu yang keren & 100% offline ini!';
+      }
+
+      function updateMessagePreview() {
+        if (!prevEl) return;
+        prevEl.innerHTML = '<b>Pratinjau Pesan:</b>\n' + buildMessage().replace(/[&<>]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+        });
+      }
+
+      if (fname) fname.addEventListener('input', updateMessagePreview);
+      if (fmsg) fmsg.addEventListener('input', updateMessagePreview);
+      syncAmount(10000, false);
+
+      /* "Saya Sudah Bayar" Notification Action */
+      var paidBtn = $('#paid');
+      var tyModal = $('#ty'), tyxBtn = $('#tyx');
+      if (paidBtn) {
+        paidBtn.addEventListener('click', function () {
+          var msg = encodeURIComponent(buildMessage());
+          window.open('https://t.me/ryuzinetshh?text=' + msg, '_blank', 'noopener');
+          if (tyModal) tyModal.classList.add('open');
+          window.__burst(window.innerWidth / 2, window.innerHeight * 0.4, 70);
+          [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(function (f, i) {
+            window.__note(f, i * 0.09, 0.16);
+          });
+        });
+      }
+      if (tyxBtn && tyModal) {
+        tyxBtn.addEventListener('click', function () { tyModal.classList.remove('open'); });
+        tyModal.addEventListener('click', function (e) {
+          if (e.target === tyModal) tyModal.classList.remove('open');
+        });
+      }
+
+      /* ---- Download Friendly Gate Modal ---- */
+      var dlGate = $('#dlgate'), dlGateGo = $('#dlgatego'), dlGateX = $('#dlgatex');
+      var pendingDlUrl = null;
+      $$('.dl-trigger').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          pendingDlUrl = link.href;
+          if (dlGate) dlGate.classList.add('open');
+          [440, 659.25].forEach(function (f, i) { window.__note(f, i * 0.08, 0.12); });
+        });
+      });
+
+      if (dlGateGo) {
+        dlGateGo.addEventListener('click', function () {
+          if (dlGate) dlGate.classList.remove('open');
+          if (pendingDlUrl) {
+            window.open(pendingDlUrl, '_blank', 'noopener');
+            pendingDlUrl = null;
+          }
+          window.__burst(window.innerWidth / 2, window.innerHeight * 0.5, 40);
+        });
+      }
+      if (dlGateX && dlGate) {
+        dlGateX.addEventListener('click', function () { dlGate.classList.remove('open'); });
+        dlGate.addEventListener('click', function (e) {
+          if (e.target === dlGate) dlGate.classList.remove('open');
+        });
+      }
+
+      /* WhatsApp Copy Link */
+      var wacpBtn = $('#wacp');
+      if (wacpBtn) {
+        wacpBtn.addEventListener('click', function () {
+          var u = $('#wa') ? $('#wa').href : 'https://whatsapp.com/channel/0029Vb9V9eCFi8xiFABvop0h';
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(u).then(function () {
+              say('Tautan saluran WhatsApp disalin');
+            });
+          } else {
+            say('Tekan lama tombol Gabung untuk menyalin');
+          }
+        });
+      }
+
+      /* ---- Floating Dock Sliding Pill Indicator ---- */
+      var dock = $('#dock'), pillsel = $('#pillsel');
+      var dockButtons = $$('.dk[data-go]');
+      function updateDockPill(activeBtn) {
+        if (!pillsel || !activeBtn) return;
+        pillsel.style.transform = 'translateX(' + activeBtn.offsetLeft + 'px)';
+        pillsel.style.width = activeBtn.offsetWidth + 'px';
+        dockButtons.forEach(function (b) {
+          b.setAttribute('aria-current', b === activeBtn ? 'true' : 'false');
+        });
+      }
+
+      dockButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var targetId = btn.getAttribute('data-go');
+          var targetEl = document.getElementById(targetId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updateDockPill(btn);
+            var r = btn.getBoundingClientRect();
+            window.__burst(r.left + r.width / 2, r.top + r.height / 2, 15);
+            [523.25, 659.25].forEach(function (f, i) { window.__note(f, i * 0.07, 0.1); });
+          }
+        });
+      });
+
+      if (dockButtons.length > 0) {
+        setTimeout(function () { updateDockPill(dockButtons[0]); }, 100);
+      }
+
+      /* Active Section Spy on Scroll */
+      var trackedSecs = ['unduh', 'fitur', 'dukung'];
+      window.addEventListener('scroll', function () {
+        var scrollPos = window.scrollY + 200;
+        for (var i = trackedSecs.length - 1; i >= 0; i--) {
+          var sec = document.getElementById(trackedSecs[i]);
+          if (sec && sec.offsetTop <= scrollPos) {
+            var matchingBtn = $('.dk[data-go="' + trackedSecs[i] + '"]');
+            if (matchingBtn) updateDockPill(matchingBtn);
+            break;
+          }
+        }
+      }, { passive: true });
+
+      /* Touch Ripples */
+      document.addEventListener('pointerdown', function (e) {
+        var el = e.target.closest && e.target.closest('.btn, .tier');
+        if (!el || reduce) return;
+        var r = el.getBoundingClientRect();
+        var s = Math.max(r.width, r.height) * 2;
+        var sp = document.createElement('span');
+        sp.className = 'ripple';
+        sp.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - r.left - s / 2) + 'px;top:' + (e.clientY - r.top - s / 2) + 'px';
+        el.appendChild(sp);
+        setTimeout(function () { sp.remove(); }, 650);
+      });
+
+      /* Keyboard Shortcuts */
+      document.addEventListener('keydown', function (e) {
+        var tag = (e.target.tagName || '').toLowerCase();
+        if ((tag === 'input' && e.target.type !== 'range') || tag === 'textarea' || e.metaKey || e.ctrlKey || e.altKey) return;
+        var k = e.key.toLowerCase();
+        if (k >= '1' && k <= '4') {
+          var t = tiers[+k - 1];
+          if (t) { t.click(); e.preventDefault(); }
+        } else if (k === 'f') {
+          if (fullBtn) { fullBtn.click(); e.preventDefault(); }
+        } else if (k === 'm') {
+          if (sndBtn) { sndBtn.click(); e.preventDefault(); }
+        } else if (k === 't') {
+          var cur = document.documentElement.getAttribute('data-theme');
+          var otherBtn = $('.sw button[data-t="' + (cur === 'glass' ? 'paper' : 'glass') + '"]');
+          if (otherBtn) { otherBtn.click(); e.preventDefault(); }
+        } else if (k === 'arrowup' || k === 'arrowdown') {
+          if (tag !== 'input') {
+            syncAmount(+rng.value + (k === 'arrowup' ? 5000 : -5000), true);
+            e.preventDefault();
+          }
+        } else if (k === 'escape') {
+          closeLb();
+          if (tyModal) tyModal.classList.remove('open');
+          if (dlGate) dlGate.classList.remove('open');
         }
       });
-    }, {threshold: 0.12});
-    $$('.reveal').forEach(function(el){ io.observe(el); });
-  } else {
-    document.body.classList.add('no-io');
-  }
 
-  /* ---- Display Style Theme Switcher (Editorial vs Liquid Glass) ---- */
-  var swButtons = $$('.sw button');
-  swButtons.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var targetTheme = btn.getAttribute('data-t');
-      document.documentElement.setAttribute('data-theme', targetTheme);
-      swButtons.forEach(function(b){
-        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-      });
-      [440, 880].forEach(function(f, i){ window.__note(f, i * 0.08, 0.14); });
-      var r = btn.getBoundingClientRect();
-      window.__burst(r.left + r.width / 2, r.top + r.height / 2, 25);
-    });
-  });
-
-  /* ---- Brand Logo Melodic Tap ---- */
-  function playBrandMelody(el){
-    var r = el.getBoundingClientRect();
-    el.classList.remove('pulse');
-    void el.offsetWidth;
-    el.classList.add('pulse');
-    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(function(f, i){
-      window.__note(f, i * 0.09, 0.14);
-    });
-    window.__burst(r.left + r.width / 2, r.top + r.height / 2, 35);
-  }
-  var mark = $('.mark'), brandlogo = $('#brandlogo');
-  if(mark) mark.addEventListener('click', function(){ playBrandMelody(mark); });
-  if(brandlogo) brandlogo.addEventListener('click', function(){ playBrandMelody(brandlogo); });
-
-  /* ---- Interactive QRIS Amount Slider & Tier Presets ---- */
-  var rng = $('#rng'), amtv = $('#amtv'), amtl = $('#amtl');
-  var tiers = $$('.tier');
-  var tierLabels = {
-    1000: 'DUKUNGAN TULUS 💚',
-    5000: 'SEGELAS KOPI HANGAT ☕',
-    10000: 'KOPI + CAMILAN SORE 🥐',
-    20000: 'MAKAN SIANG LEZAT 🍜',
-    50000: 'SPONSOR BULAN INI 🚀',
-    100000: 'SULTAN & DONATUR UTAMA 👑'
-  };
-
-  function formatRp(n){
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
-
-  function getTierLabel(val){
-    if(tierLabels[val]) return tierLabels[val];
-    if(val < 5000) return 'DUKUNGAN TULUS 💚';
-    if(val < 10000) return 'SECANGKIR KOPI ☕';
-    if(val < 20000) return 'KOPI + KUDAPAN 🥐';
-    if(val < 50000) return 'MAKAN SIANG SPESIAL 🍜';
-    if(val < 100000) return 'SPONSOR DOMPETKU 🚀';
-    return 'SULTAN & DONATUR UTAMA 👑';
-  }
-
-  function syncAmount(val, playSound){
-    val = Math.max(1000, Math.min(100000, Math.round(val / 1000) * 1000));
-    rng.value = val;
-    amtv.textContent = formatRp(val);
-    amtl.textContent = getTierLabel(val);
-    var pct = ((val - 1000) / (100000 - 1000)) * 100;
-    rng.style.setProperty('--p', pct.toFixed(1) + '%');
-
-    tiers.forEach(function(t){
-      t.setAttribute('aria-pressed', +t.getAttribute('data-v') === val ? 'true' : 'false');
-    });
-
-    if(playSound){
-      window.__note(440 + (val / 100000) * 440, 0, 0.08, 0.1);
-    }
-    updateMessagePreview();
-  }
-
-  if(rng){
-    rng.addEventListener('input', function(){
-      syncAmount(+rng.value, true);
-    });
-  }
-
-  tiers.forEach(function(t){
-    t.addEventListener('click', function(){
-      var v = +t.getAttribute('data-v');
-      syncAmount(v, true);
-      var r = t.getBoundingClientRect();
-      window.__burst(r.left + r.width / 2, r.top + r.height / 2, 20);
-    });
-  });
-
-  /* Copy Amount Button */
-  var amtCopyBtn = $('#amtcopy');
-  if(amtCopyBtn){
-    amtCopyBtn.addEventListener('click', function(){
-      var val = +rng.value;
-      if(navigator.clipboard && window.isSecureContext){
-        navigator.clipboard.writeText(val.toString()).then(function(){
-          say('Nominal Rp' + formatRp(val) + ' disalin!');
-        }, function(){
-          say('Nominal Rp' + formatRp(val));
-        });
-      } else {
-        say('Nominal Rp' + formatRp(val));
+      /* Subtle Cursor Sparkle Trail on Desktop */
+      if (fine && !reduce) {
+        var lastSparkle = 0;
+        window.addEventListener('pointermove', function (e) {
+          var now = performance.now();
+          if (now - lastSparkle < 65) return;
+          lastSparkle = now;
+          if (Math.random() < 0.4) {
+            window.__burst(e.clientX, e.clientY, 1);
+          }
+        }, { passive: true });
       }
-      var r = amtCopyBtn.getBoundingClientRect();
-      window.__burst(r.left + r.width / 2, r.top + r.height / 2, 30);
-      [523.25, 659.25, 783.99].forEach(function(f, i){ window.__note(f, i * 0.08, 0.12); });
-    });
-  }
-
-  /* Fullscreen QR Lightbox */
-  var lb = $('#lb'), fullBtn = $('#full'), lbx = $('#lbx');
-  function openLb(){
-    if(lb) lb.classList.add('open');
-    var beam = $('#beam');
-    if(beam){
-      beam.classList.remove('go');
-      void beam.offsetWidth;
-      beam.classList.add('go');
-    }
-    [523.25, 783.99].forEach(function(f, i){ window.__note(f, i * 0.1, 0.15); });
-  }
-  function closeLb(){
-    if(lb) lb.classList.remove('open');
-  }
-  if(fullBtn) fullBtn.addEventListener('click', openLb);
-  if(lbx) lbx.addEventListener('click', closeLb);
-  if(lb){
-    lb.addEventListener('click', function(e){
-      if(e.target === lb) closeLb();
-    });
-  }
-
-  /* Share QRIS Button */
-  var shareBtn = $('#share');
-  if(shareBtn){
-    shareBtn.addEventListener('click', function(){
-      if(navigator.share){
-        navigator.share({
-          title: 'Traktir Kopi DompetKu',
-          text: 'Dukung pengembang DompetKu lewat QRIS RellAppstore (Farel Rizky P) agar aplikasi tetap gratis 100% dan bebas iklan!',
-          url: window.location.href
-        }).catch(function(){});
-      } else if(navigator.clipboard){
-        navigator.clipboard.writeText(window.location.href).then(function(){
-          say('Tautan halaman disalin ke papan klip');
-        });
-      }
-    });
-  }
-
-  /* ---- Message to Admin / Developer Form ---- */
-  var fname = $('#fname'), fmsg = $('#fmsg'), prevEl = $('#prev');
-  function buildMessage(){
-    var name = (fname && fname.value.trim()) || 'Pengguna DompetKu';
-    var userMsg = (fmsg && fmsg.value.trim()) || '';
-    var amount = formatRp(+rng.value);
-    return 'Halo Farel (Admin DompetKu), saya ' + name + ' baru saja traktir kopi sebesar Rp' + amount + ' untuk mendukung DompetKu.\n' +
-      (userMsg ? '\nPesan: ' + userMsg + '\n' : '') +
-      '\nTerima kasih atas aplikasi DompetKu yang keren & 100% offline ini!';
-  }
-
-  function updateMessagePreview(){
-    if(!prevEl) return;
-    prevEl.innerHTML = '<b>Pratinjau Pesan:</b>\n' + buildMessage().replace(/[&<>]/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];
-    });
-  }
-
-  if(fname) fname.addEventListener('input', updateMessagePreview);
-  if(fmsg) fmsg.addEventListener('input', updateMessagePreview);
-  syncAmount(10000, false);
-
-  /* "Saya Sudah Bayar" Notification Action */
-  var paidBtn = $('#paid');
-  var tyModal = $('#ty'), tyxBtn = $('#tyx');
-  if(paidBtn){
-    paidBtn.addEventListener('click', function(){
-      var msg = encodeURIComponent(buildMessage());
-      window.open('https://t.me/ryuzinetshh?text=' + msg, '_blank', 'noopener');
-      if(tyModal) tyModal.classList.add('open');
-      window.__burst(window.innerWidth / 2, window.innerHeight * 0.4, 70);
-      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(function(f, i){
-        window.__note(f, i * 0.09, 0.16);
-      });
-    });
-  }
-  if(tyxBtn && tyModal){
-    tyxBtn.addEventListener('click', function(){ tyModal.classList.remove('open'); });
-    tyModal.addEventListener('click', function(e){
-      if(e.target === tyModal) tyModal.classList.remove('open');
-    });
-  }
-
-  /* ---- Download Friendly Gate Modal ---- */
-  var dlGate = $('#dlgate'), dlGateGo = $('#dlgatego'), dlGateX = $('#dlgatex');
-  var pendingDlUrl = null;
-  $$('.dl-trigger').forEach(function(link){
-    link.addEventListener('click', function(e){
-      e.preventDefault();
-      pendingDlUrl = link.href;
-      if(dlGate) dlGate.classList.add('open');
-      [440, 659.25].forEach(function(f, i){ window.__note(f, i * 0.08, 0.12); });
-    });
-  });
-
-  if(dlGateGo){
-    dlGateGo.addEventListener('click', function(){
-      if(dlGate) dlGate.classList.remove('open');
-      if(pendingDlUrl){
-        window.open(pendingDlUrl, '_blank', 'noopener');
-        pendingDlUrl = null;
-      }
-      window.__burst(window.innerWidth / 2, window.innerHeight * 0.5, 40);
-    });
-  }
-  if(dlGateX && dlGate){
-    dlGateX.addEventListener('click', function(){ dlGate.classList.remove('open'); });
-    dlGate.addEventListener('click', function(e){
-      if(e.target === dlGate) dlGate.classList.remove('open');
-    });
-  }
-
-  /* WhatsApp Copy Link */
-  var wacpBtn = $('#wacp');
-  if(wacpBtn){
-    wacpBtn.addEventListener('click', function(){
-      var u = $('#wa') ? $('#wa').href : 'https://whatsapp.com/channel/0029Vb9V9eCFi8xiFABvop0h';
-      if(navigator.clipboard && window.isSecureContext){
-        navigator.clipboard.writeText(u).then(function(){
-          say('Tautan saluran WhatsApp disalin');
-        });
-      } else {
-        say('Tekan lama tombol Gabung untuk menyalin');
-      }
-    });
-  }
-
-  /* ---- Floating Dock Sliding Pill Indicator ---- */
-  var dock = $('#dock'), pillsel = $('#pillsel');
-  var dockButtons = $$('.dk[data-go]');
-  function updateDockPill(activeBtn){
-    if(!pillsel || !activeBtn) return;
-    pillsel.style.transform = 'translateX(' + activeBtn.offsetLeft + 'px)';
-    pillsel.style.width = activeBtn.offsetWidth + 'px';
-    dockButtons.forEach(function(b){
-      b.setAttribute('aria-current', b === activeBtn ? 'true' : 'false');
-    });
-  }
-
-  dockButtons.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var targetId = btn.getAttribute('data-go');
-      var targetEl = document.getElementById(targetId);
-      if(targetEl){
-        targetEl.scrollIntoView({behavior: 'smooth', block: 'start'});
-        updateDockPill(btn);
-        var r = btn.getBoundingClientRect();
-        window.__burst(r.left + r.width / 2, r.top + r.height / 2, 15);
-        [523.25, 659.25].forEach(function(f, i){ window.__note(f, i * 0.07, 0.1); });
-      }
-    });
-  });
-
-  if(dockButtons.length > 0){
-    setTimeout(function(){ updateDockPill(dockButtons[0]); }, 100);
-  }
-
-  /* Active Section Spy on Scroll */
-  var trackedSecs = ['unduh', 'fitur', 'dukung'];
-  window.addEventListener('scroll', function(){
-    var scrollPos = window.scrollY + 200;
-    for(var i = trackedSecs.length - 1; i >= 0; i--){
-      var sec = document.getElementById(trackedSecs[i]);
-      if(sec && sec.offsetTop <= scrollPos){
-        var matchingBtn = $('.dk[data-go="' + trackedSecs[i] + '"]');
-        if(matchingBtn) updateDockPill(matchingBtn);
-        break;
-      }
-    }
-  }, {passive: true});
-
-  /* Touch Ripples */
-  document.addEventListener('pointerdown', function(e){
-    var el = e.target.closest && e.target.closest('.btn, .tier');
-    if(!el || reduce) return;
-    var r = el.getBoundingClientRect();
-    var s = Math.max(r.width, r.height) * 2;
-    var sp = document.createElement('span');
-    sp.className = 'ripple';
-    sp.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - r.left - s / 2) + 'px;top:' + (e.clientY - r.top - s / 2) + 'px';
-    el.appendChild(sp);
-    setTimeout(function(){ sp.remove(); }, 650);
-  });
-
-  /* Keyboard Shortcuts */
-  document.addEventListener('keydown', function(e){
-    var tag = (e.target.tagName || '').toLowerCase();
-    if((tag === 'input' && e.target.type !== 'range') || tag === 'textarea' || e.metaKey || e.ctrlKey || e.altKey) return;
-    var k = e.key.toLowerCase();
-    if(k >= '1' && k <= '4'){
-      var t = tiers[+k - 1];
-      if(t){ t.click(); e.preventDefault(); }
-    } else if(k === 'f'){
-      if(fullBtn){ fullBtn.click(); e.preventDefault(); }
-    } else if(k === 'm'){
-      if(sndBtn){ sndBtn.click(); e.preventDefault(); }
-    } else if(k === 't'){
-      var cur = document.documentElement.getAttribute('data-theme');
-      var otherBtn = $('.sw button[data-t="' + (cur === 'glass' ? 'paper' : 'glass') + '"]');
-      if(otherBtn){ otherBtn.click(); e.preventDefault(); }
-    } else if(k === 'arrowup' || k === 'arrowdown'){
-      if(tag !== 'input'){
-        syncAmount(+rng.value + (k === 'arrowup' ? 5000 : -5000), true);
-        e.preventDefault();
-      }
-    } else if(k === 'escape'){
-      closeLb();
-      if(tyModal) tyModal.classList.remove('open');
-      if(dlGate) dlGate.classList.remove('open');
-    }
-  });
-
-  /* Subtle Cursor Sparkle Trail on Desktop */
-  if(fine && !reduce){
-    var lastSparkle = 0;
-    window.addEventListener('pointermove', function(e){
-      var now = performance.now();
-      if(now - lastSparkle < 65) return;
-      lastSparkle = now;
-      if(Math.random() < 0.4){
-        window.__burst(e.clientX, e.clientY, 1);
-      }
-    }, {passive: true});
-  }
-})();
-</script>
+    })();
+  </script>
 </body>
+
 </html>
