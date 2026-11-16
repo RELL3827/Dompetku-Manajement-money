@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { StreakFlame } from './StreakFlame';
-import type { StreakInfo } from '../../utils/streak';
-import { Trophy, Calendar, ShieldCheck, Flame, PlusCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ALL_STREAK_TIERS, type StreakInfo, type StreakTierConfig } from '../../utils/streak';
+import { Trophy, Calendar, ShieldCheck, Flame, PlusCircle, CheckCircle2, AlertTriangle, Lock, Sparkles } from 'lucide-react';
 import { formatIndonesianDate } from '../../utils/date';
 
 interface StreakModalProps {
@@ -18,41 +18,78 @@ export const StreakModal: React.FC<StreakModalProps> = ({
   streak,
   onOpenAddTransaction,
 }) => {
+  // Allow user to preview how each flame tier looks when tapped!
+  const [selectedPreviewTier, setSelectedPreviewTier] = useState<StreakTierConfig | null>(null);
+
+  const activeTier = selectedPreviewTier || streak.tier;
   const isAtRisk = !streak.isRecordedToday && streak.currentStreak > 0;
-  const progressPercent = Math.min(
-    100,
-    Math.round((streak.currentStreak / Math.max(1, streak.streakLevel.nextMilestone)) * 100)
-  );
+
+  const isCurrentMaxTier = streak.tier.minDays >= 1000;
+  const progressPercent = isCurrentMaxTier
+    ? 100
+    : Math.min(
+        100,
+        Math.round((streak.currentStreak / Math.max(1, streak.tier.nextMilestone)) * 100)
+      );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Streak Api Keuangan 🔥" maxWidth="md">
+    <Modal isOpen={isOpen} onClose={onClose} title="Streak Api Keuangan TikTok Style 🔥" maxWidth="lg">
       <div className="space-y-6">
         {/* Hero Flame Header */}
-        <div className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-b from-orange-500/15 via-amber-500/10 to-transparent border border-orange-500/20 text-center flex flex-col items-center justify-center">
+        <div
+          className="relative overflow-hidden p-6 rounded-3xl border text-center flex flex-col items-center justify-center transition-all duration-500"
+          style={{
+            background: `radial-gradient(circle at center top, ${activeTier.colors.glow} 0%, rgba(15, 23, 42, 0.02) 70%)`,
+            borderColor: activeTier.colors.glow,
+          }}
+        >
+          {/* Interactive Tier Switch Tag if previewing */}
+          {selectedPreviewTier && selectedPreviewTier.key !== streak.tier.key && (
+            <div className="mb-2 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1.5 animate-pulse">
+              <Sparkles size={13} />
+              <span>Pratinjau Tingkatan: {selectedPreviewTier.name}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedPreviewTier(null)}
+                className="underline ml-1 cursor-pointer hover:text-amber-900 dark:hover:text-amber-100"
+              >
+                (Reset ke Apiku)
+              </button>
+            </div>
+          )}
+
           <div className="relative mb-3">
             <StreakFlame
               size="xl"
-              streakCount={streak.currentStreak}
+              streakCount={selectedPreviewTier ? selectedPreviewTier.minDays || 1 : streak.currentStreak}
+              tier={activeTier}
               isActiveToday={streak.isRecordedToday}
-              isAtRisk={isAtRisk}
+              isAtRisk={isAtRisk && !selectedPreviewTier}
               showCount={false}
+              showCrown={true}
             />
           </div>
 
           <div className="space-y-1">
-            <span className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent tabular-nums drop-shadow-xs">
+            <span
+              className="text-4xl sm:text-5xl font-black bg-clip-text text-transparent tabular-nums drop-shadow-xs"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${activeTier.colors.middle}, ${activeTier.colors.outer})`,
+              }}
+            >
               {streak.currentStreak} Hari
             </span>
-            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-              {streak.streakLevel.badgeEmoji} {streak.streakLevel.title}
+            <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center justify-center gap-1.5">
+              <span>{activeTier.badgeEmoji}</span>
+              <span>{activeTier.name}</span>
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-              {streak.streakLevel.description}
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+              {activeTier.description}
             </p>
           </div>
 
           {/* Status Banner */}
-          <div className="mt-4 w-full">
+          <div className="mt-4 w-full max-w-md">
             {streak.isRecordedToday ? (
               <div className="p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2">
                 <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
@@ -69,6 +106,74 @@ export const StreakModal: React.FC<StreakModalProps> = ({
                 <span>Mulai streak pertamamu dengan mencatat transaksi hari ini!</span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* TikTok-Style Flame Tier Evolution Showcase (7, 14, 30, 50, 100, 365, 1000 Hari) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <Sparkles size={14} className="text-amber-500" />
+              <span>Evolusi Tingkatan Api TikTok (7 Taraf Pencapaian)</span>
+            </h4>
+            <span className="text-[11px] text-slate-400">Klik untuk pratinjau</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            {ALL_STREAK_TIERS.map((tier) => {
+              const isUnlocked = streak.currentStreak >= tier.minDays;
+              const isSelected = activeTier.key === tier.key;
+
+              return (
+                <div
+                  key={tier.key}
+                  onClick={() => setSelectedPreviewTier(tier)}
+                  className={`p-3 rounded-2xl border transition-all cursor-pointer flex flex-col items-center text-center relative group ${
+                    isSelected
+                      ? 'ring-2 ring-orange-500 bg-orange-50/40 dark:bg-orange-950/30 border-orange-500/50 shadow-sm'
+                      : isUnlocked
+                      ? 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-orange-400/50'
+                      : 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/50 dark:border-slate-800/60 opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  {/* Lock / Unlock Status Pill */}
+                  <div className="absolute top-2 right-2">
+                    {isUnlocked ? (
+                      <span className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400">
+                        ✓
+                      </span>
+                    ) : (
+                      <Lock size={11} className="text-slate-400 dark:text-slate-500" />
+                    )}
+                  </div>
+
+                  {/* Flame preview icon */}
+                  <div className="my-1">
+                    <StreakFlame
+                      size="sm"
+                      streakCount={tier.minDays || 1}
+                      tier={tier}
+                      isActiveToday={true}
+                      showCount={false}
+                      showCrown={false}
+                    />
+                  </div>
+
+                  <p className="text-xs font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+                    {tier.shortTitle}
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    {tier.name}
+                  </p>
+
+                  <span
+                    className={`mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full border ${tier.colors.pillBg} ${tier.colors.pillText} ${tier.colors.pillBorder}`}
+                  >
+                    {isUnlocked ? 'Terbuka ✨' : `${tier.minDays} Hari`}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -100,11 +205,14 @@ export const StreakModal: React.FC<StreakModalProps> = ({
                 <div
                   className={`w-9 h-9 rounded-2xl flex items-center justify-center text-sm transition-all ${
                     day.isActive
-                      ? 'bg-gradient-to-tr from-orange-500 to-amber-400 text-white shadow-xs font-black'
+                      ? 'text-white shadow-xs font-black'
                       : day.isToday
                       ? 'border-2 border-dashed border-amber-500 text-amber-600 dark:text-amber-400 animate-pulse font-bold'
                       : 'bg-white dark:bg-slate-700 text-slate-300 dark:text-slate-600 border border-slate-200 dark:border-slate-600'
                   }`}
+                  style={{
+                    backgroundColor: day.isActive ? streak.tier.colors.middle : undefined,
+                  }}
                 >
                   {day.isActive ? '🔥' : day.isToday ? '⏳' : '•'}
                 </div>
@@ -144,22 +252,27 @@ export const StreakModal: React.FC<StreakModalProps> = ({
         </div>
 
         {/* Milestone Progress Bar */}
-        <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-slate-700 dark:text-slate-300">
-              Target Level Berikutnya: {streak.streakLevel.nextMilestone} Hari
-            </span>
-            <span className="font-extrabold text-orange-600 dark:text-orange-400 tabular-nums">
-              {streak.currentStreak}/{streak.streakLevel.nextMilestone} ({progressPercent}%)
-            </span>
+        {!isCurrentMaxTier && (
+          <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                Target Level Berikutnya: {streak.tier.nextMilestone} Hari
+              </span>
+              <span className="font-extrabold text-orange-600 dark:text-orange-400 tabular-nums">
+                {streak.currentStreak}/{streak.tier.nextMilestone} ({progressPercent}%)
+              </span>
+            </div>
+            <div className="h-2.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${progressPercent}%`,
+                  background: `linear-gradient(90deg, ${streak.tier.colors.outer}, ${streak.tier.colors.middle}, ${streak.tier.colors.core})`,
+                }}
+              />
+            </div>
           </div>
-          <div className="h-2.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">

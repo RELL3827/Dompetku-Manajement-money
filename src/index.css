@@ -948,5 +948,27 @@ html:active-view-transition-type(backward)::view-transition-new(root) {
   }
 }
 
+/* 1000-Day Celestial Sun God Halo Ring Animation */
+@keyframes celestial-halo-spin {
+  from {
+    transform: rotate(0deg) scale(1.35) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) scale(1.35) translateZ(0);
+  }
+}
+
+.celestial-halo {
+  animation: celestial-halo-spin 14s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial-halo {
+    animation: none !important;
+  }
+}
+
+
 
 

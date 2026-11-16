@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.10.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.11.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '16 November 2026';
@@ -44,9 +44,14 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
   {
+    title: 'Evolusi Tingkatan Api TikTok (8 Taraf)',
+    description: 'Transformasi visual bentuk, warna, dan aura api seiring bertambahnya streak: Api Oranye (<7h), Emas (7h), Ungu Mistis (14h), Biru Plasma (30h), Zamrud Hijau (50h), Berlian Ruby Crown (100h), Pelangi Kosmik (365h), dan Dewa Abadi dengan Solar Halo (1000h) lengkap dengan galeri pratinjau interaktif.',
+    icon: '🔥',
+  },
+  {
     title: 'Streak Api Harian TikTok Style',
     description: 'Fitur streak api (flame streak) setiap hari ala TikTok: pelacakan konsistensi mencatat keuangan harian, animasi api membara & percikan bara GPU, status api menyala vs hampir padam, kalender mini 7 hari, rekor terpanjang, dan level pencapaian api abadi.',
-    icon: '🔥',
+    icon: '⚡',
   },
   {
     title: 'Touch Ripples, Micro-Interactions & Gestures',

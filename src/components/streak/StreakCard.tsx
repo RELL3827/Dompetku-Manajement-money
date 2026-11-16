@@ -37,18 +37,21 @@ export const StreakCard: React.FC<StreakCardProps> = ({
             <StreakFlame
               size="md"
               streakCount={streak.currentStreak}
+              tier={streak.tier}
               isActiveToday={streak.isRecordedToday}
               isAtRisk={isAtRisk}
               showCount={false}
             />
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                   <Flame size={16} className="text-orange-500 fill-orange-500" />
-                  <span>Streak Api Keuangan</span>
+                  <span>Streak Api</span>
                 </h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-orange-500/15 text-orange-700 dark:text-orange-300 border border-orange-500/25">
-                  {streak.streakLevel.title}
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${streak.tier.colors.pillBg} ${streak.tier.colors.pillText} ${streak.tier.colors.pillBorder}`}
+                >
+                  {streak.tier.badgeEmoji} {streak.tier.name}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
