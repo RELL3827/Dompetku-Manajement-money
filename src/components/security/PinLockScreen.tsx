@@ -103,9 +103,9 @@ export const PinLockScreen: React.FC = () => {
   if (!isLocked) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-between p-6 text-white select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-between px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-[calc(1rem+env(safe-area-inset-bottom,0px))] text-white select-none animate-in fade-in duration-200">
       {/* Top Header */}
-      <div className="pt-8 flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center">
         <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-400 shadow-xl mb-4">
           <Lock size={32} />
         </div>

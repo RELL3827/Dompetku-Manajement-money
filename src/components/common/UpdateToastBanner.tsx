@@ -20,7 +20,7 @@ export const UpdateToastBanner: React.FC = () => {
   return (
     <aside
       aria-label="Pemberitahuan pembaruan aplikasi"
-      className="fixed bottom-24 md:bottom-6 right-4 left-4 md:left-auto md:w-[400px] z-50 ios-glass-card shadow-2xl p-3 flex items-center justify-between gap-3 animate-in slide-in-from-bottom-5 duration-300 ring-1 ring-emerald-500/30"
+      className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-4 left-4 md:left-auto md:w-[400px] z-50 ios-glass-card shadow-2xl p-3 flex items-center justify-between gap-3 animate-in slide-in-from-bottom-5 duration-300 ring-1 ring-emerald-500/30"
     >
       <div
         onClick={openPrompt}

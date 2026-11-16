@@ -138,7 +138,7 @@ export const App: React.FC = () => {
         />
 
         {/* Page Container */}
-        <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 sm:py-6">
+        <main className="flex-1 max-w-4xl w-full mx-auto px-3.5 sm:px-4 pt-4 sm:pt-6 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
           {currentTab === 'home' && (
             <HomePage
               onNavigate={handleNavigate}

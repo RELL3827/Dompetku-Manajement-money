@@ -58,31 +58,31 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
   };
 
   return (
-    <header className="sticky top-0 z-30 ios-glass-header transition-colors">
-      <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-30 ios-glass-header transition-colors pt-[env(safe-area-inset-top,0px)]">
+      <div className="max-w-4xl mx-auto px-3.5 sm:px-4 h-16 flex items-center justify-between gap-2">
         {/* Brand */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500/20 via-teal-400/20 to-emerald-500/25 border border-emerald-500/30 flex items-center justify-center shadow-xs backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500/20 via-teal-400/20 to-emerald-500/25 border border-emerald-500/30 flex items-center justify-center shadow-xs backdrop-blur-md shrink-0">
             <RealisticIcon name="Wallet" size={26} />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h1 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                 DompetKu
               </h1>
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300 border border-emerald-500/25 backdrop-blur-md shadow-xs">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300 border border-emerald-500/25 backdrop-blur-md shadow-xs shrink-0">
                 Liquid Glass Edition
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium truncate">
               <RealisticIcon name="ShieldCheck" size={12} />
-              <span>Privat & Terenkripsi Lokal</span>
+              <span className="truncate">Privat & Terenkripsi Lokal</span>
             </p>
           </div>
         </div>
 
         {/* Action badges & Lock */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Storage persistence indicator */}
           {!isPersisted ? (
             <button
@@ -110,10 +110,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
               type="button"
               onClick={installApp}
               title="Tambahkan DompetKu ke Layar Utama"
-              className="ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50/90 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl"
+              className="ios-btn flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50/90 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl shrink-0"
             >
               <Download size={13} className="text-emerald-600 dark:text-emerald-400" />
-              <span>Instal App</span>
+              <span className="hidden sm:inline">Instal App</span>
             </button>
           )}
 
@@ -123,10 +123,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
               type="button"
               onClick={openPrompt}
               title="Versi baru DompetKu siap dipasang! Klik untuk update"
-              className="ios-btn ios-btn-primary flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold rounded-xl animate-pulse cursor-pointer shadow-md"
+              className="ios-btn ios-btn-primary flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-bold rounded-xl animate-pulse cursor-pointer shadow-md shrink-0"
             >
               <Rocket size={13} />
-              <span>Update v{APP_VERSION}</span>
+              <span className="hidden sm:inline">Update v{APP_VERSION}</span>
             </button>
           )}
 
@@ -141,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
           >
             <span className={`w-1.5 h-1.5 rounded-full ${!isOnline ? 'bg-slate-400' : 'bg-emerald-500 animate-ping'}`} />
             {!isOnline ? <WifiOff size={12} /> : <Wifi size={12} />}
-            <span>{!isOnline ? 'Offline' : 'Lokal Aktif'}</span>
+            <span className="hidden sm:inline">{!isOnline ? 'Offline' : 'Lokal Aktif'}</span>
           </div>
 
           {/* Streak Api Button */}
@@ -152,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
               title={`Streak Api Keuangan: ${streak.currentStreak} Hari ${
                 streak.isRecordedToday ? '(Menyala Hari Ini 🔥)' : '(Catat Hari Ini! ⏳)'
               }`}
-              className={`ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer shadow-xs ${
+              className={`ios-btn flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer shadow-xs shrink-0 ${
                 streak.isRecordedToday
                   ? 'bg-orange-50/90 hover:bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border-orange-200/80 dark:border-orange-900/60'
                   : streak.currentStreak > 0
@@ -172,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
               type="button"
               onClick={onOpenCalculator}
               title="Kalkulator & Alat Hitung Cepat"
-              className="ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl cursor-pointer"
+              className="ios-btn p-2 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl cursor-pointer flex items-center gap-1.5 shrink-0"
             >
               <RealisticIcon name="Calculator" size={15} />
               <span className="hidden sm:inline">Kalkulator</span>
@@ -184,7 +184,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
             type="button"
             onClick={() => setIsDonationModalOpen(true)}
             title="Traktir Pengembang Kopi ☕"
-            className="ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/40 border border-amber-200/80 dark:border-amber-900/60 rounded-xl cursor-pointer"
+            className="ios-btn p-2 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-amber-700 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/40 border border-amber-200/80 dark:border-amber-900/60 rounded-xl cursor-pointer flex items-center gap-1.5 shrink-0"
           >
             <Coffee size={15} />
             <span className="hidden sm:inline">Traktir Kopi</span>

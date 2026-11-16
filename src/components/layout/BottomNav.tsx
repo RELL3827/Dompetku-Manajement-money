@@ -36,9 +36,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
   return (
     <nav
       aria-label="Navigasi bawah iOS"
-      className="md:hidden fixed bottom-3 left-3 right-3 z-30 max-w-lg mx-auto ios-glass-dock pb-[env(safe-area-inset-bottom)] transition-all"
+      className="md:hidden fixed bottom-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem))] left-3 right-3 z-30 max-w-lg mx-auto ios-glass-dock transition-all"
     >
-      <div className="flex items-center overflow-x-auto scrollbar-none h-[62px] px-1.5 gap-0.5">
+      <div
+        className="flex items-center overflow-x-auto scrollbar-none h-[62px] px-1.5 gap-0.5 touch-pan-x overscroll-x-contain"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
 

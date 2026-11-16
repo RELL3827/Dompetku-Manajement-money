@@ -7,7 +7,7 @@ interface FloatingActionButtonProps {
 
 export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onClick }) => {
   return (
-    <div className="md:hidden fixed bottom-22 right-4 z-40">
+    <div className="md:hidden fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] right-[max(1rem,env(safe-area-inset-right,0px))] z-40">
       <button
         type="button"
         onClick={onClick}

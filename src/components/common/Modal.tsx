@@ -99,7 +99,7 @@ export const Modal: React.FC<ModalProps> = ({
           transform: dragY > 0 ? `translate3d(0, ${dragY}px, 0)` : undefined,
           transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
         }}
-        className={`modal-dialog-box w-full ${maxWidthClass} bg-white/90 dark:bg-slate-900/90 backdrop-blur-3xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-white/60 dark:border-white/10 max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-black/5 dark:ring-white/5 touch-ripple-container`}
+        className={`modal-dialog-box w-full ${maxWidthClass} bg-white/90 dark:bg-slate-900/90 backdrop-blur-3xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-white/60 dark:border-white/10 max-h-[calc(90dvh-env(safe-area-inset-top,0px))] sm:max-h-[85vh] flex flex-col overflow-hidden ring-1 ring-black/5 dark:ring-white/5 touch-ripple-container`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* iOS Drag Handle Pill (Mobile Only Gesture Anchor) */}
@@ -132,7 +132,12 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-5 overflow-y-auto flex-1">{children}</div>
+        <div
+          className="p-5 overflow-y-auto flex-1 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+1rem))] overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

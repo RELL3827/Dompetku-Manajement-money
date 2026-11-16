@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.12.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.13.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '17 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Optimalisasi Tampilan iOS & Safe Area Insets',
+    description: 'Penyempurnaan tata letak khusus iOS: dukungan penuh Safe Area Insets (Dynamic Island, notch & home bar), pemosisian rapih Floating Dock & FAB tanpa tumpang tindih, modal bottom sheet dvh anti-terpotong toolbar Safari, pencegahan auto-zoom input, dan clearance scroll halaman agar seluruh aksi hapus dan riwayat terlihat utuh.',
+    icon: '📱',
+  },
   {
     title: 'Tombol Masuk & Check-In Nyalakan Api Streak',
     description: 'Tombol "Masuk & Nyalakan Api" harian untuk mengklaim dan menyalakan streak api setiap hari secara mandiri tanpa harus mencatat transaksi, dilengkapi getaran sukses dan indikator api menyala aman.',

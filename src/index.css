@@ -46,6 +46,12 @@
     --ios-fluid-spring: cubic-bezier(0.32, 0.72, 0, 1);
     --liquid-glow-emerald: 0 12px 32px -6px rgba(16, 185, 129, 0.38);
 
+    /* iOS Safe Area Insets (per modern-web-guidance form-factor-adaptation) */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
     /* Safe gradient color spaces per modern-web-guidance visual-effects */
     --in-oklab: ;
     --in-oklch: ;
@@ -87,6 +93,10 @@
   html {
     background-color: var(--color-bg-primary);
     color: var(--color-text-main);
+    scroll-padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
+    scroll-padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -96,8 +106,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    overflow-x: hidden;
+    min-height: 100dvh;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent iOS Safari auto-zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
 
   input, textarea, select {
