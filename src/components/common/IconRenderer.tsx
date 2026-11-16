@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Icons from 'lucide-react';
+import { getLucideIcon } from './iconMap';
 import { RealisticIcon } from './RealisticIcon';
 
 interface IconRendererProps {
@@ -21,8 +21,7 @@ export const IconRenderer: React.FC<IconRendererProps> = ({
     return <RealisticIcon name={name} size={size} className={className} color={color} />;
   }
 
-  // @ts-ignore dynamic index into Lucide icons
-  const LucideIcon = (Icons as Record<string, any>)[name] || Icons.HelpCircle;
+  const LucideIcon = getLucideIcon(name);
 
   return <LucideIcon size={size} className={className} color={color} />;
 };

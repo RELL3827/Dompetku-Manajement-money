@@ -19,7 +19,7 @@ export const initTouchFeedback = (): (() => void) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const target = (e.target as HTMLElement | null)?.closest(
-      'button, a, [role="button"], .ios-btn, .liquid-btn, .btn-tactile, .btn-glow-emerald, .card-elevated, .liquid-card, .ios-glass-card, .touch-ripple-target'
+      'button, a, [role="button"], .ios-btn, .liquid-btn, .btn-tactile, .btn-glow-emerald, .touch-ripple-target'
     ) as HTMLElement | null;
 
     if (!target) return;

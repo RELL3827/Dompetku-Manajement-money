@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.13.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.14.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '17 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Optimasi Performa Ringan & 60fps GPU Rendering',
+    description: 'Aplikasi kini jauh lebih ringan dan mulus tanpa mengubah tampilan atau fitur apapun: pemotongan drastis ukuran bundle ikon Lucide (-700 kB JS), eliminasi reflow layout pada sentuhan scroll kartu, pengalihan animasi ambient orb ke GPU compositor layer murni (translate3d), optimasi beban Gaussian blur, dan akselerasi content-visibility pada daftar transaksi panjang.',
+    icon: '⚡',
+  },
   {
     title: 'Optimalisasi Tampilan iOS & Safe Area Insets',
     description: 'Penyempurnaan tata letak khusus iOS: dukungan penuh Safe Area Insets (Dynamic Island, notch & home bar), pemosisian rapih Floating Dock & FAB tanpa tumpang tindih, modal bottom sheet dvh anti-terpotong toolbar Safari, pencegahan auto-zoom input, dan clearance scroll halaman agar seluruh aksi hapus dan riwayat terlihat utuh.',

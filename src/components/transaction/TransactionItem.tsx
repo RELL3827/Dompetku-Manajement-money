@@ -66,7 +66,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
     <>
       <article
         onClick={() => onEdit(transaction)}
-        className="ios-glass-card group relative flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-xs hover:shadow-md cursor-pointer select-none"
+        className="ios-glass-card content-visibility-auto group relative flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-xs hover:shadow-md cursor-pointer select-none"
       >
         {/* Left: Icon & Details */}
         <div className="flex items-center gap-3 min-w-0 pr-2 flex-1">
