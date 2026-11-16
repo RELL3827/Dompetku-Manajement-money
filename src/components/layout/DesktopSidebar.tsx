@@ -14,6 +14,7 @@ import { usePwaInstall } from '../../hooks/usePwaInstall';
 import { PwaInstallModal } from '../common/PwaInstallModal';
 import { DonationModal } from '../common/DonationModal';
 import { RealisticIcon } from '../common/RealisticIcon';
+import { useStreak } from '../../hooks/useStreak';
 
 interface DesktopSidebarProps {
   activeTab: NavTab;
@@ -21,6 +22,7 @@ interface DesktopSidebarProps {
   onOpenAddModal: () => void;
   onOpenAbout?: () => void;
   onOpenFeedback?: () => void;
+  onOpenStreak?: () => void;
 }
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
@@ -29,7 +31,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   onOpenAddModal,
   onOpenAbout,
   onOpenFeedback,
+  onOpenStreak,
 }) => {
+  const streak = useStreak();
   const { theme, setTheme } = useTheme();
   const { isInstalled, isIOS, isAndroid, showGuideModal, setShowGuideModal, installApp } = usePwaInstall();
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
@@ -62,6 +66,43 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Streak Api Banner */}
+        {onOpenStreak && (
+          <div
+            onClick={onOpenStreak}
+            className={`p-3 rounded-2xl border transition-all cursor-pointer group shadow-2xs ${
+              streak.isRecordedToday
+                ? 'bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-emerald-500/10 border-orange-500/25 hover:border-orange-500/40'
+                : streak.currentStreak > 0
+                ? 'bg-gradient-to-r from-amber-500/15 to-orange-500/15 border-amber-500/35 hover:border-amber-500/50'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 hover:border-orange-500/30'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg ${
+                  streak.isRecordedToday
+                    ? 'bg-gradient-to-tr from-orange-500 to-amber-400 text-white shadow-xs'
+                    : 'bg-orange-500/20 text-orange-600 dark:text-orange-400'
+                }`}>
+                  🔥
+                </div>
+                <div>
+                  <p className="text-xs font-black text-slate-800 dark:text-slate-100 flex items-center gap-1">
+                    <span>{streak.currentStreak} Hari Streak</span>
+                  </p>
+                  <p className="text-[10px] font-semibold text-orange-600 dark:text-orange-400">
+                    {streak.isRecordedToday ? 'Api Menyala Hari Ini 🔥' : 'Catat Hari Ini! ⏳'}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 group-hover:text-orange-500 transition-colors">
+                Detail →
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Quick Add Button */}
         <button

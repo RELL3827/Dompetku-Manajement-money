@@ -28,19 +28,24 @@ import {
 } from 'lucide-react';
 import { RealisticIcon } from '../components/common/RealisticIcon';
 import { DonationModal } from '../components/common/DonationModal';
+import { StreakCard } from '../components/streak/StreakCard';
+import { useStreak } from '../hooks/useStreak';
 import type { Transaction, NavTab, TransactionType, Category, Wallet as WalletType, SavingGoal, CalendarEvent } from '../types';
 
 interface HomePageProps {
   onNavigate: (tab: NavTab) => void;
   onOpenTransactionModal: (type?: TransactionType) => void;
   onEditTransaction: (tx: Transaction) => void;
+  onOpenStreakModal?: () => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
   onOpenTransactionModal,
   onEditTransaction,
+  onOpenStreakModal,
 }) => {
+  const streak = useStreak();
   const [walletBalances, setWalletBalances] = useState<WalletBalanceInfo[]>([]);
   const [budgetAlerts, setBudgetAlerts] = useState<BudgetStatusInfo[]>([]);
   const [backupReminder, setBackupReminder] = useState<string | null>(null);
@@ -247,6 +252,15 @@ export const HomePage: React.FC<HomePageProps> = ({
           </span>
         </button>
       </div>
+
+      {/* TikTok-Style Daily Streak Flame Card */}
+      {onOpenStreakModal && (
+        <StreakCard
+          streak={streak}
+          onOpenStreakModal={onOpenStreakModal}
+          onOpenAddTransaction={() => onOpenTransactionModal('expense')}
+        />
+      )}
 
       {/* Savings Summary Banner / Shortcut */}
       <article className="ios-glass-card p-4 flex items-center justify-between gap-4">

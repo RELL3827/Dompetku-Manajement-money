@@ -27,9 +27,11 @@ import { SettingsPage } from './pages/SettingsPage';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
 import { AboutModal } from './components/about/AboutModal';
 import { DonationModal } from './components/common/DonationModal';
+import { StreakModal } from './components/streak/StreakModal';
 
 import { useTheme } from './hooks/useTheme';
 import { useSwipeNavigation } from './hooks/useSwipeNavigation';
+import { useStreak } from './hooks/useStreak';
 import { navigateWithTransition } from './utils/navigation';
 import type { NavTab, Transaction, TransactionType } from './types';
 
@@ -57,6 +59,10 @@ export const App: React.FC = () => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
+
+  // TikTok-Style Daily Streak State
+  const streak = useStreak();
 
   // High-performance horizontal swipe gestures to switch between tabs on mobile
   useSwipeNavigation({
@@ -67,7 +73,8 @@ export const App: React.FC = () => {
       !isCalculatorModalOpen &&
       !isFeedbackModalOpen &&
       !isAboutModalOpen &&
-      !isDonationModalOpen,
+      !isDonationModalOpen &&
+      !isStreakModalOpen,
   });
 
   // Check onboarding status
@@ -118,6 +125,7 @@ export const App: React.FC = () => {
         onOpenAddModal={() => handleOpenAddTransaction('expense')}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+        onOpenStreak={() => setIsStreakModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -126,6 +134,7 @@ export const App: React.FC = () => {
         <Header
           onOpenSettings={() => handleNavigate('settings')}
           onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+          onOpenStreak={() => setIsStreakModalOpen(true)}
         />
 
         {/* Page Container */}
@@ -135,6 +144,7 @@ export const App: React.FC = () => {
               onNavigate={handleNavigate}
               onOpenTransactionModal={handleOpenAddTransaction}
               onEditTransaction={handleEditTransaction}
+              onOpenStreakModal={() => setIsStreakModalOpen(true)}
             />
           )}
 
@@ -226,6 +236,14 @@ export const App: React.FC = () => {
       <DonationModal
         isOpen={isDonationModalOpen}
         onClose={() => setIsDonationModalOpen(false)}
+      />
+
+      {/* Global TikTok-Style Daily Streak Modal */}
+      <StreakModal
+        isOpen={isStreakModalOpen}
+        onClose={() => setIsStreakModalOpen(false)}
+        streak={streak}
+        onOpenAddTransaction={() => handleOpenAddTransaction('expense')}
       />
 
       {/* Global PWA Update Notification Modal & Toast Banner */}

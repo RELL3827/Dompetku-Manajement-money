@@ -3,10 +3,10 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.9.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.10.0';
 
 export const APP_RELEASE_DATE: string =
-  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '15 November 2026';
+  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '16 November 2026';
 
 export const APP_BUILD_TIMESTAMP: number =
   typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : Date.now();
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Streak Api Harian TikTok Style',
+    description: 'Fitur streak api (flame streak) setiap hari ala TikTok: pelacakan konsistensi mencatat keuangan harian, animasi api membara & percikan bara GPU, status api menyala vs hampir padam, kalender mini 7 hari, rekor terpanjang, dan level pencapaian api abadi.',
+    icon: '🔥',
+  },
   {
     title: 'Touch Ripples, Micro-Interactions & Gestures',
     description: 'Efek sentuhan riak air (liquid touch ripple) bertenaga GPU, navigasi gestur swipe layar antar tab yang mulus, tarikan gesture drag-down bottom-sheet pada modal, directional view transitions, dan respons tactile haptic yang ringan dan responsif.',

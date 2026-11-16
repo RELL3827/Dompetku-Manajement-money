@@ -9,13 +9,16 @@ import { usePwaUpdate } from '../../context/PwaUpdateContext';
 import { PwaInstallModal } from '../common/PwaInstallModal';
 import { DonationModal } from '../common/DonationModal';
 import { APP_VERSION } from '../../utils/version';
+import { useStreak } from '../../hooks/useStreak';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
   onOpenCalculator?: () => void;
+  onOpenStreak?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator, onOpenStreak }) => {
+  const streak = useStreak();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isPersisted, setIsPersisted] = useState(false);
   const [isPinEnabled, setIsPinEnabled] = useState(false);
@@ -140,6 +143,28 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenCalculator
             {!isOnline ? <WifiOff size={12} /> : <Wifi size={12} />}
             <span>{!isOnline ? 'Offline' : 'Lokal Aktif'}</span>
           </div>
+
+          {/* Streak Api Button */}
+          {onOpenStreak && (
+            <button
+              type="button"
+              onClick={onOpenStreak}
+              title={`Streak Api Keuangan: ${streak.currentStreak} Hari ${
+                streak.isRecordedToday ? '(Menyala Hari Ini 🔥)' : '(Catat Hari Ini! ⏳)'
+              }`}
+              className={`ios-btn flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer shadow-xs ${
+                streak.isRecordedToday
+                  ? 'bg-orange-50/90 hover:bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border-orange-200/80 dark:border-orange-900/60'
+                  : streak.currentStreak > 0
+                  ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border-amber-500/40 animate-pulse'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              <span className={`text-sm ${streak.isRecordedToday ? 'animate-bounce' : ''}`}>🔥</span>
+              <span className="tabular-nums font-black">{streak.currentStreak}</span>
+              <span className="hidden sm:inline text-[11px] font-semibold">Streak</span>
+            </button>
+          )}
 
           {/* Quick Calculator Button */}
           {onOpenCalculator && (
