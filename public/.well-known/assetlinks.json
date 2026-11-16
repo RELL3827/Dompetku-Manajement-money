@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.dompetku_manajement_money.twa",
+        "sha256_cert_fingerprints": ["29:9C:62:F6:75:79:4A:ED:B9:9A:6F:BF:98:A0:9D:65:72:AC:EE:AF:A4:51:F1:3A:BC:2A:FD:F7:C9:4E:9B:69"]
+      }
+    }]
