@@ -3,10 +3,10 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.16.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.17.0';
 
 export const APP_RELEASE_DATE: string =
-  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '17 November 2026';
+  typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '18 November 2026';
 
 export const APP_BUILD_TIMESTAMP: number =
   typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : Date.now();
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Integrasi Tautan Website Resmi DompetKu',
+    description: 'Menyematkan akses langsung ke website resmi https://website-dompetku-one.vercel.app/ di halaman Pengaturan & Backup, modal Tentang DompetKu, Desktop Sidebar, dan metadata landing page aplikasi.',
+    icon: '🌐',
+  },
   {
     title: 'Loading Screen Liquid Glass Edition (Progress 100% ~5 Detik)',
     description: 'Penyempurnaan animasi pembuka tampilan awal bertema Liquid Glass Edition dengan durasi terkalibrasi ~5 detik: kartu kaca frosted dengan specular rim highlight, indikator progres persentase 0% hingga 100% dengan tabular numerals, status bertahap (Inisialisasi, Basis Data, Sinkronisasi, Rendering, Finalisasi), efek neon shimmer fluid, serta penutupan transisi mulus 60 FPS tanpa memberatkan APK.',

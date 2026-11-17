@@ -57,6 +57,8 @@ import {
   Upload,
   AlertCircle,
   CheckCircle2,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 
 export type IconComponent = React.ComponentType<{
@@ -126,6 +128,8 @@ export const LUCIDE_ICON_MAP: Record<string, IconComponent> = {
   Upload,
   AlertCircle,
   CheckCircle2,
+  Globe,
+  ExternalLink,
 };
 
 export const getLucideIcon = (name: string): IconComponent => {

@@ -40,6 +40,8 @@ import {
   MessageSquare,
   Calendar,
   Coffee,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 import type { BackupData, ThemeMode, NavTab } from '../types';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -758,6 +760,35 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Official Website Banner */}
+        <a
+          href="https://website-dompetku-one.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border border-emerald-500/25 dark:border-emerald-500/35 hover:border-emerald-500/50 flex items-center justify-between gap-3 group transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0 shadow-sm">
+              <Globe size={18} />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                <span>Website Resmi DompetKu</span>
+                <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300">
+                  Online
+                </span>
+              </h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                https://website-dompetku-one.vercel.app/
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0">
+            <span>Buka</span>
+            <ExternalLink size={14} />
+          </div>
+        </a>
 
         {/* Buttons for About, Feedback & Calendar */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">

@@ -1,11 +1,14 @@
 # 👛 DompetKu - Aplikasi Manajemen Keuangan Pribadi (PWA 100% Offline-First)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/Website-website--dompetku--one.vercel.app-10b981.svg)](https://website-dompetku-one.vercel.app/)
 [![PWA Ready](https://img.shields.io/badge/PWA-100%25%20Offline-success.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 [![No Tracking](https://img.shields.io/badge/Privacy-Zero%20Tracking-blue.svg)](PRIVACY.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg)](https://www.typescriptlang.org/)
 
 **DompetKu** adalah Progressive Web App (PWA) manajemen keuangan pribadi offline-first yang gratis, bebas iklan, tanpa registrasi akun, tanpa pelacak, dan 100% data tersimpan di perangkat lokal pengguna menggunakan **IndexedDB**. 
+
+🌐 **Website Resmi:** [https://website-dompetku-one.vercel.app/](https://website-dompetku-one.vercel.app/) 
 
 ---
 

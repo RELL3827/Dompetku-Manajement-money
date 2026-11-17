@@ -7,6 +7,7 @@ import {
   Info,
   Plus,
   Coffee,
+  Globe,
 } from 'lucide-react';
 import type { NavTab } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
@@ -175,6 +176,15 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
               <Info size={12} />
               <span>Tentang DompetKu</span>
             </button>
+            <a
+              href="https://website-dompetku-one.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors"
+            >
+              <Globe size={12} />
+              <span>Website</span>
+            </a>
             <button
               type="button"
               onClick={onOpenFeedback}
