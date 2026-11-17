@@ -19,8 +19,280 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Immediate theme bootstrap to eliminate startup flash -->
+    <script>
+      (function() {
+        try {
+          var cachedTheme = localStorage.getItem('dompetku_theme_cache');
+          var isDark = false;
+          if (cachedTheme === 'dark') {
+            isDark = true;
+          } else if (cachedTheme === 'light') {
+            isDark = false;
+          } else {
+            isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          }
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Critical Aesthetic Splash Loading Screen (Ultra-Lightweight, 60fps GPU Composited) -->
+    <style>
+      #app-splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #070a12;
+        color: #f8fafc;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        pointer-events: all;
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+        transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+        will-change: opacity, transform;
+      }
+      html:not(.dark) #app-splash-screen {
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+      #app-splash-screen.splash-dismiss {
+        opacity: 0;
+        transform: scale(1.04) translate3d(0, 0, 0);
+        pointer-events: none;
+      }
+      .splash-orb {
+        position: absolute;
+        border-radius: 9999px;
+        pointer-events: none;
+        filter: blur(28px);
+        transform: translate3d(0, 0, 0);
+      }
+      .splash-orb-1 {
+        width: 320px;
+        height: 320px;
+        top: 15%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.24) 0%, rgba(5, 150, 105, 0.08) 50%, transparent 75%);
+      }
+      .splash-orb-2 {
+        width: 260px;
+        height: 260px;
+        bottom: 20%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 75%);
+      }
+      .splash-content {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1.5rem;
+        max-width: 320px;
+      }
+      .splash-emblem-wrap {
+        position: relative;
+        margin-bottom: 1.25rem;
+      }
+      .splash-emblem-glow {
+        position: absolute;
+        inset: -10px;
+        border-radius: 2.25rem;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
+        filter: blur(14px);
+        animation: splash-pulse-glow 2.4s ease-in-out infinite alternate;
+      }
+      .splash-emblem-box {
+        position: relative;
+        width: 78px;
+        height: 78px;
+        border-radius: 1.5rem;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(6, 78, 59, 0.4));
+        border: 1px solid rgba(52, 211, 153, 0.38);
+        box-shadow: 0 14px 30px -4px rgba(16, 185, 129, 0.35), inset 0 1.5px 1px rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        animation: splash-float 3s ease-in-out infinite;
+      }
+      .splash-brand {
+        margin-bottom: 1.35rem;
+      }
+      .splash-title {
+        margin: 0;
+        font-size: 1.625rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+      }
+      .splash-accent {
+        color: #10b981;
+      }
+      .splash-subtitle {
+        margin: 0.35rem 0 0 0;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #94a3b8;
+        letter-spacing: -0.01em;
+      }
+      html:not(.dark) .splash-subtitle {
+        color: #64748b;
+      }
+      .splash-loader-bar {
+        width: 130px;
+        height: 3.5px;
+        border-radius: 9999px;
+        background: rgba(148, 163, 184, 0.18);
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 1.25rem;
+      }
+      .splash-loader-thumb {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 55px;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, transparent, #10b981, #34d399, transparent);
+        animation: splash-shimmer 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      .splash-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        color: #10b981;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      html:not(.dark) .splash-badge {
+        color: #059669;
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+      .splash-footer {
+        position: absolute;
+        bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: #64748b;
+        opacity: 0.8;
+        letter-spacing: 0.01em;
+      }
+      html:not(.dark) .splash-footer {
+        color: #94a3b8;
+      }
+      @keyframes splash-float {
+        0%, 100% { transform: translateY(0) scale(1) translate3d(0, 0, 0); }
+        50% { transform: translateY(-3.5px) scale(1.02) translate3d(0, 0, 0); }
+      }
+      @keyframes splash-pulse-glow {
+        0% { opacity: 0.4; transform: scale(0.95) translate3d(0, 0, 0); }
+        100% { opacity: 0.85; transform: scale(1.08) translate3d(0, 0, 0); }
+      }
+      @keyframes splash-shimmer {
+        0% { transform: translateX(-100%) translate3d(0, 0, 0); }
+        100% { transform: translateX(300%) translate3d(0, 0, 0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash-emblem-box,
+        .splash-emblem-glow,
+        .splash-loader-thumb {
+          animation: none !important;
+        }
+        #app-splash-screen {
+          transition: opacity 0.15s ease !important;
+        }
+        #app-splash-screen.splash-dismiss {
+          transform: none !important;
+        }
+      }
+    </style>
   </head>
   <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen antialiased selection:bg-emerald-500/20 selection:text-emerald-500">
+    <!-- Aesthetic Initial Startup Splash Screen (Zero-FOUC, Lightweight) -->
+    <div id="app-splash-screen" aria-hidden="true">
+      <div class="splash-orb splash-orb-1"></div>
+      <div class="splash-orb splash-orb-2"></div>
+
+      <div class="splash-content">
+        <div class="splash-emblem-wrap">
+          <div class="splash-emblem-glow"></div>
+          <div class="splash-emblem-box">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="46" height="46">
+              <rect x="5" y="10" width="38" height="28" rx="8" fill="url(#splash-em-grad)" stroke="rgba(255,255,255,0.4)" stroke-width="1.75"/>
+              <path d="M5 18H43" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+              <path d="M28 21.5H39C40.6569 21.5 42 22.8431 42 24.5V27.5C42 29.1569 40.6569 30.5 39 30.5H28C25.5147 30.5 23.5 28.4853 23.5 26C23.5 23.5147 25.5147 21.5 28 21.5Z" fill="#047857" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
+              <circle cx="30.5" cy="26" r="2.2" fill="#34d399"/>
+              <path d="M37 7L38 10L41 11L38 12L37 15L36 12L33 11L36 10L37 7Z" fill="#34d399"/>
+              <defs>
+                <linearGradient id="splash-em-grad" x1="5" y1="10" x2="43" y2="38" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#10b981"/>
+                  <stop offset="0.5" stop-color="#059669"/>
+                  <stop offset="1" stop-color="#047857"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <div class="splash-brand">
+          <h1 class="splash-title">Dompet<span class="splash-accent">Ku</span></h1>
+          <p class="splash-subtitle">Manajemen Keuangan Pribadi</p>
+        </div>
+
+        <div class="splash-loader-bar">
+          <div class="splash-loader-thumb"></div>
+        </div>
+
+        <div class="splash-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>100% Offline • Privasi Penuh</span>
+        </div>
+      </div>
+
+      <div class="splash-footer">
+        <span>v2.15.0 • Desain Liquid Glass</span>
+      </div>
+    </div>
+
+    <script>
+      // Failsafe auto-dismiss after 3.5s in case JS initialization takes too long
+      setTimeout(function() {
+        var s = document.getElementById('app-splash-screen');
+        if (s && !s.classList.contains('splash-dismiss')) {
+          s.classList.add('splash-dismiss');
+          setTimeout(function() { if (s && s.parentNode) s.parentNode.removeChild(s); }, 500);
+        }
+      }, 3500);
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

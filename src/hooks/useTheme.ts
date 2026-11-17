@@ -16,6 +16,10 @@ export function applyThemeToDOM(mode: ThemeMode) {
     isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 
+  try {
+    localStorage.setItem('dompetku_theme_cache', mode);
+  } catch {}
+
   if (isDark) {
     root.classList.add('dark');
     root.setAttribute('data-theme', 'dark');

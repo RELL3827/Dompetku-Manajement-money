@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.14.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.15.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '17 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Animasi Loading Screen Tampilan Awal Aesthetic & Ringan',
+    description: 'Layar pembuka awal bertema Liquid Glass ultra-ringan: logo emblem berkilau dengan efek pendar halus, shimmer bar berbasis GPU compositor 60fps, adaptasi tema otomatis tanpa kedipan (zero-FOUC), dan pembersihan instan dari memori setelah terbuka sehingga APK tetap enteng dan responsif.',
+    icon: '✨',
+  },
   {
     title: 'Optimasi Performa Ringan & 60fps GPU Rendering',
     description: 'Aplikasi kini jauh lebih ringan dan mulus tanpa mengubah tampilan atau fitur apapun: pemotongan drastis ukuran bundle ikon Lucide (-700 kB JS), eliminasi reflow layout pada sentuhan scroll kartu, pengalihan animasi ambient orb ke GPU compositor layer murni (translate3d), optimasi beban Gaussian blur, dan akselerasi content-visibility pada daftar transaksi panjang.',

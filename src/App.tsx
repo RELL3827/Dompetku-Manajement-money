@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db/database';
 import { Header } from './components/layout/Header';
@@ -38,6 +38,24 @@ import type { NavTab, Transaction, TransactionType } from './types';
 export const App: React.FC = () => {
   // Initialize theme
   useTheme();
+
+  // Dismiss initial aesthetic splash screen once App finishes mounting
+  useEffect(() => {
+    const splash = document.getElementById('app-splash-screen');
+    if (splash) {
+      // Small pause (450ms) to allow the aesthetic opening animation to play smoothly
+      const timer = setTimeout(() => {
+        splash.classList.add('splash-dismiss');
+        const removeTimer = setTimeout(() => {
+          if (splash.parentNode) {
+            splash.parentNode.removeChild(splash);
+          }
+        }, 500);
+        return () => clearTimeout(removeTimer);
+      }, 450);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
 
