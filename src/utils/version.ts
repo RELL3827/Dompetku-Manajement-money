@@ -3,7 +3,7 @@
  */
 
 export const APP_VERSION: string =
-  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.15.0';
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v2.16.0';
 
 export const APP_RELEASE_DATE: string =
   typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '17 November 2026';
@@ -43,6 +43,11 @@ export function getInstalledUpdateInfo(): { version: string; date: string } {
 }
 
 export const LATEST_RELEASE_NOTES: VersionChange[] = [
+  {
+    title: 'Loading Screen Liquid Glass Edition (Progress 100% ~5 Detik)',
+    description: 'Penyempurnaan animasi pembuka tampilan awal bertema Liquid Glass Edition dengan durasi terkalibrasi ~5 detik: kartu kaca frosted dengan specular rim highlight, indikator progres persentase 0% hingga 100% dengan tabular numerals, status bertahap (Inisialisasi, Basis Data, Sinkronisasi, Rendering, Finalisasi), efek neon shimmer fluid, serta penutupan transisi mulus 60 FPS tanpa memberatkan APK.',
+    icon: '✨',
+  },
   {
     title: 'Animasi Loading Screen Tampilan Awal Aesthetic & Ringan',
     description: 'Layar pembuka awal bertema Liquid Glass ultra-ringan: logo emblem berkilau dengan efek pendar halus, shimmer bar berbasis GPU compositor 60fps, adaptasi tema otomatis tanpa kedipan (zero-FOUC), dan pembersihan instan dari memori setelah terbuka sehingga APK tetap enteng dan responsif.',

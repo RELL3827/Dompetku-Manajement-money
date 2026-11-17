@@ -39,22 +39,9 @@ export const App: React.FC = () => {
   // Initialize theme
   useTheme();
 
-  // Dismiss initial aesthetic splash screen once App finishes mounting
+  // Signal that React is ready in background (splash screen completes its 5-second 100% cycle)
   useEffect(() => {
-    const splash = document.getElementById('app-splash-screen');
-    if (splash) {
-      // Small pause (450ms) to allow the aesthetic opening animation to play smoothly
-      const timer = setTimeout(() => {
-        splash.classList.add('splash-dismiss');
-        const removeTimer = setTimeout(() => {
-          if (splash.parentNode) {
-            splash.parentNode.removeChild(splash);
-          }
-        }, 500);
-        return () => clearTimeout(removeTimer);
-      }, 450);
-      return () => clearTimeout(timer);
-    }
+    (window as any).__DOMPETKU_REACT_READY__ = true;
   }, []);
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');

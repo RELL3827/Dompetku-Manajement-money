@@ -3,45 +3,48 @@ import React from 'react';
 interface LoadingScreenProps {
   message?: string;
   subMessage?: string;
+  progress?: number;
   isFullPage?: boolean;
 }
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   message = 'Memuat DompetKu...',
   subMessage = '100% Offline • Privasi Penuh',
+  progress,
   isFullPage = true,
 }) => {
   return (
     <div
       className={`${
         isFullPage ? 'fixed inset-0 z-50' : 'relative w-full py-16'
-      } flex flex-col items-center justify-center bg-slate-50/90 dark:bg-[#070a12]/90 backdrop-blur-xl select-none transition-colors overflow-hidden`}
+      } flex flex-col items-center justify-center bg-slate-50/90 dark:bg-[#070a12]/95 backdrop-blur-xl select-none transition-colors overflow-hidden`}
       role="status"
       aria-live="polite"
     >
       {/* Ambient background glow orbs */}
       <div
-        className="absolute w-72 h-72 rounded-full pointer-events-none filter blur-2xl opacity-40 bg-radial from-emerald-500/25 via-emerald-600/10 to-transparent top-1/4"
+        className="absolute w-80 h-80 rounded-full pointer-events-none filter blur-3xl opacity-40 bg-radial from-emerald-500/30 via-emerald-600/10 to-transparent top-12 -right-10"
         aria-hidden="true"
       />
       <div
-        className="absolute w-60 h-60 rounded-full pointer-events-none filter blur-2xl opacity-30 bg-radial from-blue-500/20 via-indigo-500/5 to-transparent bottom-1/4"
+        className="absolute w-72 h-72 rounded-full pointer-events-none filter blur-3xl opacity-30 bg-radial from-blue-500/25 via-indigo-500/8 to-transparent bottom-12 -left-10"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex flex-col items-center text-center px-4 max-w-xs">
+      {/* Signature Liquid Glass Card */}
+      <div className="relative z-10 flex flex-col items-center text-center p-7 sm:p-8 w-[88%] max-w-[335px] rounded-[2rem] bg-white/75 dark:bg-slate-900/70 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-2xl shadow-emerald-500/10 dark:shadow-black/60">
         {/* Emblem box with 3D liquid border and gentle float */}
-        <div className="relative mb-4 group">
+        <div className="relative mb-3 group">
           <div
-            className="absolute -inset-2 rounded-3xl bg-radial from-emerald-500/40 to-transparent filter blur-md animate-pulse opacity-70"
+            className="absolute -inset-2.5 rounded-3xl bg-radial from-emerald-500/45 to-transparent filter blur-md animate-pulse opacity-75"
             aria-hidden="true"
           />
-          <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/25 to-emerald-950/40 border border-emerald-400/35 shadow-lg shadow-emerald-500/20 flex items-center justify-center backdrop-blur-md">
+          <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500/25 to-emerald-950/45 border border-emerald-400/40 shadow-lg shadow-emerald-500/25 flex items-center justify-center backdrop-blur-md">
             <svg
               viewBox="0 0 48 48"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-11 h-11 text-emerald-400 transition-transform duration-700"
+              className="w-11 h-11 text-emerald-400"
             >
               <rect
                 x="5"
@@ -50,7 +53,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
                 height="28"
                 rx="8"
                 fill="url(#loading-em-grad)"
-                stroke="rgba(255,255,255,0.4)"
+                stroke="rgba(255,255,255,0.45)"
                 strokeWidth="1.75"
               />
               <path d="M5 18H43" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" />
@@ -80,21 +83,41 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
           </div>
         </div>
 
+        {/* Edition Tag */}
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 mb-2">
+          ✨ Liquid Glass Edition
+        </span>
+
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+        <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 mb-1">
           Dompet<span className="text-emerald-500">Ku</span>
         </h2>
-        <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1 mb-4">
+        <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-3">
           {message}
         </p>
 
-        {/* Shimmer loading track */}
-        <div className="w-32 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden relative mb-4">
-          <div className="absolute top-0 left-0 h-full w-12 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full animate-[splash-shimmer_1.4s_infinite]" />
+        {/* Liquid Glass Progress Track */}
+        <div className="w-full h-2.5 bg-slate-200/70 dark:bg-slate-800/80 rounded-full overflow-hidden relative border border-slate-300/40 dark:border-white/10 shadow-inner mb-2">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.7)] transition-all duration-300 relative overflow-hidden"
+            style={{ width: `${progress !== undefined ? Math.min(100, Math.max(0, progress)) : 100}%` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[splash-shimmer_1.5s_infinite]" />
+          </div>
         </div>
 
+        {/* Percentage or Step */}
+        {progress !== undefined && (
+          <div className="flex justify-between items-center w-full text-xs font-bold tabular-nums text-emerald-600 dark:text-emerald-400 mb-3 px-1">
+            <span>{Math.round(progress)}%</span>
+            <span className="text-[10px] text-slate-400 font-semibold">
+              {progress >= 100 ? 'Siap!' : 'Memproses...'}
+            </span>
+          </div>
+        )}
+
         {/* Pill Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold tracking-wide">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold tracking-wide mt-1">
           <svg
             className="w-3 h-3"
             viewBox="0 0 24 24"
